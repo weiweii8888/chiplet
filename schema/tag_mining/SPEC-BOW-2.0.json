@@ -1,0 +1,122 @@
+{
+ "doc_id": "SPEC-BOW-2.0",
+ "existing_tags": [
+  "generic",
+  "spec",
+  "bow",
+  "organic_substrate",
+  "interposer_2_5d",
+  "bandwidth_capacity",
+  "energy",
+  "latency",
+  "area"
+ ],
+ "decisions": [
+  {
+   "decision": "BoW 模式（每條線的速率）",
+   "options": [
+    "BoW-32（2 Gb/s/wire）",
+    "BoW-64（4）",
+    "BoW-128（8）",
+    "BoW-256（16）",
+    "BoW-384（24，2.0 新增）",
+    "BoW-512（32，2.0 新增）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.11"
+  },
+  {
+   "decision": "終端方式：用功耗和設計複雜度換速率和傳輸距離",
+   "options": [
+    "不終端（unterminated）",
+    "只在發送端終端（source-terminated）",
+    "兩端都終端（doubly-terminated）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7"
+  },
+  {
+   "decision": "D2D 走線用哪種封裝：決定每種模式的最遠距離",
+   "options": [
+    "有機層壓板（laminate／organic，線寬線距約 25 µm，最遠 10–25+ mm）",
+    "先進封裝（矽中介層，最遠約 2–4 mm）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.17"
+  },
+  {
+   "decision": "slice 寬度：die 邊長有限時降低頻寬換 bump 數",
+   "options": [
+    "一般 slice（16 data + 差動時脈，18/20 bumps）",
+    "半寬 slice（8 data，10/12 bumps，可和一般 slice 互通）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.19"
+  },
+  {
+   "decision": "連結方向與兩個方向的頻寬配比",
+   "options": [
+    "兩向頻寬相同（TX/RX slice 數相等）",
+    "兩向頻寬不同（非對稱）",
+    "單向",
+    "slice 固定 TX/RX 或可設定方向（bidirectional slice）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "選用 FEC／AUX 線（錯誤率、延遲、DBI 省能）",
+   "options": [
+    "不用 FEC（延遲 <2–4 ns）",
+    "用 FEC（延遲 <15 ns）",
+    "AUX 用於 DBI、流量控制或修復",
+    "FEC 和 AUX 都不做"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7"
+  },
+  {
+   "decision": "PHY 低功耗狀態（流量低時的能耗）",
+   "options": [
+    "一直開著",
+    "Data Idle 狀態",
+    "Clock Gated 狀態（需要 preamble／postamble，最長 1024 UI）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.38"
+  },
+  {
+   "decision": "I/O 冗餘修復（良率）",
+   "options": [
+    "不做冗餘",
+    "AUX/FEC 當備援線，最多修 2 條 data 線（時脈線不支援修復）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.41"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "d2d_config（新組：D2D 連結的配置選項，和 d2d_interface 選哪種標準分開）",
+   "id": "d2d_asymmetric_link",
+   "label": "非對稱 D2D 連結",
+   "definition": "D2D 連結兩個方向可以配不同頻寬（TX/RX slice 數不同，或只走單向），用來對應讀多寫少的流量。",
+   "why": "edge 常見的 host SoC 接加速 chiplet、NPU 接記憶體 chiplet，decode 時讀權重和 KV 的流量遠大於寫回。沒有這個標籤時，agent 想查『哪些 D2D 可以只在讀的方向配高頻寬來省 die 邊長』，只能把所有 bow、ucie 文件逐份翻。numbers.csv 的 dir 只有 uni/bi，也記不下 TX:RX 配比。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "energy",
+   "suggestion": "分成 energy_active（滿載時的 pJ/bit，本文 <0.25–1 pJ/bit 依終端方式而定）和 energy_idle（閒置或低流量時的能耗，例如本文說能耗可隨活動量降到約 10% 並定義了 clock gating）。edge 跑 LLM decode 時 D2D 流量時有時無，平均功耗主要看閒置那部分；只標 energy 時，agent 分不出文件給的是滿載數字，還是有閒置或低流量時的行為。終端方式（none/source/double）會讓 pJ/bit 差一倍，建議放在 numbers.csv 的 condition key（例如 term=none|source|double），不要再開標籤。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "這份文件的「頻寬」指每條線的速率和每 mm die 邊長的頻寬（2–12+ Tbps/mm），跟記憶體容量無關。建議拆成 capacity（記憶體容量）、bandwidth（總頻寬）、bw_density（每 mm 邊長或每 mm² 的頻寬密度）三個。edge 的 die 小，切多小常常受邊長頻寬限制；合在一起時，agent 用『容量』或『頻寬密度』查都會撈到一堆不相關的文件。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.5611602,
+  "turns": 9
+ }
+}

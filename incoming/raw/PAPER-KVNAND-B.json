@@ -1,0 +1,722 @@
+{
+ "doc_id": "PAPER-KVNAND",
+ "rows": [
+  {
+   "parameter": "die_peak_compute",
+   "value": 32,
+   "unit": "TOPS",
+   "condition": "design=KVNAND (NPU die on SoC); precision=BF16; Tensor Core; sparsity=not stated; component=NPU",
+   "location": "PDF p.8 Table I",
+   "quote": "32 TOPS (BF16 Tensor Core), 4.60 W",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_power",
+   "value": 4.6,
+   "unit": "W",
+   "condition": "design=KVNAND; component=NPU; precision=BF16; 模擬設定功耗",
+   "location": "PDF p.8 Table I",
+   "quote": "32 TOPS (BF16 Tensor Core), 4.60 W",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_energy_efficiency",
+   "value": 6.96,
+   "unit": "TOPS/W",
+   "condition": "design=KVNAND; component=NPU; precision=BF16; 算法=32 TOPS / 4.60 W; peak",
+   "location": "PDF p.8 Table I",
+   "quote": "32 TOPS (BF16 Tensor Core), 4.60 W",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 5,
+   "unit": "MB",
+   "condition": "design=KVNAND-D; component=SoC-side KV buffer (SRAM); power=0.36 W",
+   "location": "PDF p.8 Table I",
+   "quote": "5MB KV buffers for KVNAND-D, 0.36 W",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 0.254,
+   "unit": "MB",
+   "condition": "design=KVNAND; component=IFC logic die global buffer; 原文 260 KB（÷1024）; area=0.4095 mm2; power=18.4 mW total",
+   "location": "PDF p.8 Table I",
+   "quote": "260 KB Global buffer",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 0.25,
+   "unit": "MB",
+   "condition": "design=KVNAND-C; component=IFC logic die per-plane KV buffers; 算法=8 KB/plane × 32 planes = 256 KB; 不含 260 KB global buffer",
+   "location": "PDF p.8 Table I",
+   "quote": "16 FMACs + 8 KB KV buffer per plane for KVNAND-C",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 512,
+   "unit": "count",
+   "condition": "design=KVNAND-C; component=IFC logic die; 算法=16 FMACs/plane × 32 planes/die; MAC type=FMAC",
+   "location": "PDF p.8 Table I",
+   "quote": "16 FMACs + 8 KB KV buffer per plane for KVNAND-C",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 64,
+   "unit": "count",
+   "condition": "design=KVNAND (weight-GEMV baseline sizing, MHA); component=IFC logic die; 算法=2 FMACs/plane × 32 planes; 4 KB page in 4 us",
+   "location": "PDF p.6",
+   "quote": "(i.e., 2FMACs at 400MHz)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_clock_freq",
+   "value": 400,
+   "unit": "MHz",
+   "condition": "design=KVNAND; component=IFC logic die PE (FMAC); GQA h/k=8 sizing",
+   "location": "PDF p.7",
+   "quote": "16 FMACs per plane operating at 400MHz",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_peak_compute",
+   "value": 0.4096,
+   "unit": "TOPS",
+   "condition": "design=KVNAND-C; component=IFC logic die; 算法=16 FMACs × 32 planes × 2 ops × 400 MHz = 409.6 GOPS; precision=FMAC (floating, 未註明位寬)",
+   "location": "PDF p.8 Table I",
+   "quote": "16 FMACs + 8 KB KV buffer per plane for KVNAND-C",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_power",
+   "value": 0.2234,
+   "unit": "W",
+   "condition": "design=KVNAND-C; component=IFC logic die PE+KV buffer only; 算法=6.98 mW/plane × 32 planes = 223.36 mW; 不含 ECC 與 global buffer",
+   "location": "PDF p.8 Table I",
+   "quote": "0.0737 mm2, 6.98 mW per plane",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_energy_efficiency",
+   "value": 1.83,
+   "unit": "TOPS/W",
+   "condition": "design=KVNAND-C; component=IFC logic per plane (16 FMACs + 8 KB KV buffer); 算法=16×2×400 MHz=12.8 GOPS / 6.98 mW; peak; 只算 PE+buffer",
+   "location": "PDF p.8 Table I",
+   "quote": "0.0737 mm2, 6.98 mW per plane",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "process_node",
+   "value": 20,
+   "unit": "nm",
+   "condition": "design=KVNAND; component=IFC logic layer (synthesized with Design Compiler, scaled to 20 nm)",
+   "location": "PDF p.8",
+   "quote": "is synthesized using Design Compiler and also scaled to 20 nm",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 1,
+   "unit": "count",
+   "condition": "design=KVNAND; component=NPU die (separate die in SoC); IFC flash dies 另計於 memory_die_count",
+   "location": "PDF p.5",
+   "quote": "The NPU is implemented on a separate die",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "memory_die_count",
+   "value": 8,
+   "unit": "count",
+   "condition": "design=KVNAND-D-(6+2); mem_type=NAND (IFC dies); 8 channels × 1 die per channel; DRAM-free",
+   "location": "PDF p.8",
+   "quote": "8 channels × 1 die per channel",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "memory_die_count",
+   "value": 16,
+   "unit": "count",
+   "condition": "design=KVNAND-C-16; mem_type=NAND (IFC dies); DRAM-free",
+   "location": "PDF p.8",
+   "quote": "we use the KVNAND-C-16 configuration",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "memory_die_count",
+   "value": 16,
+   "unit": "count",
+   "condition": "design=Base-1 (scaled Lincoln); 8 IFC NAND dies + 8 LPDDR DRAM dies; 算法=8 channels × (1 IFC + 1 DRAM)",
+   "location": "PDF p.8",
+   "quote": "one IFC die and one DRAM attached to each of the 8 LPDDR channels",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_device_capacity",
+   "value": 2,
+   "unit": "GB",
+   "condition": "design=Base-1; mem_type=LPDDR5X; 原文 16Gb per die",
+   "location": "PDF p.8 Table I",
+   "quote": "LPDDR5X, 16Gb, 8GB/s, 7 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_device_capacity",
+   "value": 16,
+   "unit": "GB",
+   "condition": "design=KVNAND/Base; mem_type=NAND (SLC, ONFI 6.0); 原文 128Gb per die",
+   "location": "PDF p.8 Table I",
+   "quote": "ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_channel_bandwidth",
+   "value": 8,
+   "unit": "GB/s",
+   "condition": "design=Base-1; mem_type=LPDDR5X; per channel/die",
+   "location": "PDF p.8 Table I",
+   "quote": "LPDDR5X, 16Gb, 8GB/s, 7 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 4.8,
+   "unit": "GB/s",
+   "condition": "design=KVNAND; mem_type=NAND; interface=ONFI 6.0; external per die (1 die per channel)",
+   "location": "PDF p.8 Table I",
+   "quote": "ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 32,
+   "unit": "GB/s",
+   "condition": "design=naive KV-in-flash on Lincoln architecture (motivation study); mem_type=NAND; internal read bandwidth; 4 dies in parallel（原文未明說 per die 或總和）",
+   "location": "PDF p.3",
+   "quote": "with an internal read bandwidth of 32 GB/s, assuming ideal KV cache access and 4 dies in parallel",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 32.77,
+   "unit": "GB/s",
+   "condition": "design=KVNAND; mem_type=NAND SLC; internal per die; 算法=32 planes × 4 KB page / tR 4 us",
+   "location": "PDF p.8 Table I",
+   "quote": "tR = 4 μs, tP = 75 μs (program), 3 pJ/bit (read), 7.5 pJ/bit (program)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 38.4,
+   "unit": "GB/s",
+   "condition": "design=KVNAND-D (8 channels × 1 die); mem_type=NAND ONFI 6.0; external aggregate; 算法=8 × 4.8 GB/s; peak",
+   "location": "PDF p.8",
+   "quote": "8 channels × 1 die per channel",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 64,
+   "unit": "GB/s",
+   "condition": "design=Base-1; mem_type=LPDDR5X; 8 LPDDR channels; 算法=8 × 8 GB/s; peak",
+   "location": "PDF p.8",
+   "quote": "one IFC die and one DRAM attached to each of the 8 LPDDR channels",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 16,
+   "unit": "GB",
+   "condition": "design=Base-1; mem_type=LPDDR5X; 算法=8 DRAM dies × 16Gb (2 GB)",
+   "location": "PDF p.8",
+   "quote": "one IFC die and one DRAM attached to each of the 8 LPDDR channels",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 128,
+   "unit": "GB",
+   "condition": "design=KVNAND-D-(4+4), 8-channel 8-die; mem_type=NAND SLC; 算法=$92.16 / $0.72 per GB = 128 GB（= 8 × 128Gb）",
+   "location": "PDF p.11",
+   "quote": "flash cost is approximately $92.16 for combined weight and KV cache storage",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 256,
+   "unit": "GB",
+   "condition": "design=KVNAND-C-16; mem_type=NAND SLC; 算法=16 dies × 128Gb (16 GB)",
+   "location": "PDF p.8",
+   "quote": "we use the KVNAND-C-16 configuration",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 8,
+   "unit": "GB",
+   "condition": "context=typical smartphone DRAM limit; 下限; mem_type=DRAM",
+   "location": "PDF p.1",
+   "quote": "8–16 GB on smartphones",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 16,
+   "unit": "GB",
+   "condition": "context=typical smartphone DRAM limit; 上限; mem_type=DRAM",
+   "location": "PDF p.1",
+   "quote": "8–16 GB on smartphones",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 64,
+   "unit": "GB",
+   "condition": "context=typical laptop DRAM limit; 上限（<64 GB）; mem_type=DRAM",
+   "location": "PDF p.1",
+   "quote": "<64 GB on laptops",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 7,
+   "unit": "pJ/bit",
+   "condition": "design=Base-1; mem_type=LPDDR5X; DRAM access energy; 模擬設定，來源 [1],[16]",
+   "location": "PDF p.8",
+   "quote": "DRAM access energy in Base-1 is modeled at 7.0 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 4.9,
+   "unit": "pJ/bit",
+   "condition": "design=KVNAND; mem_type=NAND; flash interface (ONFI 6.0) I/O access; 模擬設定，來源 [57]",
+   "location": "PDF p.8",
+   "quote": "flash interface access at 4.9 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 3,
+   "unit": "pJ/bit",
+   "condition": "design=KVNAND; mem_type=NAND SLC; internal flash read (array, 不含 I/O); 模擬設定",
+   "location": "PDF p.8",
+   "quote": "internal flash reads at 3 pJ/bit",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 7.5,
+   "unit": "pJ/bit",
+   "condition": "design=KVNAND; mem_type=NAND SLC; op=program (write), tP=75 us; ≈2.5× read energy; 來源 [36]",
+   "location": "PDF p.8",
+   "quote": "and 7.5 pJ/bit energy",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_cost_per_gb",
+   "value": 0.52,
+   "unit": "USD/GB",
+   "condition": "mem_type=NAND SLC mode (1.8 Gb/mm2); 算法=YMTC TLC $0.11/GB × 8.5/1.8 密度比; 不含良率",
+   "location": "PDF p.11",
+   "quote": "results in $0.52/GB",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_cost_per_gb",
+   "value": 0.72,
+   "unit": "USD/GB",
+   "condition": "design=KVNAND IFC flash; mem_type=NAND SLC; 含 1.22× area、2× HB I/O 與 58% yield",
+   "location": "PDF p.11",
+   "quote": "leading to $0.72/GB",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_yield",
+   "value": 58,
+   "unit": "percent",
+   "condition": "design=KVNAND IFC die (SLC 3D NAND + logic, hybrid bonding); 1.22× area, 2× HB I/O; 由 80% 基準良率保守估計",
+   "location": "PDF p.11",
+   "quote": "conservatively estimated as 58% (normal, 80% yield base)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_yield",
+   "value": 80,
+   "unit": "percent",
+   "condition": "baseline flash die yield used for KVNAND cost estimate",
+   "location": "PDF p.11",
+   "quote": "conservatively estimated as 58% (normal, 80% yield base)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "partition_count_studied",
+   "value": 1,
+   "unit": "count",
+   "condition": "design=KVNAND-D; DSE optimum G2 (KV) dies; G1=15, G2=1, total 16 IFC dies; model=LLaMA3.1-8B; context=1K",
+   "location": "PDF p.9",
+   "quote": "G1=15, G2=1 for LLaMA3.1-8B, 1K context-length",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "partition_count_studied",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=KVNAND-D; DSE optimum G2 (KV) dies; total 8 IFC dies; model=LLaMA3.1-70B; precision=W4A16; context=100K",
+   "location": "PDF p.10 Fig. 15",
+   "quote": "with the optimal configuration reaching 4 dies in G2 at 100K tokens",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.125,
+   "unit": "MB/token",
+   "condition": "model=Mixtral-8x7B; GQA; precision=BF16; 原文 128KB/token（÷1024）; KV=2×l×k×d/h×2B",
+   "location": "PDF p.3",
+   "quote": "128KB in BF16",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.125,
+   "unit": "MB/token",
+   "condition": "model=LLaMA3-8B; GQA; precision=FP16; 原文 128KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "llama3-8B (KV: 128KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.0625,
+   "unit": "MB/token",
+   "condition": "model=LLaMA3-8B; GQA; precision=INT8; 原文 64KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "llama3-8B-int8 (KV: 64KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.7998,
+   "unit": "MB/token",
+   "condition": "model=LLaMA2-13B; MHA; precision=FP16; 原文 819KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "llama2-13B (KV: 819KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 1.4,
+   "unit": "MB/token",
+   "condition": "model=OPT-30B; MHA; precision=FP16; 原文 1433.6KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "OPT-30B (KV: 1433.6KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 2.5,
+   "unit": "MB/token",
+   "condition": "model=LLaMA-65B; MHA; precision=FP16; 原文 2560KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "llama-65B (KV: 2560KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.3203,
+   "unit": "MB/token",
+   "condition": "model=LLaMA2-70B; GQA; precision=FP16; 原文 328KB/token（÷1024）",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "llama2-70B (KV: 328KB/token)",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "model_weight_size",
+   "value": 22.4,
+   "unit": "GB",
+   "condition": "model=Mixtral-8x7B; FFN weights only (8 experts × 32 layers × 175M params); precision=INT4",
+   "location": "PDF p.4",
+   "quote": "the FFN weights total roughly 22.4 GB",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 128,
+   "unit": "tokens",
+   "condition": "evaluation context length (shortest); designs=Base-1/Base-2/KVNAND-C/KVNAND-D",
+   "location": "PDF p.9",
+   "quote": "At 128 context length, it achieves 1.98×",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 102400,
+   "unit": "tokens",
+   "condition": "evaluation context length (longest); 原文 100K，以 1024 計",
+   "location": "PDF p.9",
+   "quote": "At a 100K-token context, it achieves",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 51200,
+   "unit": "tokens",
+   "condition": "design=KVNAND-D 8-die 16 GB/die config 支援的最大 context; 原文 ~50K，以 1024 計",
+   "location": "PDF p.11",
+   "quote": "which supports up to ∼50K context length",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 3,
+   "unit": "tokens/s",
+   "condition": "reliability study assumption; model=65B; system=KVNAND; continuous decoding for 5 years",
+   "location": "PDF p.11",
+   "quote": "running on KVNAND at 3 tokens/s throughput",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 10,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND; model=LLaMA3.1-8B; context=100K; batch=1; method=simulation (SSDsim/NVSim)",
+   "location": "PDF p.12",
+   "quote": "an inference throughput of 10 tokens/s on LLaMA3.1-8B",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 34.39,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D (DSE-selected G1/G2); model=LLaMA3.1-8B; precision=full-precision; context=128; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "34.39",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 33.42,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA3.1-8B; precision=full-precision; context=1K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "33.42",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 23.45,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA3.1-8B; precision=full-precision; context=10K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "23.45",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 9.93,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA3.1-8B; precision=full-precision; context=100K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "9.93",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 36.33,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-C-16; model=LLaMA3.1-8B; precision=full-precision; context=128; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "36.33",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 4.22,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-C-16; model=LLaMA3.1-8B; precision=full-precision; context=100K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "4.22",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 17.66,
+   "unit": "tokens/s",
+   "condition": "design=Base-1 (weight-only IFC + LPDDR5X DRAM); model=LLaMA3.1-8B; precision=full-precision; context=1K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "17.66",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 3.51,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA3.1-70B; precision=full-precision; context=1K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "3.51",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 1.78,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA3.1-70B; precision=full-precision; context=100K; batch=1; method=simulation; Base-1 OOM",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "1.78",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 33.21,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA2-7B; precision=full-precision; context=1K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "33.21",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 4.69,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=LLaMA2-7B; precision=full-precision; context=100K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "4.69",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 1.29,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=OPT-30B; precision=full-precision; context=100K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "1.29",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 2.92,
+   "unit": "tokens/s",
+   "condition": "design=KVNAND-D; model=Mixtral-8x7B; precision=full-precision; context=100K; batch=1; method=simulation",
+   "location": "PDF p.9 Fig. 12",
+   "quote": "2.92",
+   "value_kind": "derived"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "model_weight_size",
+   "value": 140,
+   "unit": "GB",
+   "cited_ref": "[71]",
+   "note": "LLaMA2-70B needs ~140 GB (FP16), PDF p.1"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 8192,
+   "unit": "MB",
+   "cited_ref": "[71]",
+   "note": "13B model ~8 GB KV memory at 10K context, PDF p.1"
+  },
+  {
+   "parameter": "context_length",
+   "value": 131072,
+   "unit": "tokens",
+   "cited_ref": "[50]",
+   "note": "LLaMA3.1-70B supports 128K context, PDF p.1"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1000000,
+   "unit": "tokens",
+   "cited_ref": "[13]",
+   "note": "Gemini 2.5 Pro 1M context, PDF p.1"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 3.6,
+   "unit": "GB/s",
+   "cited_ref": "[51], [58], [79]",
+   "note": "NAND per-die external bandwidth, ONFI 5.2, PDF p.2"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 4.8,
+   "unit": "GB/s",
+   "cited_ref": "[51], [58], [79]",
+   "note": "NAND per-die external bandwidth, ONFI 6.0, PDF p.2–3"
+  },
+  {
+   "parameter": "flash_read_bandwidth",
+   "value": 1.6,
+   "unit": "GB/s",
+   "cited_ref": "[36]",
+   "note": "NAND internal bandwidth, 75 us program time, PDF p.3"
+  },
+  {
+   "parameter": "mem_channel_bandwidth",
+   "value": 8,
+   "unit": "GB/s",
+   "cited_ref": "[54]",
+   "note": "single LPDDR5X channel ~8 GB/s, PDF p.2–3"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 36.3,
+   "unit": "tokens/s",
+   "cited_ref": "[81]",
+   "note": "Cambricon-LLM on LLaMA2-7B, PDF p.3"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 11.5,
+   "unit": "tokens/s",
+   "cited_ref": "[67]",
+   "note": "Lincoln on LLaMA-65B, PDF p.3"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 7.0,
+   "unit": "pJ/bit",
+   "cited_ref": "[1], [16]",
+   "note": "DRAM access energy adopted for Base-1, PDF p.8"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 4.9,
+   "unit": "pJ/bit",
+   "cited_ref": "[57]",
+   "note": "flash interface access energy, PDF p.8"
+  },
+  {
+   "parameter": "mem_cost_per_gb",
+   "value": 0.11,
+   "unit": "USD/GB",
+   "cited_ref": "[69]",
+   "note": "YMTC 128-layer TLC flash (8.5 Gb/mm2) incl. hybrid bonding and peripheral die, PDF p.11"
+  },
+  {
+   "parameter": "mem_cost_per_gb",
+   "value": 4.62,
+   "unit": "USD/GB",
+   "cited_ref": "[56]",
+   "note": "LPDDR5 price, PDF p.11"
+  },
+  {
+   "parameter": "package_cost_share",
+   "value": 15,
+   "unit": "percent",
+   "cited_ref": "[17]",
+   "note": "multi-die package + HB packaging cost < 15% of raw die cost (upper bound), PDF p.11"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 207,
+  "cost_usd": 0.7745191,
+  "turns": 5
+ }
+}

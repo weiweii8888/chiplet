@@ -1,0 +1,71 @@
+defaults:
+  doc_id: PAPER-MOONCAKE
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: context_length
+  value: 7955
+  unit: tokens
+  condition: dataset=Real Data (Kimi trace replay, end-to-end experiment); stat=average input length; avg_output=194 tokens; cache_ratio=~50%; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.15 Table 2
+  quote: Real Data 7955 194 ~50% Timestamp-based
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 8088
+  unit: tokens
+  condition: dataset=ArXiv Summarization (public dataset, cited as [26]); stat=average input length in Mooncake end-to-end experiment; avg_output=229 tokens; cache_ratio=~0%; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.15 Table 2
+  quote: 8088 229 ~0% Poisson Process
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 19019
+  unit: tokens
+  condition: dataset=L-Eval (public dataset, cited as [27]); stat=average input length in Mooncake end-to-end experiment; avg_output=72 tokens; cache_ratio=>80%; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.15 Table 2
+  quote: 19019 72 >80% Poisson Process
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 16000
+  unit: tokens
+  condition: dataset=Simulated Data; lower bound of simulated input lengths (16k; set is 16k/32k/64k/128k); output=512 tokens; cache_ratio=50%; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.15 Table 2
+  quote: Simulated Data 16k, 32k, 64k, 128k 512 50% Poisson Process
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 128000
+  unit: tokens
+  condition: dataset=Simulated Data; upper bound of simulated input lengths (128k; set is 16k/32k/64k/128k); output=512 tokens; cache_ratio=50%; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.15 Table 2
+  quote: Simulated Data 16k, 32k, 64k, 128k 512 50% Poisson Process
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 80
+  unit: GB
+  condition: product=NVIDIA A800-SXM4-80GB; mem_type=HBM (generation not stated); scope=per GPU; testbed=8 GPUs per node, NVLINK, RDMA up to 800 Gbps; scenario=datacenter
+  location: PDF p.15
+  quote: 8 NVIDIA-A800-SXM4-80GB GPUs, each with 80GB HBM
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 640
+  unit: GB
+  condition: product=NVIDIA A800-SXM4-80GB x8; mem_type=HBM; scope=per node; derived=8 GPUs x 80 GB; scenario=datacenter
+  location: PDF p.15
+  quote: 8 NVIDIA-A800-SXM4-80GB GPUs, each with 80GB HBM
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 10
+  unit: tokens/s
+  condition: SLO-implied minimum per-request decode rate, not measured hardware throughput; derived=1 / TBT cap 0.1 s/token; experiment=Mooncake-[10P+10D] vs vLLM-[20M] real workload; model=dummy LLaMA2-70B;
+    hw=A800 nodes; scenario=datacenter
+  location: PDF p.17
+  quote: the TBT threshold is capped at 0.1 seconds per token
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok

@@ -1,0 +1,206 @@
+defaults:
+  doc_id: PAPER-CACHEGEN
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: kv_cache_size
+  value: 622
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=8-bit quantization (baseline); accuracy=1.00
+  location: PDF p.2 Table 1
+  quote: 8-bit quantization 622 1.00
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 176
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=CacheGen compressed bitstream; accuracy=0.98
+  location: PDF p.2 Table 1
+  quote: CacheGen (this paper) 176 0.98
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 282
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=H2O token dropping (baseline run by authors); accuracy=0.97
+  location: PDF p.2 Table 1
+  quote: H2O [153] 282 0.97
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 71
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=CacheGen on H2O; accuracy=0.97
+  location: PDF p.2 Table 1
+  quote: CacheGen on H2O 71 0.97
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 492
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=LLMLingua context compression (baseline run by authors); accuracy=0.94
+  location: PDF p.2 Table 1
+  quote: LLMLingua [72] 492 0.94
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 183
+  unit: MB
+  condition: model=Mistral-7B; dataset=LongChat; context≈9.2-9.6K tokens; technique=CacheGen on LLMLingua; accuracy=0.94
+  location: PDF p.2 Table 1
+  quote: CacheGen on LLMLingua 183 0.94
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_bytes_per_token
+  value: 0.066
+  unit: MB/token
+  condition: model=Mistral-7B; precision=INT8 (8-bit quantization); derived=622 MB (Table 1, PDF p.2) ÷ LongChat median context 9.4K tokens (Table 2, PDF p.8) ≈ 0.0662 MB/token
+  location: PDF p.2 Table 1
+  quote: 8-bit quantization 622 1.00
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 19000
+  unit: MB
+  condition: model=Llama-34B; context≈80,000 tokens (Amazon 2023 annual report); 原文 19 GB, 換算 1 GB=1000 MB; precision 未註明
+  location: PDF p.3
+  quote: with the model of Llama-34B produces a KV cache of 19 GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_bytes_per_token
+  value: 0.2375
+  unit: MB/token
+  condition: model=Llama-34B; derived=19 GB (=19000 MB) ÷ ~80,000 tokens; precision 未註明
+  location: PDF p.3
+  quote: with the model of Llama-34B produces a KV cache of 19 GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 140
+  unit: MB
+  condition: model=Llama-7B; CacheGen default medium encoding level; per chunk (default chunk length 1.5K tokens); compressed bitstream
+  location: PDF p.7
+  quote: 140 MB per chunk for Llama 7B
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_cache_size
+  value: 5000
+  unit: MB
+  condition: model=Llama-13B; context=8.5K tokens; total storage of all CacheGen-compressed versions (multiple encoding levels), not a single KV copy; 原文 roughly 5GB, 換算 1 GB=1000 MB; 論文粗估
+  location: PDF p.19
+  quote: one piece of 8.5K-token context in Llama-13B takes roughly 5GB to store different versions compressed with CacheGen
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 1400
+  unit: tokens
+  condition: evaluation set=662 contexts across four datasets; 下限
+  location: PDF p.2
+  quote: 662 contexts with 1.4 K to 16 K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 16000
+  unit: tokens
+  condition: evaluation set=662 contexts across four datasets; 上限
+  location: PDF p.2
+  quote: 662 contexts with 1.4 K to 16 K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 9400
+  unit: tokens
+  condition: dataset=LongChat; 200 contexts; statistic=median
+  location: PDF p.8 Table 2
+  quote: LongChat [90] 200 9.4K 164 9.6K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 9600
+  unit: tokens
+  condition: dataset=LongChat; 200 contexts; statistic=P95
+  location: PDF p.8 Table 2
+  quote: LongChat [90] 200 9.4K 164 9.6K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 9300
+  unit: tokens
+  condition: dataset=TriviaQA; 200 contexts; statistic=median
+  location: PDF p.8 Table 2
+  quote: TriviaQA [75] 200 9.3K 4497 15K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 15000
+  unit: tokens
+  condition: dataset=TriviaQA; 200 contexts; statistic=P95
+  location: PDF p.8 Table 2
+  quote: TriviaQA [75] 200 9.3K 4497 15K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 14000
+  unit: tokens
+  condition: dataset=NarrativeQA; 200 contexts; statistic=median
+  location: PDF p.8 Table 2
+  quote: NarrativeQA [81] 200 14K 1916 15K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 15000
+  unit: tokens
+  condition: dataset=NarrativeQA; 200 contexts; statistic=P95
+  location: PDF p.8 Table 2
+  quote: NarrativeQA [81] 200 14K 1916 15K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 5900
+  unit: tokens
+  condition: dataset=WikiText; 62 contexts; statistic=median
+  location: PDF p.8 Table 2
+  quote: WikiText [102] 62 5.9K 4548 14.8K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 14800
+  unit: tokens
+  condition: dataset=WikiText; 62 contexts; statistic=P95
+  location: PDF p.8 Table 2
+  quote: WikiText [102] 62 5.9K 4548 14.8K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 32000
+  unit: tokens
+  condition: models=fine-tuned Mistral-7B, Llama-34B, Llama-70B; 模型可接受的最大 context; 上限
+  location: PDF p.8
+  quote: All models are fine-tuned such that they can take long contexts (up to 32K)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 16000
+  unit: tokens
+  condition: experiment=bandwidth sensitivity (Fig. 11); model=Mistral-7B; fixed context length
+  location: PDF p.10
+  quote: we fix the context length at 16K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 100
+  unit: tokens
+  condition: experiment=context length sweep (Fig. 12 right); model=Mistral-7B; bandwidth=3 Gbps; 下限
+  location: PDF p.10
+  quote: different input lengths from 0.1K to 15K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 15000
+  unit: tokens
+  condition: experiment=context length sweep (Fig. 12 right); model=Mistral-7B; bandwidth=3 Gbps; 上限
+  location: PDF p.10
+  quote: different input lengths from 0.1K to 15K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok

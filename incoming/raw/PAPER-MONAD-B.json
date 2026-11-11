@@ -1,0 +1,186 @@
+{
+ "doc_id": "PAPER-MONAD",
+ "rows": [
+  {
+   "parameter": "compute_die_area",
+   "value": 331,
+   "unit": "mm2",
+   "condition": "design=TPU (used as one chiplet in cost study); systolic=256x256; node=28nm; source of TPU spec cited as [11]",
+   "location": "PDF p.3",
+   "quote": "TPU uses a 256×256 systolic array within 331",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 28,
+   "unit": "nm",
+   "condition": "design=TPU chiplet in cost study; area=331 mm2",
+   "location": "PDF p.3",
+   "quote": "area in 28nm node",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 65536,
+   "unit": "count",
+   "condition": "design=TPU chiplet in cost study; derived=256x256 systolic array",
+   "location": "PDF p.3",
+   "quote": "TPU uses a 256×256 systolic array",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 1.1,
+   "unit": "mm2",
+   "condition": "design=Gemmini (assumed, used as one chiplet in cost study); systolic=16x16; node=22nm",
+   "location": "PDF p.3",
+   "quote": "Gemmini is assumed to have a 16×16 systolic array within 1.1",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 22,
+   "unit": "nm",
+   "condition": "design=Gemmini chiplet in cost study; area=1.1 mm2",
+   "location": "PDF p.3",
+   "quote": "area in 22nm",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 256,
+   "unit": "count",
+   "condition": "design=Gemmini chiplet in cost study; derived=16x16 systolic array",
+   "location": "PDF p.3",
+   "quote": "Gemmini is assumed to have a 16×16 systolic array",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 3,
+   "unit": "count",
+   "condition": "design=TPU or Gemmini cost study; pkg=organic/passive interposer/active interposer; three identical chiplets",
+   "location": "PDF p.3",
+   "quote": "we integrate three chiplets",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 993,
+   "unit": "mm2",
+   "condition": "design=TPU monolithic baseline; derived=3 x 331 mm2 (three times the area of a single chip)",
+   "location": "PDF p.3",
+   "quote": "leading to three times the area of a single chip",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 3.3,
+   "unit": "mm2",
+   "condition": "design=Gemmini monolithic baseline; derived=3 x 1.1 mm2 (three times the area of a single chip)",
+   "location": "PDF p.3",
+   "quote": "leading to three times the area of a single chip",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "package_cost_share",
+   "value": 15,
+   "unit": "percent",
+   "condition": "design=TPU and Gemmini 3-chiplet cost study; pkg=passive interposer; bound=lower (more than 15%); share=interposer cost only of total fabrication cost; model=Eq.1 cost model",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "more than 15% of the cost is paid on a passive interposer",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "package_cost_share",
+   "value": 30,
+   "unit": "percent",
+   "condition": "design=TPU and Gemmini 3-chiplet cost study; pkg=active interposer; bound=lower (more than 30%); share=interposer cost only of total fabrication cost; model=Eq.1 cost model",
+   "location": "PDF p.3 Fig. 3",
+   "quote": "more than 30% on an active interposer",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "process_node",
+   "value": 28,
+   "unit": "nm",
+   "condition": "design=Monad evaluation; fabrication cost model=ICKnowledge; d2d=UCIe",
+   "location": "PDF p.6",
+   "quote": "from ICKnowledge [8] under 28nm",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=Monad validation setup; workload=Transformer; validated against ScaleSim",
+   "location": "PDF p.6",
+   "quote": "We assume a four-chip accelerator running Transformer",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 64,
+   "unit": "count",
+   "condition": "design=Monad validation setup; per chip; 8x8 PE array; 1 MAC per PE (p.2: every PE has a MAC unit); chiplets=4",
+   "location": "PDF p.7",
+   "quote": "has an 8×8 PE array",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "partition_count_studied",
+   "value": 2,
+   "unit": "count",
+   "condition": "design=Monad TT-decomposition case study; chiplets per high-dimensional workload (C4,3 and C5,2); result=28% cost reduction vs monolithic; pkg=passive interposer; network=ring",
+   "location": "PDF p.8 Fig. 10",
+   "quote": "Using two chiplets can bring 28% cost reduction",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 300,
+   "unit": "mm2",
+   "condition": "design=Monad TT case study; single chip for workload C3,3 chosen by optimizer; bound=lower (> 300 mm2)",
+   "location": "PDF p.8",
+   "quote": "despite its larger size (> 300mm",
+   "value_kind": "derived"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 0.25,
+   "unit": "pJ/bit",
+   "cited_ref": "[31]",
+   "note": "UCIe white paper; quoted on PDF p.8 as die-to-die energy, compared against SRAM 0.81 pJ/bit"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 0.81,
+   "unit": "pJ/bit",
+   "cited_ref": "[28]",
+   "note": "NN-Baton; this is on-chip SRAM access energy, not external memory, so it may not fit mem_energy_per_bit (no exact SRAM-energy param in schema); PDF p.8"
+  },
+  {
+   "parameter": "d2d_shoreline_bw_density",
+   "value": 6,
+   "unit": "ratio",
+   "cited_ref": "[31]",
+   "note": "silicon interposer microbumps give 6x higher interconnect density than organic substrate; ratio only, no absolute value; PDF p.2"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 331,
+   "unit": "mm2",
+   "cited_ref": "[11]",
+   "note": "TPU v1 die area 28nm, from Jouppi et al. ISCA 2017; also kept in rows as this paper's cost-study setup, so check for duplicates against any existing TPU entry"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 59,
+  "cost_usd": 0.33916340000000006,
+  "turns": 4
+ }
+}

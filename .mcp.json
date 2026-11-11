@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "chiplet-kb": {
+      "command": "python3",
+      "args": ["/home/weiwei888/chiplet/tools/kb_mcp.py"]
+    }
+  }
+}

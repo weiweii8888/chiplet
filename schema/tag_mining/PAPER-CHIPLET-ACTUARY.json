@@ -1,0 +1,133 @@
+{
+ "doc_id": "PAPER-CHIPLET-ACTUARY",
+ "existing_tags": [
+  "generic",
+  "cost_model",
+  "cost_yield",
+  "dse",
+  "organic_substrate",
+  "fan_out",
+  "interposer_2_5d",
+  "compute_die",
+  "io_die"
+ ],
+ "decisions": [
+  {
+   "decision": "整合技術／封裝選擇（多 chiplet 時用哪種基板）",
+   "options": [
+    "MCM（有機基板）",
+    "InFO（扇出型）",
+    "2.5D 矽中介層"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "單一系統要做單晶 SoC 還是切成多 chiplet（看 die 面積、製程、生產量是否攤得掉 NRE）",
+   "options": [
+    "單晶 SoC",
+    "2 chiplet MCM",
+    "2 chiplet InFO",
+    "2 chiplet 2.5D；生產量 500k／2M／10M"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "切分粒度（一個系統切成幾顆 chiplet）",
+   "options": [
+    "2 chiplets",
+    "3 chiplets",
+    "5 chiplets（總面積 100–900 mm2）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "製程節點對切分效益的影響",
+   "options": [
+    "14nm",
+    "7nm",
+    "5nm"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "封裝組裝流程",
+   "options": [
+    "chip-first",
+    "chip-last（論文採用）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3"
+  },
+  {
+   "decision": "chiplet 重用方案（用同一組 chiplet 組出多個產品等級）",
+   "options": [
+    "SCMS（單一 chiplet 組 1X/2X/4X）",
+    "OCME（中心 die + 外掛延伸 die）",
+    "FSMC（k 個 socket 的封裝搭配 n 種 chiplet）",
+    "對照：各自做單晶 SoC"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "封裝是否跨產品重用（大系統的 package／interposer 拿給小系統用）",
+   "options": [
+    "每個系統各做封裝",
+    "重用最大系統的封裝（MCM、2.5D）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "異質製程（中心 die 留在舊製程，延伸 die 用新製程）",
+   "options": [
+    "全部 7nm",
+    "中心 die 14nm + 延伸 die 7nm（Hetero-MCM）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.6"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "partition",
+   "id": "chiplet_reuse",
+   "label": "chiplet／封裝重用",
+   "definition": "用同一組 chiplet 或同一個封裝組出多個產品等級（例如 1X/2X/4X、中心 die 加不同延伸 die）。",
+   "why": "dse_dimensions 寫 edge 用 chiplet 的理由多半是重用與 NRE，但現有標籤只能標成 cost_yield；agent 查「一顆 host SoC 外掛 1～4 顆加速 chiplet 划不划算」時，找不到 SCMS／OCME／FSMC 這類分析。"
+  },
+  {
+   "group": "partition",
+   "id": "mixed_process_node",
+   "label": "異質製程切分",
+   "definition": "同一個封裝裡不同 die 用不同製程節點（例如 IO／host／中心 die 用成熟製程，運算 die 用先進製程）。",
+   "why": "compute_die／io_die 只說明 die 的角色，看不出有沒有混用製程；agent 想查「哪些 die 可以留在舊製程省成本」時會漏掉這份與 AMD CCD+IOD 這類案例。"
+  },
+  {
+   "group": "partition",
+   "id": "monolithic_baseline",
+   "label": "有單晶 SoC 對照",
+   "definition": "文件拿單晶 SoC 當基準，量化跟多 chiplet 比起來的差異。",
+   "why": "edge 的 die 小，最常要回答的是「到底該不該切」；沒有這個標籤，agent 分不出哪些文件有單晶對照、哪些預設一定要切 chiplet。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "cost_yield",
+   "suggestion": "拆成 cost_re_yield（製造成本：晶圓、die 良率、封裝良率、KGD 浪費，對應 p.3 式 4–5）和 cost_nre（一次性設計成本與生產量攤提，對應 p.3 式 6–8、p.5 的量產轉折點）。edge 的 die 小，良率好處有限，主要差在 NRE；現在兩種成本混在一個標籤裡，agent 挑不出要的那種。"
+  },
+  {
+   "tag": "dse",
+   "suggestion": "依探索的目標拆開，例如 dse_cost（只看成本）和 dse_perf_energy（看效能、能耗）。這份文件明講不考慮效能與功耗（p.2 的假設），只標 dse 的話，agent 找 LLM edge 的效能 DSE 時會誤撈到它。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.2964366,
+  "turns": 4
+ }
+}

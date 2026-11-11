@@ -1,0 +1,162 @@
+{
+ "doc_id": "PAPER-SIMBA",
+ "existing_tags": [
+  "edge_embedded",
+  "datacenter",
+  "proprietary_d2d",
+  "organic_substrate",
+  "compute_die",
+  "on_chip_sram",
+  "dnn_inference",
+  "energy",
+  "latency",
+  "area",
+  "bandwidth_capacity"
+ ],
+ "decisions": [
+  {
+   "decision": "切分粒度：一個工作要分到幾顆同質 chiplet 上",
+   "options": [
+    "1／4／8／32 顆 chiplet 同時運作（逐層量測）",
+    "多個 PE 放在同一顆 chiplet 上 vs 每顆 chiplet 只用一個 PE"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7（Fig.5）、p.8（Fig.6、Fig.7）"
+  },
+  {
+   "decision": "D2D／NoP 頻寬要給多少（相對於運算量）",
+   "options": [
+    "NoP 頻寬是原本的 1.0×",
+    "1.5×",
+    "2.0×（做法是調降 PE 頻率來模擬）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8（Fig.8，§4.5）"
+  },
+  {
+   "decision": "D2D 延遲：用到的 chiplet 彼此隔幾個 hop",
+   "options": [
+    "4 顆相鄰 chiplet（最遠 2 hop）",
+    "4 顆分散的 chiplet，最遠到 12 hop"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8（Fig.9，§4.6）、p.9"
+  },
+  {
+   "decision": "D2D 實體層與基板",
+   "options": [
+    "GRS 跑在有機基板上（11–25 Gbps/pin，0.82–1.75 pJ/bit）",
+    "其他 MCM 互連（GRS 每單位面積頻寬是它們的 3.5 倍）",
+    "矽中介層（只在背景提到，沒有實測比較）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3（§2.2）、p.5（§3.2、Table 2）"
+  },
+  {
+   "decision": "電壓與頻率的工作點（能效和峰值算力的取捨）",
+   "options": [
+    "單顆 chiplet 0.42 V／161 MHz → 0.11 pJ/op",
+    "單顆 chiplet 1.2 V／2 GHz → 4 TOPS",
+    "整個封裝 0.52 V／484 MHz → 0.16 pJ/op",
+    "整個封裝 1.1 V／1.8 GHz → 128 TOPS"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5（§3.2）"
+  },
+  {
+   "decision": "記憶體架構：權重常駐在分散於各 chiplet 的 SRAM、跑小 batch，對比 GPU 用 DRAM、跑大 batch",
+   "options": [
+    "Simba（216 mm²，只跑 batch 1–2）",
+    "V100（815 mm²）",
+    "T4（525 mm²），batch 1 到 128 以上"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（§4.8、Fig.11）"
+  },
+  {
+   "decision": "batch 和 chiplet 數一起放大（weak scaling）",
+   "options": [
+    "batch 等於 chiplet 數，從 1、2、4、8、16 到 32"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（§4.7、Fig.10）"
+  },
+  {
+   "decision": "各 chiplet／PE 分到多少工作量",
+   "options": [
+    "平均分配（uniform tiling）",
+    "依通訊距離不平均分配（non-uniform work partitioning）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.9–10（§5.1、Fig.12、Fig.13）"
+  },
+  {
+   "decision": "activation 資料要放在哪顆 chiplet",
+   "options": [
+    "從第一顆 chiplet 依序往下放",
+    "考慮通訊距離、用貪婪演算法放（輸入放在中央，輸出放在周邊）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.10–11（§5.2、Algorithm 1、Fig.14、Fig.15）"
+  },
+  {
+   "decision": "層與層之間怎麼排程",
+   "options": [
+    "整個封裝一次跑一層",
+    "把 chiplet 分成幾群，跨層做 pipeline"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.11–12（§5.3、Fig.16、Fig.17）"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "method",
+   "id": "cross_die_mapping",
+   "label": "跨 die 映射與資料放置",
+   "definition": "文件量化了工作切分、資料放在哪顆 die、跨 die pipeline 這些映射選擇，在同一套硬體上造成多大的效能或能耗差。",
+   "why": "沒有這個標籤，agent 分不出哪些差距來自映射、哪些來自硬體。例如同一套硬體只因 chiplet 位置不同就慢了 2.5 倍，跨 chiplet 執行比單顆慢 2 倍。拿 LLMCompass 或 roofline 這類假設映射理想的模型做 DSE 時，就找不到要扣掉多少映射損失的校正依據。"
+  },
+  {
+   "group": "d2d_topology（新組）",
+   "id": "multi_hop_nop",
+   "label": "多跳封裝內網路",
+   "definition": "封裝內的 die 用 mesh 這類多跳網路互連，延遲和能耗會隨 hop 數與 die 的位置增加。",
+   "why": "現有的 d2d_interface 標籤只描述點對點的 PHY 規格。die 數多過 2–4 顆時，agent 只查得到單一鏈路的延遲，查不到每跳延遲（例如 20 ns/hop）以及延遲怎麼隨距離放大，會低估多 die 設計的延遲。"
+  },
+  {
+   "group": "workload_sweep（新組）",
+   "id": "batch_sweep",
+   "label": "有掃 batch",
+   "definition": "文件在多個 batch size 下量測或比較了效能、能效、延遲。",
+   "why": "Tack 要查「batch 改變時，最佳硬體會不會翻轉」，例如 SRAM 常駐的小 batch 架構和 DRAM＋GPU 的大 batch 架構在哪裡交叉。現有的 workload 標籤只記工作負載類型，記不了文件有沒有掃這個條件，agent 只能一篇一篇打開來看。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "compute_die",
+   "suggestion": "分成 compute_die_homogeneous（同一顆運算 die 複製多顆來放大，同一顆 die 也可以單獨出貨，例如 Simba 單顆是 edge 規模、36 顆是資料中心規模）和 compute_die_heterogeneous（host SoC 加外掛加速 chiplet 這類異質組合）。兩者在 DSE 裡的切分決策和成本理由（重用 vs 整合）不一樣。"
+  },
+  {
+   "tag": "on_chip_sram",
+   "suggestion": "分成 sram_resident（權重常駐在片上或分散的 SRAM，封裝內沒有 DRAM，像 Simba）和 sram_as_buffer（SRAM 只當 DRAM 前面的 buffer 或快取）。跑 LLM 時前者容量通常放不下權重和 KV，agent 要能直接排除或特別當對照。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "分成 link_latency（D2D 或 NoC 每跳的 ns 級延遲，例如 Simba 的 NoP 20 ns/hop、NoC 10 ns/hop）和 inference_latency（端到端推論延遲，例如 ResNet-50 batch 1 是 0.50 ms）。兩者單位和用途都不同，混在一起時，agent 用 metric 篩選會拿到錯誤層級的數字。"
+  },
+  {
+   "tag": "energy",
+   "suggestion": "分成 interconnect_energy（pJ/bit，D2D 或記憶體 I/O）和 compute_energy（pJ/op、TOPS/W）。Simba 兩種都有（0.82–1.75 pJ/bit 和 0.11–0.16 pJ/op），而 DSE 的功耗模型要分開代入這兩種數字。"
+  },
+  {
+   "tag": "proprietary_d2d",
+   "suggestion": "依訊號方式分成 serial_d2d（少量導線、高速序列，可以跑在有機基板上，例如 GRS 每 pin 11–25 Gbps）和 parallel_d2d（大量導線、低速並列，多半需要中介層或橋接，例如 NV-HBI）。這兩類在 pJ/bit、shoreline 密度、延遲和封裝成本上差別很大，edge 走有機基板時只會考慮前者。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4699225,
+  "turns": 7
+ }
+}

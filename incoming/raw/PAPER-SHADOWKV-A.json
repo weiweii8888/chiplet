@@ -1,0 +1,282 @@
+{
+ "doc_id": "PAPER-SHADOWKV",
+ "rows": [
+  {
+   "parameter": "decode_throughput",
+   "value": 455.14,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=60K; batch=48; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "160.62 (8) 455.14 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 239.51,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=122K; batch=24; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "80.77 (4) 239.51 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 119.01,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=12; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "40.37 (2) 119.01 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 472.77,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=60K; batch=48; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "160.93 (8) 472.77 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 245.9,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=122K; batch=24; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "80.78 (4) 245.90 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 615.89,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=60K; batch=50; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "241.05 (12) 615.89 (50)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 293.4,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=122K; batch=25; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "122.67 (6) 293.40 (25)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 136.51,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=244K; batch=12; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "61.13 (3) 136.51 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 544.36,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Yi-9B-200K (4 KV heads); precision=BF16; context=60K; batch=42; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "204.81 (10) 544.36 (42)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 260.03,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Yi-9B-200K (4 KV heads); precision=BF16; context=122K; batch=21; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "101.44 (5) 260.03 (21)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 118.55,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Yi-9B-200K (4 KV heads); precision=BF16; context=244K; batch=10; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "46.74 (2) 118.55 (10)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 160.62,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=60K; batch=8",
+   "location": "PDF p.8 Table 3",
+   "quote": "160.62 (8) 455.14 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 80.77,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=122K; batch=4",
+   "location": "PDF p.8 Table 3",
+   "quote": "80.77 (4) 239.51 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 40.37,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=2",
+   "location": "PDF p.8 Table 3",
+   "quote": "40.37 (2) 119.01 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 160.93,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=60K; batch=8",
+   "location": "PDF p.8 Table 3",
+   "quote": "160.93 (8) 472.77 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 80.78,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=122K; batch=4",
+   "location": "PDF p.8 Table 3",
+   "quote": "80.78 (4) 245.90 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 241.05,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=60K; batch=12",
+   "location": "PDF p.8 Table 3",
+   "quote": "241.05 (12) 615.89 (50)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 204.81,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Yi-9B-200K (4 KV heads); precision=BF16; context=60K; batch=10",
+   "location": "PDF p.8 Table 3",
+   "quote": "204.81 (10) 544.36 (42)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 53.46,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M; precision=BF16; context=488K; batch=6 (Table 4 第 5 欄，batch 8 以上 OOM)",
+   "location": "PDF p.8 Table 4",
+   "quote": "29.82 41.01 47.13 50.85 53.46",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 45.32,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M; context=1M; batch=3 (原文 3×1M)",
+   "location": "PDF p.18 Table 14",
+   "quote": "OOM 9.34 tokens/s 45.32 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 9.34,
+   "unit": "tokens/s",
+   "condition": "design=Quest baseline with KV offloaded to CPU; hw=A100 GPU; model=Llama-3-8B-1M; context=1M; batch=3 (原文 3×1M)",
+   "location": "PDF p.18 Table 14",
+   "quote": "OOM 9.34 tokens/s 45.32 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 0.21,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline with KV offloaded to CPU; hw=A100 GPU; model=Llama-3-8B-1M; context=1M; batch=3 (原文 3×1M)",
+   "location": "PDF p.18 Table 14",
+   "quote": "0.21 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 2000,
+   "unit": "GB/s",
+   "condition": "product=NVIDIA A100; 論文用來估算等效頻寬與 infinite-batch 吞吐量的理論 GPU 記憶體頻寬; 原文 2 TB/s; scenario=datacenter",
+   "location": "PDF p.8",
+   "quote": "theoretical memory bandwidth (2 TB/s) for attention computations",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 31.5,
+   "unit": "GB/s",
+   "condition": "link=PCIe CPU→GPU (offloaded value cache fetch); 等效頻寬公式中的 B_PCIe 假設值; 這是 host 記憶體經 PCIe 的頻寬，不是加速器本地記憶體頻寬; scenario=datacenter",
+   "location": "PDF p.6",
+   "quote": "31.5 GB/s",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 7200,
+   "unit": "GB/s",
+   "condition": "design=ShadowKV; product=A100; 理論等效頻寬（非實體頻寬）; 由公式 B=2S·B_GPU/(S/C+2(K+O)C+(1-α)KC·B_GPU/B_PCIe) 算出，C=8, S=128K, K=256, O=48, B_PCIe=31.5 GB/s, B_GPU=2 TB/s; 原文 7.2 TB/s",
+   "location": "PDF p.6",
+   "quote": "is calculated as 7.2 TB/s, which is 3.6× higher than A100 memory bandwidth",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 131072,
+   "unit": "tokens",
+   "condition": "design=ShadowKV evaluation; benchmark=RULER; models=Llama-3-8B-1M, GLM-4-9B-1M, Llama-3.1-8B, Yi-9B-200K; 原文 128K（以 1K=1024 換算）",
+   "location": "PDF p.7",
+   "quote": "demonstrates excellent performance on 128K contexts",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 16384,
+   "unit": "tokens",
+   "condition": "design=ShadowKV evaluation; benchmark=Needle In A Haystack; model=Llama-3-8B-1M; 下限; 原文 16K（以 1K=1024 換算）",
+   "location": "PDF p.8",
+   "quote": "context windows, ranging from 16K to 1M tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1048576,
+   "unit": "tokens",
+   "condition": "design=ShadowKV evaluation; benchmark=Needle In A Haystack; model=Llama-3-8B-1M; 上限; 原文 1M（以 1M=1048576 換算）",
+   "location": "PDF p.8",
+   "quote": "context windows, ranging from 16K to 1M tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 524288,
+   "unit": "tokens",
+   "condition": "design=ShadowKV evaluation; benchmark=RULER; model=Llama-3-70B-1M; 原文 512K（以 1K=1024 換算）",
+   "location": "PDF p.17",
+   "quote": "Llama-3-70B-1M on 512K contexts",
+   "value_kind": "assumed"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "context_length",
+   "value": 214000,
+   "unit": "tokens",
+   "cited_ref": "[61]",
+   "note": "InfiniteBench average length 214K (PDF p.20 B.4); benchmark property from the cited InfiniteBench paper"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "A",
+  "seconds": 77,
+  "cost_usd": 0.5442638,
+  "turns": 5
+ }
+}

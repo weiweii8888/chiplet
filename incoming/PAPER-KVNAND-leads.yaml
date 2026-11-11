@@ -1,0 +1,102 @@
+doc_id: PAPER-KVNAND
+leads:
+- parameter: decode_throughput
+  value: 36.3
+  unit: tokens/s
+  cited_ref: '[81]'
+  note: Cambricon-LLM on LLaMA2-7B, PDF p.3
+- parameter: decode_throughput
+  value: 11.5
+  unit: tokens/s
+  cited_ref: '[67]'
+  note: Lincoln on LLaMA-65B, PDF p.3
+- parameter: flash_read_bandwidth
+  value: 3.6
+  unit: GB/s
+  cited_ref: '[51], [58], [79]'
+  note: NAND per-die external bandwidth, ONFI 5.2, PDF p.2
+- parameter: flash_read_bandwidth
+  value: 4.8
+  unit: GB/s
+  cited_ref: '[51]'
+  note: modern NAND per-die external bandwidth, ONFI 6.0 (PDF p.2, p.3)
+- parameter: flash_read_bandwidth
+  value: 1.6
+  unit: GB/s
+  cited_ref: '[36]'
+  note: NAND internal bandwidth, 75 us program time, PDF p.3
+- parameter: flash_read_bandwidth
+  value: 32
+  unit: GB/s
+  cited_ref: '[67]'
+  note: Lincoln architecture internal read bandwidth, 4 dies in parallel, used in naive-substitution analysis (PDF p.3)
+- parameter: mem_channel_bandwidth
+  value: 8
+  unit: GB/s
+  cited_ref: '[54]'
+  note: single LPDDR5X channel ~8 GB/s, PDF p.2–3
+- parameter: mem_energy_per_bit
+  value: 7.0
+  unit: pJ/bit
+  cited_ref: '[1], [16]'
+  note: DRAM access energy adopted for Base-1, PDF p.8
+- parameter: mem_energy_per_bit
+  value: 4.9
+  unit: pJ/bit
+  cited_ref: '[57]'
+  note: flash interface access energy, PDF p.8
+- parameter: mem_energy_per_bit
+  value: 3
+  unit: pJ/bit
+  cited_ref: '[67]'
+  note: internal flash read energy, from Lincoln (PDF p.8)
+- parameter: mem_cost_per_gb
+  value: 0.11
+  unit: USD/GB
+  cited_ref: '[69]'
+  note: YMTC 128-layer TLC flash (8.5 Gb/mm2) incl. hybrid bonding and peripheral die, PDF p.11
+- parameter: mem_cost_per_gb
+  value: 4.62
+  unit: USD/GB
+  cited_ref: '[56]'
+  note: LPDDR5 price, PDF p.11
+- parameter: package_cost_share
+  value: 15
+  unit: percent
+  cited_ref: '[17]'
+  note: multi-die package + HB packaging cost < 15% of raw die cost (upper bound), PDF p.11
+- parameter: kv_cache_size
+  value: 8000
+  unit: MB
+  cited_ref: '[71]'
+  note: 13B model ~8 GB KV memory at 10K context (PDF p.1)
+- parameter: model_weight_size
+  value: 140
+  unit: GB
+  cited_ref: '[71]'
+  note: LLaMA2-70B needs ~140 GB (FP16), PDF p.1
+- parameter: context_length
+  value: 128000
+  unit: tokens
+  cited_ref: '[50]'
+  note: LLaMA3.1-70B supported context 128K (PDF p.1)
+- parameter: context_length
+  value: 1000000
+  unit: tokens
+  cited_ref: '[13]'
+  note: Gemini 2.5 Pro 1M context, PDF p.1
+- parameter: kv_cache_size
+  value: 8192
+  unit: MB
+  cited_ref: '[71]'
+  note: 13B model ~8 GB KV memory at 10K context, PDF p.1
+- parameter: context_length
+  value: 131072
+  unit: tokens
+  cited_ref: '[50]'
+  note: LLaMA3.1-70B supports 128K context, PDF p.1
+- parameter: flash_read_bandwidth
+  value: 4.8
+  unit: GB/s
+  cited_ref: '[51], [58], [79]'
+  note: NAND per-die external bandwidth, ONFI 6.0, PDF p.2–3

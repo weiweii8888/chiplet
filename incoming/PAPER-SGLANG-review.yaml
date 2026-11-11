@@ -1,0 +1,50 @@
+doc_id: PAPER-SGLANG
+rows:
+- parameter: context_length
+  value: 4.0
+  unit: tokens
+  condition: workload=multi-turn chat (short); 每輪輸出長度下限(4-8 tokens); 輸出長度而非 context
+  location: PDF p.7
+  quote: Multi-turn chat (short) means short output (4-8 tokens)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 8.0
+  unit: tokens
+  condition: workload=multi-turn chat (short); 每輪輸出長度上限(4-8 tokens); 輸出長度而非 context
+  location: PDF p.7
+  quote: Multi-turn chat (short) means short output (4-8 tokens)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 256.0
+  unit: tokens
+  condition: workload=multi-turn chat (long); 每輪輸出長度下限(256-512 tokens); 輸出長度而非 context
+  location: PDF p.7
+  quote: multi-turn chat (long) means long output (256-512 tokens)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 512.0
+  unit: tokens
+  condition: workload=multi-turn chat (long); 每輪輸出長度上限(256-512 tokens); 輸出長度而非 context
+  location: PDF p.7
+  quote: multi-turn chat (long) means long output (256-512 tokens)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 2080.0
+  unit: tokens
+  condition: 上限; workload=multi-turn chat (short), 4 turns; 累積序列長度上限; 算法=4 輪 × (input 512 + output 8) = 2080
+  location: PDF p.7
+  quote: Multi-turn chat (short) means short output (4-8 tokens) and multi-turn chat (long) means long output (256-512 tokens)
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 4096.0
+  unit: tokens
+  condition: 上限; workload=multi-turn chat (long), 4 turns; 累積序列長度上限; 算法=4 輪 × (input 512 + output 512) = 4096
+  location: PDF p.7
+  quote: Multi-turn chat (short) means short output (4-8 tokens) and multi-turn chat (long) means long output (256-512 tokens)
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）

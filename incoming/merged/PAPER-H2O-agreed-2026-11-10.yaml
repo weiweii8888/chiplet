@@ -1,0 +1,222 @@
+defaults:
+  doc_id: PAPER-H2O
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: kv_cache_size
+  value: 180000
+  unit: MB
+  condition: model=30B-parameter LLM; batch=128; seq_len=1024; 原文 180GB（以 1 GB=1000 MB 換算）; precision 原文未註明
+  location: PDF p.1
+  quote: a sequence length of 1024 results in 180GB of KV cache
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 35.1
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+32 (prompt+gen); batch=4; offload=none (GPU); metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 35.1 (4, G)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 12.7
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+32; batch=728; offload=CPU; metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 12.7 (728, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 51.7
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+512; batch=4; offload=none (GPU); metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 51.7 (4, G)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 18.83
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+512; batch=416; offload=CPU; metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 18.83 (416, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 52.1
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+1024; batch=4; offload=none (GPU); metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 52.1 (4, G)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 13.82
+  unit: tokens/s
+  condition: design=H2O (20% KV budget) on FlexGen; hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+1024; batch=264; offload=CPU; metric=generated tokens/(prompt time+decode time)
+  location: PDF p.8 Table 3
+  quote: 13.82 (264, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 20.2
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+32; batch=2; offload=none (GPU); 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: FlexGen 20.2 (2, G) 8.1 (144, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 8.1
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+32; batch=144; offload=CPU; 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: FlexGen 20.2 (2, G) 8.1 (144, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 16.8
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+512; batch=1; offload=none (GPU); 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: 16.8 (1, G) 8.5 (80, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 8.5
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+512; batch=80; offload=CPU; 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: 16.8 (1, G) 8.5 (80, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 16.9
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+1024; batch=1; offload=none (GPU); 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: 16.9 (1, G) 7.1 (48, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 7.1
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-30B; seq=512+1024; batch=48; offload=CPU; 作者自行量測的 baseline
+  location: PDF p.8 Table 3
+  quote: 16.9 (1, G) 7.1 (48, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 30.4
+  unit: tokens/s
+  condition: design=H2O (20% KV budget); hw=NVIDIA T4 16GB; model=OPT-6.7B; dataset=XSUM (real-world); batch=1; offload=none (GPU)
+  location: PDF p.9 Table 4
+  quote: 30.40 (1, G)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 6.7
+  unit: tokens/s
+  condition: design=H2O (20% KV budget); hw=NVIDIA T4 16GB; model=OPT-30B; dataset=XSUM (real-world); batch=180; offload=CPU
+  location: PDF p.9 Table 4
+  quote: 6.70 (180, C)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 918.9
+  unit: tokens/s
+  condition: design=H2O (20% KV budget); hw=NVIDIA A100 80GB; model=OPT-6.7B; seq=2048+2048; batch=24
+  location: PDF p.9 Table 5
+  quote: 2048+2048 6.7B 24 throughput (token/s) 494.1 918.9
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 494.1
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA A100 80GB; model=OPT-6.7B; seq=2048+2048; batch=24; 作者自行量測的 baseline
+  location: PDF p.9 Table 5
+  quote: 2048+2048 6.7B 24 throughput (token/s) 494.1 918.9
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 1161
+  unit: tokens/s
+  condition: design=H2O (20% KV budget); hw=NVIDIA A100 80GB; model=OPT-6.7B; seq=2048+2048; batch=64; FlexGen 在同設定 OOM
+  location: PDF p.9 Table 5
+  quote: 2048+2048 6.7B 64 throughput (token/s) OOM 1161.0
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 50.5
+  unit: tokens/s
+  condition: design=H2O-c (20% KV budget + 4-bit weight compression); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+32; batch=70; offload=none
+  location: PDF p.24 Table 7
+  quote: 50.5 (70) 72.5 (52) 62.3 (44)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 72.5
+  unit: tokens/s
+  condition: design=H2O-c (20% KV budget + 4-bit weight compression); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+512; batch=52; offload=none
+  location: PDF p.24 Table 7
+  quote: 50.5 (70) 72.5 (52) 62.3 (44)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 62.3
+  unit: tokens/s
+  condition: design=H2O-c (20% KV budget + 4-bit weight compression); hw=NVIDIA T4 16GB; model=OPT-6.7B; seq=512+1024; batch=44; offload=none
+  location: PDF p.24 Table 7
+  quote: 50.5 (70) 72.5 (52) 62.3 (44)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 4000000
+  unit: tokens
+  condition: design=H2O streaming (attention-sink style); 原文 four million tokens; 上限
+  location: PDF p.10 Fig. 5
+  quote: handle inputs with sequence lengths of four million tokens
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 10000
+  unit: tokens
+  condition: hw=NVIDIA A100 80GB; throughput/latency benchmark; 原文 10K; 上限
+  location: PDF p.9
+  quote: with sequence lengths up to 10K
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 100
+  unit: tokens
+  condition: benchmark=0/1-shot tasks (lm-eval-harness); 下限
+  location: PDF p.25
+  quote: have shorter sequence lengths ranging from 100 to 300
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 300
+  unit: tokens
+  condition: benchmark=0/1-shot tasks (lm-eval-harness); 上限
+  location: PDF p.25
+  quote: have shorter sequence lengths ranging from 100 to 300
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 16
+  unit: GB
+  condition: product=NVIDIA T4 (實驗平台); 單 GPU
+  location: PDF p.9
+  quote: an NVIDIA T4 (16GB) GPU and an NVIDIA A100 (80GB) GPU
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 80
+  unit: GB
+  condition: product=NVIDIA A100 (實驗平台); 單 GPU; datacenter 對照
+  location: PDF p.9
+  quote: an NVIDIA T4 (16GB) GPU and an NVIDIA A100 (80GB) GPU
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok

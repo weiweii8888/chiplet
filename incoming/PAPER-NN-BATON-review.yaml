@@ -1,0 +1,50 @@
+doc_id: PAPER-NN-BATON
+rows:
+- parameter: die_sram_capacity
+  value: 0.2092
+  unit: MB
+  condition: design=NN-Baton Sec. VI-A 設定; 算法=8 cores x (800B A-L1 + 18KB W-L1) + 64KB A-L2 = 214.25 KB ÷1024; 不含 O-L1（用 register 實作，1.5KB）與 O-L2（大小未給）
+  location: PDF p.8
+  quote: size vector MAC, 1.5KB O-L1, 800B A-L1, 18KB W-L1 ... and 64KB A-L2
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 0.03125
+  unit: MB
+  condition: design=NN-Baton DSE 探索範圍下限; scope=只算 A-L2（chiplet 共用 activation buffer），不是整顆 die 總量; 原文 32 KB
+  location: PDF p.8 Table II
+  quote: A-L2 Size (KB) ... 32 - 256
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 0.25
+  unit: MB
+  condition: design=NN-Baton DSE 探索範圍上限; scope=只算 A-L2（chiplet 共用 activation buffer），不是整顆 die 總量; 原文 256 KB
+  location: PDF p.8 Table II
+  quote: A-L2 Size (KB) ... 32 - 256
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_energy_efficiency
+  value: 41.67
+  unit: TOPS/W
+  condition: design=NN-Baton 能耗模型; precision=INT8; scope=只算單一 MAC 運算，不含 SRAM/DRAM/D2D; 算法=1/0.024 pJ/op（原文 0.024 pJ/op）；如果 1 MAC 算 2 ops 就是 83.3 TOPS/W; 16 nm 縮放值
+  location: PDF p.8
+  quote: the area and power of an 8-bit MAC are respectively 135.1 ... 0.024
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_energy_efficiency
+  value: 83.3
+  unit: TOPS/W
+  condition: design=NN-Baton 評估模型; precision=INT8; 只算 MAC，不含 SRAM/DRAM/D2D; 算法：8-bit MAC 0.024 pJ/op，以 1 MAC=2 ops 換算 2/0.024=83.3 TOPS/W（如果 1 op=1 MAC 則是 41.7 TOPS/W）; 16nm@500MHz
+  location: PDF p.8
+  quote: the area and power of an 8-bit MAC are respectively 135.1
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: compute_die_count
+  value: 4.0
+  unit: count
+  condition: design=與 Simba 比較時建的 4-chiplet Simba 原型模型; 記憶體與運算資源和 Simba 相同
+  location: PDF p.9
+  quote: We model a 4-chiplet Simba prototype with the configurations
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）

@@ -1,0 +1,42 @@
+case_id: CASE-GAUDI3
+product: Intel Gaudi 3 AI Accelerator（OAM）
+vendor: Intel
+year: 2024
+sources: [WP-INTEL-GAUDI3]
+
+workload: 資料中心 AI 訓練與推論（含 LLM）
+
+design:
+  compute_die:
+    choice: 2 顆相同的運算 die（TSMC 5nm），共 8 個 MME、64 個 TPC；片上 SRAM 合計 96MB
+    numbers: [N0061, N0062, N0072]
+  partition:
+    choice: 兩顆對稱的運算 die，沒有獨立 IO die；軟體看起來像一顆大 die
+    numbers: []
+  memory:
+    choice: 8 stack HBM2E，每 stack 16GB，合計 128GB、3.7 TB/s
+    numbers: [N0064, N0066, N0067, N0068, N0070]
+  d2d:
+    choice: 兩顆 die 經 interposer bridge 相連（私有介面，白皮書沒給頻寬）
+    numbers: []
+  package:
+    choice: interposer bridge（類型未詳）
+    numbers: []
+  thermal_power:
+    choice: OAM 最大 900W
+    numbers: [N0076]
+
+why: >-
+  白皮書 p.3：兩顆相同的運算 die 經高頻寬、低延遲的 interposer bridge 互連，die 之間的連接對軟體透明，
+  效能與行為等同一顆統一的大 die。p.16：大 HBM 容量讓需要較多裝置的配置可以用更少裝置跑，
+  也能用更大的 batch 或避免重算。（WP-INTEL-GAUDI3）
+kv_implication: >-
+  （自己推算，未經驗證）和 MI300X 比：Gaudi 3 用較舊的 HBM2E，容量 128GB vs 192GB、頻寬 3.7 vs 5.3 TB/s，
+  片上 SRAM 96MB 約是 MI300X 256MB Infinity Cache 的四成；長 context 時 KV 放不進片上，HBM 容量與頻寬才是上限。
+  Gaudi 2 → Gaudi 3 從 6 stack 加到 8 stack、7nm → 5nm，是「換製程＋加 HBM」的對照組（Gaudi 2 是否單 die 待查）。
+compare_with: [CASE-MI300X]
+open_questions:
+  - 兩顆 die 之間 bridge 的頻寬、延遲、能耗（白皮書沒給）
+  - 片上 SRAM 頻寬：p.3 寫 12.8/6.4 TB/s（讀/寫），p.16 寫 19.2 TB/s，原文矛盾
+  - HBM 速率原文寫 3.6GHz，推斷為 3.6 Gb/s 每 pin（N0067），要找 HBM2E 規格核對
+  - Gaudi 2 是否為單 die（本白皮書沒明講）

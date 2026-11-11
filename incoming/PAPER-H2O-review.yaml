@@ -1,0 +1,42 @@
+doc_id: PAPER-H2O
+rows:
+- parameter: kv_bytes_per_token
+  value: 1.3733
+  unit: MB/token
+  condition: model=30B-parameter LLM; 由 180GB KV cache ÷ (batch 128 × seq_len 1024)=180000 MB/131072 tokens 算出; precision 原文未註明
+  location: PDF p.1
+  quote: a sequence length of 1024 results in 180GB of KV cache
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 10.8
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-6.7B; dataset=XSUM; batch=1; offload=none (GPU); 作者自行量測的 baseline
+  location: PDF p.9 Table 4
+  quote: FlexGen 10.80 (1, G) 3.29 (44, C)
+  value_kind: measured
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 3.29
+  unit: tokens/s
+  condition: design=FlexGen baseline (full KV); hw=NVIDIA T4 16GB; model=OPT-30B; dataset=XSUM; batch=44; offload=CPU; 作者自行量測的 baseline
+  location: PDF p.9 Table 4
+  quote: FlexGen 10.80 (1, G) 3.29 (44, C)
+  value_kind: measured
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 4000.0
+  unit: tokens
+  condition: hw=NVIDIA A100 80GB; A100 吞吐／延遲實驗序列長度下限; 原文 4K
+  location: PDF p.9
+  quote: The results on the A100 GPU with sequence lengths from 4K to 10K are listed in Table 5
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 2000.0
+  unit: tokens
+  condition: model=OPT; 訓練序列長度; 原文 2K (未寫 2048)
+  location: PDF p.9
+  quote: Although OPT is only trained on 2K sequence length
+  value_kind: spec_limit
+  reason: 只有 B 抽到（A 沒有同參數同值）

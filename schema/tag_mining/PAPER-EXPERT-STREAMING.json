@@ -1,0 +1,162 @@
+{
+ "doc_id": "PAPER-EXPERT-STREAMING",
+ "existing_tags": [
+  "edge_embedded",
+  "paper",
+  "ucie",
+  "compute_die",
+  "io_die",
+  "on_chip_sram",
+  "bandwidth_capacity",
+  "latency",
+  "area",
+  "thermal_power",
+  "llm_inference",
+  "llm_on_device",
+  "dse",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "MoE 在多 chiplet 上的平行／映射策略",
+   "options": [
+    "Expert Parallel（EP，all-to-all 搬 token）",
+    "Hydra（EP＋依熱門度搬移專家）",
+    "FSE-DP（不含 paired-load）",
+    "FSE-DP（含 paired-load）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "跨 die 搬權重還是搬 token",
+   "options": [
+    "固定 token 序列、讓專家切片在 die 間輪轉",
+    "固定專家切片、讓 token 序列在 die 間輪轉"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "專家權重的串流粒度（micro-slice 數）",
+   "options": [
+    "naive FSE-DP，以整個專家切片為單位（A1）",
+    "micro-slice 流（A2）",
+    "每個專家切成 2～30 個 micro-slice（論文建議少於 10 個）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "片上 buffer 容量與 DDR 頻寬的取捨（die 面積 ≤30 mm2、封裝功耗 ≤60 W、D2D 固定 288 GB/s）",
+   "options": [
+    "片上 buffer 72→8 MB",
+    "每 die DDR 頻寬 16～128 GB/s"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "D2D 頻寬與 DDR 頻寬的取捨（片上 buffer 固定 14 MB）",
+   "options": [
+    "D2D 頻寬 256～2048 GB/s",
+    "DDR 頻寬 16～128 GB/s",
+    "論文換算：512 GB/s 約等於 3 個 UCIe x32 module"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "chiplet 陣列規模",
+   "options": [
+    "2×2",
+    "3×3",
+    "4×4（在 2D mesh 上同時跑多條 ring 軌跡）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.13"
+  },
+  {
+   "decision": "DDR 控制器要不要主動推送 micro-slice（Rule 5）",
+   "options": [
+    "不推送（A3）",
+    "推送給剩餘儲存空間最多的 chiplet（A4）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "專家的載入順序",
+   "options": [
+    "依序載入（A2）",
+    "熱門專家和冷門專家配對交錯載入，即 paired-load（A3）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.6"
+  },
+  {
+   "decision": "token buffering：請求碰到冷門專家時，要不要先延後到後面的迭代（照 QoS 餘裕決定）",
+   "options": [
+    "不延後",
+    "延後餘裕 10%",
+    "延後餘裕 20%",
+    "延後餘裕 30%"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.12"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "workload",
+   "id": "moe_inference",
+   "label": "MoE 模型推論",
+   "definition": "推論的是 Mixture-of-Experts 模型，每個 token 只啟用一部分專家的權重。",
+   "why": "llm_inference 分不出 dense 和 MoE。MoE 每個 token 要讀的權重量、權重重用率、專家熱門度的長尾，都會改變需要的記憶體頻寬和片上容量。沒有這個標籤，agent 查「MoE 在 edge 上要多少 DDR 頻寬或 SRAM」時找不到這篇。"
+  },
+  {
+   "group": "workload",
+   "id": "multi_session",
+   "label": "多請求並行",
+   "definition": "同一個模型同時服務多個請求或 session（prefill 和 decode 混在一起、chunked prefill），有效 batch 由並行請求數決定。",
+   "why": "Tack 要用「同時跑的 session 數」當查找條件，但現有標籤只有 multi_model（多個不同模型）和 llm_on_device（單一使用者、小 batch）。這篇用每次迭代 16～1024 個 token（從多個並行請求湊成）當有效 batch，沒有這個標籤時，agent 找不到「多請求並行、低 batch 的 edge 推論」這類結果。"
+  },
+  {
+   "group": "mapping（新組：跨 chiplet 的資料放置與搬移方式）",
+   "id": "cross_die_sram_pooling",
+   "label": "跨 die 片上記憶體共享池",
+   "definition": "把所有 chiplet 的片上 SRAM 當成一個共享池，每份權重或資料只存一份，要用時靠 D2D 搬過去，用 D2D 頻寬換片上容量。",
+   "why": "現有 d2d 標籤只寫介面種類（UCIe、BoW 等），表達不出「D2D 頻寬能不能取代片上 SRAM 容量或 DDR 頻寬」這個決策。沒有這個標籤，agent 做 D2D 頻寬、SRAM 容量、DRAM 頻寬三者的取捨時，查不到這篇的 DSE 結果（p.12）。"
+  },
+  {
+   "group": "memory",
+   "id": "ddr",
+   "label": "標準 DDR",
+   "definition": "外部記憶體用 DDR3、DDR4 或 DDR5（不是 LPDDR，也不是 HBM）。",
+   "why": "這篇的外部記憶體是 DDR3-1600，4×25.6 GB/s，現有 memory 組只有 lpddr 和 hbm 這兩種 DRAM 可選。沒有這個標籤，agent 按 DRAM 技術篩選時，這篇會被漏掉，或被誤標成 lpddr。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "on_chip_sram",
+   "suggestion": "分成 sram_resident（權重或 KV 常駐片上，SRAM 就是主要記憶體）和 sram_streaming_buffer（片上 SRAM 只當串流緩衝，權重放在外部 DRAM，用到才搬進來）。這篇屬於後者：on_chip_sram 的定義是「片上 SRAM 為主要記憶體」，套在這篇並不準確，兩種設計需要的容量和頻寬也完全不同。"
+  },
+  {
+   "tag": "simulator",
+   "suggestion": "依評估方式分成 cycle_accurate_sim（RTL 或 cycle-accurate 模擬）、analytical_model（roofline 或行為層級模擬）、silicon_measured（實測測試晶片或實機）。這篇用 5nm 2×2 測試晶片和 RTL 合成結果去校正行為層級模擬器，再拿那個模擬器做 DSE。Tack 要區分 LLMCompass、PLENA、實機、roofline 這幾種評估方式，現在的標籤分不出來。"
+  },
+  {
+   "tag": "ucie",
+   "suggestion": "分成 ucie_standard（UCIe-S，有機基板）和 ucie_advanced（UCIe-A，中介層或橋接）。這篇 p.4 兩種的數字都有引用，DSE 又以「UCIe x32 module」當頻寬單位。edge 以 UCIe-S 為主，不分開的話查到的數字常常不適用。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "至少分成 bandwidth（再註明是外部記憶體還是 D2D）和 capacity 兩個。這篇的核心結論就是片上容量、DDR 頻寬、D2D 頻寬三者之間的取捨，合在一個標籤裡表達不出來。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.47619770000000006,
+  "turns": 6
+ }
+}

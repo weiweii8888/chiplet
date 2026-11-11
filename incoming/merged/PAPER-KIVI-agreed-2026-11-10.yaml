@@ -1,0 +1,78 @@
+defaults:
+  doc_id: PAPER-KIVI
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: context_length
+  value: 8192
+  unit: tokens
+  condition: benchmark=LongBench; model=Mistral-7B; 實驗設定的最大序列長度
+  location: PDF p.6
+  quote: The maximum sequence length in LongBench was set to 8192 for the Mistral model
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 4096
+  unit: tokens
+  condition: benchmark=LongBench; model=Llama-2-7B/Llama-2-13B/Llama-2-Chat/Falcon-7B（Mistral 以外的模型）; 實驗設定的最大序列長度
+  location: PDF p.6
+  quote: set to 8192 for the Mistral model and 4096 for other models
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 27000
+  unit: tokens
+  condition: test=Needle-in-a-Haystack; model=Llama-3-8B-Instruct; 最長測試長度 20K words，約 27K tokens（原文 27K）
+  location: PDF p.7 Fig. 4
+  quote: 20K words ≈ 27K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 30000
+  unit: tokens
+  condition: test=Needle-in-a-Haystack; model=Mistral-7B-Instruct-v0.2; 最長測試長度 20K words，約 30K tokens（原文 30K）
+  location: PDF p.7 Fig. 4
+  quote: 20K words ≈ 30K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 8192
+  unit: tokens
+  condition: model=Llama-3-8B-Instruct; 模型最大 context; attention=GQA（KV 用 8 個 head，全部共 32 個 head）; 原文 8K，以 8K=8192 換算
+  location: PDF p.14 Table 8
+  quote: The model has 8K context length and applies group query attention
+  value_kind: spec_limit
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 32768
+  unit: tokens
+  condition: model=Mistral-7B-Instruct-v0.2; 模型最大 context; attention=GQA（KV 用 8 個 head，全部共 32 個 head）; 原文 32K，以 32K=32768 換算
+  location: PDF p.14 Table 9
+  quote: The model has 32K context length and applies group query attention
+  value_kind: spec_limit
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 32768
+  unit: tokens
+  condition: model=LongChat-7B-v1.5-32K; 模型最大 context; 原文 32K，以 32K=32768 換算
+  location: PDF p.15 Table 10
+  quote: The model has 32K context length.
+  value_kind: spec_limit
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 80
+  unit: GB
+  condition: product=NVIDIA A100 80GB; 單顆 GPU; 效率實驗用的硬體平台; scenario=datacenter（只當對照）
+  location: PDF p.8
+  quote: The hardware here is a single NVIDIA A100 GPU (80GB).
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 1800
+  unit: tokens/s
+  condition: hw=1x A100-80GB; model=Llama-2-7B; KV=KIVI-2bit; residual_length=128; batch≈256（OOM 前的最大值）; workload=依 ShareGPT 合成; 從 Fig. 5 讀圖估計，約略值; 含 prefill 的 end-to-end throughput
+  location: PDF p.8 Fig. 5
+  quote: Memory usage and throughput comparison between 2bit KIVI and 16bit baseline.
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok

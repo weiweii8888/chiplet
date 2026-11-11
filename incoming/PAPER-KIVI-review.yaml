@@ -1,0 +1,34 @@
+doc_id: PAPER-KIVI
+rows:
+- parameter: decode_throughput
+  value: 760.0
+  unit: tokens/s
+  condition: hw=1x A100-80GB; model=Llama-2-7B; precision=FP16 baseline（KV 16bit）; batch≈32（baseline 的最高點）; workload=依 ShareGPT 合成（平均 prompt 161、生成 338）; 從 Fig. 5 讀圖估計，約略值; 含 prefill 的 end-to-end throughput
+  location: PDF p.8 Fig. 5
+  quote: Memory usage and throughput comparison between 2bit KIVI and 16bit baseline.
+  value_kind: measured
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 2620.0
+  unit: tokens/s
+  condition: hw=1x A100-80GB; model=Llama-2-7B; KV=KIVI-2bit; residual_length=32; batch≈384（OOM 前的最大值）; workload=依 ShareGPT 合成; 從 Fig. 5 讀圖估計，約略值; 含 prefill 的 end-to-end throughput
+  location: PDF p.8 Fig. 5
+  quote: KIVI can achieve higher throughput by enabling a larger batch size.
+  value_kind: measured
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 750.0
+  unit: tokens/s
+  condition: hw=1x NVIDIA A100 80GB; model=Llama-2-7B; precision=FP16 baseline（KV 16bit）; workload=合成自 ShareGPT; batch≈32~64; 由 Fig. 5 讀出的約值（非文字值）; 吞吐量為端到端，未區分 prefill/decode
+  location: PDF p.8 Fig. 5
+  quote: 'Figure 5: Memory usage and throughput comparison between 2bit KIVI and 16bit baseline.'
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 2600.0
+  unit: tokens/s
+  condition: hw=1x NVIDIA A100 80GB; model=Llama-2-7B; KV=KIVI-2 (2bit, group=32, residual=32); workload=合成自 ShareGPT; batch≈384（OOM 前最大）; 由 Fig. 5 讀出的約值（非文字值）; 吞吐量為端到端
+  location: PDF p.8 Fig. 5
+  quote: KIVI can achieve higher throughput by enabling a larger batch size.
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）

@@ -1,0 +1,147 @@
+{
+ "doc_id": "PAPER-MOONCAKE",
+ "existing_tags": [
+  "datacenter",
+  "paper",
+  "llm_inference",
+  "kv_cache",
+  "latency",
+  "bandwidth_capacity"
+ ],
+ "decisions": [
+  {
+   "decision": "預填（prefill）與解碼（decode）要不要分到不同硬體池",
+   "options": [
+    "prefill／decode 分離（Mooncake）",
+    "兩階段放在同一個實例，加 continuous batching（vLLM）",
+    "chunked prefill 併入 decode batch",
+    "分離後的比例：3P+1D 對 2P+2D 對 vLLM-[4M]；10P+10D 對 vLLM-[20M]"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8, p.15-17"
+  },
+  {
+   "decision": "KV cache 要分幾層放、放在哪一層（GPU VRAM／CPU DRAM／SSD），以及要不要跨節點傳送",
+   "options": [
+    "只放 VRAM 的 paged KV",
+    "用 CPU DRAM／SSD 組成分散式 KV pool，透過 RDMA 傳送",
+    "熱門 block 複製到多個節點，冷門 block 換出（swap）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.2, p.5, p.8"
+  },
+  {
+   "decision": "KV 快取逐出策略與快取容量",
+   "options": [
+    "LRU",
+    "LFU",
+    "LengthAwareCache",
+    "容量 1000／10000／30000／50000／100000 個 block 與無上限，比較命中率"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.7-8"
+  },
+  {
+   "decision": "前綴 KV 重用：去遠端拿 KV，還是在本地重算；請求要派到哪個實例",
+   "options": [
+    "random",
+    "load-balancing",
+    "cache-aware（只看前綴命中長度）",
+    "KVCache-centric（cache-aware 加熱點遷移；遠端前綴不比本地長出門檻時就本地重算）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.10-12"
+  },
+  {
+   "decision": "prefill 時 KV 的寫回與搬移，要不要和運算重疊",
+   "options": [
+    "序列化：算完才存 KV",
+    "layer-wise prefill：逐層非同步 load／store，和運算重疊（8k–128k 序列長度）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.9"
+  },
+  {
+   "decision": "長 context prefill 要怎麼平行化",
+   "options": [
+    "跨節點 TP",
+    "sequence parallelism（Ring／Striped Attention）",
+    "chunked pipeline parallelism（CPP）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.8-9"
+  },
+  {
+   "decision": "過載時的請求准入",
+   "options": [
+    "baseline：在 decode 端才拒絕",
+    "Early Rejection",
+    "依預測做 Early Rejection（系統層級預測，不做請求層級預測）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.12-14, p.17"
+  },
+  {
+   "decision": "異質加速器：decode／attention 交給偏記憶體頻寬的裝置（只在未來工作提到，沒有做實驗）",
+   "options": [
+    "旗艦 HBM 加速器",
+    "GDDR／LPDDR 方案（看每美元或每瓦的頻寬）",
+    "PIM",
+    "hybrid bonding 記憶體裝置",
+    "attention 和線性運算分開放",
+    "MLA 提高算術強度"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.18-19"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "kv_policy（新組：執行期 KV 決策）",
+   "id": "kv_prefix_reuse",
+   "label": "前綴 KV 重用",
+   "definition": "跨請求或跨 session 共用相同前綴的 KV（prefix caching），包含命中率、可重用比例，以及重用和重算之間的取捨。",
+   "why": "現有 kv_cache 只定義到「放置與搬移」，agent 查「多 session／共用 system prompt 時 KV 能重用多少」會查不到本文的實測上限（線上 trace 最多約 55% 可重用，p.18；命中率表在 p.8）。"
+  },
+  {
+   "group": "kv_policy（新組：執行期 KV 決策）",
+   "id": "kv_eviction",
+   "label": "KV 逐出策略",
+   "definition": "KV 快取容量不夠時，用哪種策略（LRU、LFU、依長度或依重要性）決定先丟哪些 block 或 token。",
+   "why": "Tack 的「逐出」決策需要查「策略 × 容量 → 命中率」的比較；現有標籤沒有任何一個對應到逐出，本文 Table 1 會被埋沒在 kv_cache 底下。"
+  },
+  {
+   "group": "partition",
+   "id": "phase_disaggregation",
+   "label": "預填／解碼分離到不同硬體",
+   "definition": "把 compute-bound 的 prefill 和 memory-bound 的 decode（或 attention）放到不同的硬體單元或資源池，硬體配置也可以不同。",
+   "why": "現有 partition 標籤只分 die 的種類（compute／io／memory），表達不了「依推論階段切分」；agent 做 DSE 時找不到「decode 用偏頻寬的 chiplet 或記憶體、prefill 用偏算力的 die」這類依據（p.8, p.18-19）。"
+  },
+  {
+   "group": "method",
+   "id": "request_trace",
+   "label": "真實請求 trace",
+   "definition": "文件提供或使用真實工作負載 trace（抵達時間、輸入／輸出長度、session 或前綴 hash），可以拿來重播或統計。",
+   "why": "Tack 判斷最佳硬體時要有 context 長度分布、session 數、重用率這些工作負載條件；沒有這個標籤，agent 找不到能直接驅動模擬的 trace 來源（本文開源 23,608 筆，p.6-7）。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "kv_cache",
+   "suggestion": "目前「放置與搬移」把多種執行期決策混在一起。建議分成 kv_tiering（HBM／DRAM／SSD 分層放置與傳送）、kv_prefix_reuse、kv_eviction、kv_compression（量化／稀疏注意力／token 篩選）；本文主要落在前三個。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "本文講的是服務層 SLO 延遲（TTFT、TBT，單位是秒），和 d2d_latency 這類硬體存取延遲（ns）混在同一個標籤。建議分成 serving_latency（TTFT／TBT）與 hw_access_latency（記憶體／D2D 延遲，ns）。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "本文的「容量」指 KV 快取容量和命中率，「頻寬」指節點間 RDMA 網路頻寬（800 Gbps），都不是加速器記憶體頻寬。建議分成 mem_capacity、mem_bandwidth、interconnect_bandwidth，避免 agent 以為能在這裡找到記憶體頻寬數字。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4696078,
+  "turns": 7
+ }
+}

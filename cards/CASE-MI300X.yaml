@@ -1,0 +1,39 @@
+case_id: CASE-MI300X
+product: AMD Instinct MI300X
+vendor: AMD
+year: 2023
+sources: [WP-AMD-CDNA3]
+
+workload: 資料中心 AI 訓練與推論（含 LLM）
+
+design:
+  compute_die:
+    choice: 8 顆 XCD（TSMC 5nm），每顆 38 個 CU 啟用、4MB L2
+    numbers: [N0001, N0003, N0006]
+  partition:
+    choice: 運算（XCD）與 IO／快取／記憶體控制器（IOD）分開；4 顆 IOD（TSMC 6nm），每顆上面堆 2 顆 XCD；256MB Infinity Cache 在 IOD 上
+    numbers: [N0004, N0005, N0007]
+  memory:
+    choice: 8 stack HBM3，每 stack 1024-bit、5.2 Gb/s、24GB；每顆 IOD 接 2 stack
+    numbers: [N0008, N0009, N0010, N0012, N0014, N0016]
+  d2d:
+    choice: XCD 與 IOD 之間垂直堆疊；IOD 之間用 Infinity Fabric（私有）
+    numbers: []
+  package:
+    choice: 3D 堆疊（XCD on IOD）＋ 2.5D 封裝接 HBM
+    numbers: []
+  thermal_power:
+    choice: 最大功耗 750W
+    numbers: [N0019]
+
+why: >-
+  白皮書 p.4：用十幾顆分別為運算或記憶體與通訊特化的 chiplet，以超過單顆 die 可行的矽面積來複製運算、記憶體與通訊；
+  p.5：XCD 每顆 40 CU 中只開 38 個，2 個關掉用於良率管理。（WP-AMD-CDNA3）
+kv_implication: >-
+  （自己推算，未經驗證）192GB HBM 扣掉模型權重後的剩餘容量，決定能同時放多少 session 的 KV；
+  5.3 TB/s 是 decode 讀 KV 的頻寬上限。MI325X 同樣 8 stack，換 HBM3E 後容量 256GB、頻寬 6.0 TB/s，是「只換 HBM 世代」的天然對照組。
+compare_with: [CASE-B200]
+open_questions:
+  - XCD 與 IOD 之間的堆疊介面頻寬與能耗（p.9 圖中有數字但標籤不清）
+  - 封裝用的是哪種 CoWoS、interposer 面積多大（白皮書沒寫，要找 ISSCC／Hot Chips 資料）
+  - HBM3 每 stack 層數（8-Hi 或 12-Hi）

@@ -1,0 +1,150 @@
+defaults:
+  doc_id: PAPER-DISTSERVE
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: kv_cache_size
+  value: 1130
+  unit: MB
+  condition: model=OPT-66B; seq_len=512; batch=1 request; precision=FP16 (experiments use FP16, p.9); 原文 1.13GB, 以 1GB=1000MB 換算; 依 OPT-66B 架構 (64 層、hidden 9216) 估算約 1.21e9 B，原文 1.13 可能是 GiB
+  location: PDF p.6
+  quote: the KV cache size of a single 512-token request on OPT-66B is approximately 1.13GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: kv_bytes_per_token
+  value: 2.207
+  unit: MB/token
+  condition: model=OPT-66B (MHA); precision=FP16; 算法=1.13GB/512 tokens=1130MB/512; 原文 1.13GB 若是 GiB 則約 2.37 MB/token
+  location: PDF p.6
+  quote: the KV cache size of a single 512-token request on OPT-66B is approximately 1.13GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: model_weight_size
+  value: 26
+  unit: GB
+  condition: model=OPT-13B; params=13B; precision=FP16; workload=Chatbot
+  location: PDF p.9 Table 1
+  quote: Chatbot OPT-13B 26GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: model_weight_size
+  value: 132
+  unit: GB
+  condition: model=OPT-66B; params=66B; precision=FP16; workload=Chatbot/Code Completion/Summarization
+  location: PDF p.9 Table 1
+  quote: Chatbot OPT-66B 132GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: model_weight_size
+  value: 350
+  unit: GB
+  condition: model=OPT-175B; params=175B; precision=FP16; workload=Chatbot
+  location: PDF p.9 Table 1
+  quote: Chatbot OPT-175B 350GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 80
+  unit: GB
+  condition: product=NVIDIA SXM A100-80GB; per GPU; mem_type=HBM; testbed=4 nodes x 8 GPUs; scenario=datacenter
+  location: PDF p.9
+  quote: Each node has 8 NVIDIA SXM A100-80GB GPUs connected with NVLINK.
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_aggregate_bw
+  value: 600
+  unit: GB/s
+  condition: link=NVLink intra-node GPU-to-GPU (不是封裝內 D2D); product=A100; peak; scenario=datacenter; dir 未註明
+  location: PDF p.6
+  quote: the peak bandwidth between A100 GPUs is 600 GB/s
+  value_kind: vendor_claim
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 512
+  unit: tokens
+  condition: workload=synthetic; 輸入長度; output_len=64; model=13B; hw=1x A100 80GB
+  location: PDF p.1 Fig. 1
+  quote: input length = 512 and output length = 64
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 128
+  unit: tokens
+  condition: workload=batch execution time 實驗; 輸入長度; model=13B LLM
+  location: PDF p.4 Fig. 2
+  quote: (a) Input length = 128
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 1024
+  unit: tokens
+  condition: workload=batch execution time 實驗; 輸入長度; model=13B LLM
+  location: PDF p.4 Fig. 2
+  quote: (b) Input length = 1024
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok；警告：和 cand9 衝突（同文件、同參數、同 condition，值 1024.0 vs 128.0）；兩筆都留，進人工複核
+- parameter: context_length
+  value: 256
+  unit: tokens
+  condition: workload=decoding latency/throughput 實驗; 輸入長度; batch=128; model=13B LLM
+  location: PDF p.6 Fig. 5
+  quote: batch size = 128 and input length = 256
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 755.5
+  unit: tokens
+  condition: dataset=ShareGPT (chatbot); 平均輸入長度
+  location: PDF p.9 Fig. 7
+  quote: Input (avg=755.5)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 200.3
+  unit: tokens
+  condition: dataset=ShareGPT (chatbot); 平均輸出長度
+  location: PDF p.9 Fig. 7
+  quote: Output (avg=200.3)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 171.3
+  unit: tokens
+  condition: dataset=HumanEval (code completion); 平均輸入長度
+  location: PDF p.9 Fig. 7
+  quote: Input (avg=171.3)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 98.2
+  unit: tokens
+  condition: dataset=HumanEval (code completion); 平均輸出長度
+  location: PDF p.9 Fig. 7
+  quote: Output (avg=98.2)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 1738.3
+  unit: tokens
+  condition: dataset=LongBench (summarization); 平均輸入長度; 輸入上限截在 2048
+  location: PDF p.9 Fig. 7
+  quote: Input (avg=1738.3)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 90.7
+  unit: tokens
+  condition: dataset=LongBench (summarization); 平均輸出長度
+  location: PDF p.9 Fig. 7
+  quote: Output (avg=90.7)
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 2048
+  unit: tokens
+  condition: 上限; model=OPT (absolute positional embedding); LongBench 輸入截斷長度
+  location: PDF p.9
+  quote: only supports a maximum length of 2048
+  value_kind: spec_limit
+  ai_check: A/B 一致；出處 ok

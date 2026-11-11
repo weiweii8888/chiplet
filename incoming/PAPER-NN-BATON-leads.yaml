@@ -1,0 +1,82 @@
+doc_id: PAPER-NN-BATON
+leads:
+- parameter: d2d_energy_per_bit
+  value: 1.17
+  unit: pJ/bit
+  cited_ref: '[66]'
+  note: Wilson et al. ISSCC 2018 GRS 單端 serial link，16nm，off/on-package；NN-Baton 的 D2D 能耗與 0.38 mm2 面積都取自這篇
+- parameter: d2d_data_rate
+  value: 25
+  unit: GT/s
+  cited_ref: '[66]'
+  note: 參考文獻標題：1.17pJ/b 25Gb/s/pin ground-referenced single-ended serial link, 16nm
+- parameter: d2d_phy_area
+  value: 0.38
+  unit: mm2
+  cited_ref: '[66]'
+  note: GRS macro 面積，NN-Baton p.8 引用
+- parameter: mem_energy_per_bit
+  value: 8.75
+  unit: pJ/bit
+  cited_ref: '[22, 71]'
+  note: DRAM 存取能耗，來自 Horowitz ISSCC 2014 與 Interstellar
+- parameter: compute_die_count
+  value: 36
+  unit: count
+  cited_ref: '[55]'
+  note: Simba 封裝內最多 36 個 chiplet (6x6)
+- parameter: compute_die_area
+  value: 6
+  unit: mm2
+  cited_ref: '[55]'
+  note: Simba 每個 chiplet 約 6 mm2（p.2 文中舉例）
+- parameter: die_peak_compute
+  value: 72
+  unit: TOPS
+  cited_ref: '[3]'
+  note: Tesla FSD，自駕用，72 TOPS
+- parameter: compute_die_area
+  value: 260
+  unit: mm2
+  cited_ref: '[3]'
+  note: Tesla FSD die 面積 260 mm2
+- parameter: compute_die_area
+  value: 709
+  unit: mm2
+  cited_ref: '[25]'
+  note: Hanguang 800，12nm，資料中心
+- parameter: die_peak_compute
+  value: 825
+  unit: TOPS
+  cited_ref: '[25]'
+  note: Hanguang 800，12nm，資料中心
+- parameter: d2d_energy_per_bit
+  value: 0.062
+  unit: pJ/bit
+  cited_ref: '[40]'
+  note: 只出現在參考文獻標題：16nm 256-bit wide 89.6GB/s in-package interconnect，0.3V swing
+- parameter: d2d_aggregate_bw
+  value: 89.6
+  unit: GB/s
+  cited_ref: '[40]'
+  note: 只出現在參考文獻標題：16nm 256-bit wide in-package interconnect
+- parameter: d2d_energy_per_bit
+  value: 0.94
+  unit: pJ/bit
+  cited_ref: '[56]'
+  note: 只出現在參考文獻標題：20.83Gb/s/wire CNRZ-5 forwarded clock serdes，最長 12mm，28nm MCM
+- parameter: d2d_data_rate
+  value: 20.83
+  unit: GT/s
+  cited_ref: '[56]'
+  note: 只出現在參考文獻標題：20.83Gb/s/wire CNRZ-5 MCM serdes
+- parameter: d2d_areal_bw_density
+  value: 375
+  unit: GB/s/mm2
+  cited_ref: '[64]'
+  note: 只出現在參考文獻標題：active interposer 3Tb/s/mm2 inter-chiplet interconnect，0.6ns/mm latency（3 Tb/s/mm2 換算成 375 GB/s/mm2）
+- parameter: die_energy_efficiency
+  value: 9.09
+  unit: TOPS/W
+  cited_ref: '[62, 78]'
+  note: Simba 標題寫 0.11 pJ/op、0.32-128 TOPS，1/0.11 換算

@@ -1,0 +1,118 @@
+{
+ "doc_id": "PAPER-NN-BATON",
+ "existing_tags": [
+  "generic",
+  "compute_die",
+  "energy",
+  "area",
+  "latency",
+  "dnn_inference",
+  "dse",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "總 MAC 數固定時，要切成幾顆 chiplet，以及每顆 chiplet 內的 core、lane、vector 怎麼配",
+   "options": [
+    "2048 MAC 時，(chiplet, core, lane, vector) 的 63 種組合，chiplet 數 1/2/4/8",
+    "不限面積，或每顆 chiplet ≤ 2 mm²（2048 MAC），每顆 ≤ 3 mm²（4096 MAC）",
+    "結果：2 mm² 限制下 1 chiplet 不可行，4-4-16-8 最佳；8 chiplet 的 D2D 能耗太高"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "各層片上 SRAM buffer 的容量配置（A-L1、W-L1、O-L1、A-L2）",
+   "options": [
+    "O-L1 48–144 B、A-L1 1–128 KB、W-L1 2–256 KB、A-L2 32–256 KB（Table II）",
+    "結論：算力配置主要受面積限制決定，記憶體配置則隨模型而變（例如 512×512 輸入選 32KB A-L1，224×224 輸入選 4KB）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.11"
+  },
+  {
+   "decision": "工作負載跨 chiplet 和跨 core 的空間切分維度（決定 D2D 流量）",
+   "options": [
+    "封裝層：P-type（沿 HO/WO 平面切）、C-type（沿輸出通道切）",
+    "chiplet 層：再加 H-type（兩者混合）",
+    "封裝層與 chiplet 層的組合，例如 (C,P)、(C,H)、(P,C)、(P,P)、(P,H)"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9"
+  },
+  {
+   "decision": "多晶片的 dataflow：以輸出為中心，還是以權重為中心",
+   "options": [
+    "NN-Baton：以輸出為中心的 OS，跨 die 只傳 8-bit",
+    "Simba：以權重為中心的 WS，跨 die 要傳 24-bit partial sum",
+    "結果：相同算力與記憶體下，能耗低 22.5%～44%"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "時間上的迴圈展開順序",
+   "options": [
+    "channel-priority（有利於重用權重）",
+    "plane-priority（有利於重用 activation）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "平面切分的形狀（影響 halo 冗餘存取與 DRAM 衝突）",
+   "options": [
+    "正方形 vs 長條形",
+    "1:1 vs 1:4 長寬比"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.7"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "partition",
+   "id": "die_count_sweep",
+   "label": "固定總算力下掃描 die 數",
+   "definition": "總算力或總 MAC 固定，只改切成幾顆 die，並比較能耗、延遲、面積的文件。",
+   "why": "dse 標籤涵蓋任何參數的掃描，compute_die 只代表有運算 die。agent 想找「同樣算力切成 1/2/4/8 顆，哪個最好」的實證來做 partition_count_studied 的起點時，沒辦法從其他 DSE 文件裡篩出這種文件。"
+  },
+  {
+   "group": "mapping",
+   "id": "cross_die_mapping",
+   "label": "跨 die 工作負載切分",
+   "definition": "研究模型的運算或張量沿哪個維度分到多顆 die，以及這個選擇帶來的 D2D 流量與能耗。",
+   "why": "現有標籤只描述硬體（die、介面、封裝），表達不了「怎麼把工作分到 die 上」。agent 估 chiplet 方案的 D2D 流量時（對 LLM 就是 tensor／pipeline／head 切分），找不到交代切分策略會讓 D2D 能耗差多少的文件，例如本文 Fig.11 的 D2D 能耗占比。"
+  },
+  {
+   "group": "workload_condition",
+   "id": "batch_one",
+   "label": "batch=1／單 session 評估",
+   "definition": "評估結果建立在 batch 1 或單一請求串流的條件下。",
+   "why": "Tack 選硬體時要看並行 session 數與 batch，但現有的 batch 條件只隱含在 llm_on_device 裡，而且限定 LLM。agent 想篩出「低並行度條件下的 chiplet 切分結論」時，會漏掉本文這類 batch=1 的非 LLM 文件，也沒辦法排除大 batch 的結論。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "simulator",
+   "suggestion": "改成評估方法的三分法：analytical_model（解析／閉式模型，例如 roofline、本文的 C³P）、cycle_or_trace_sim（LLMCompass、PLENA 這類模擬器）、silicon_measured（實機量測，例如 H100）。本文是解析能耗面積模型，runtime 只用利用率估算，跟 cycle-level 模擬的可信度不同，引用時要能分開。"
+  },
+  {
+   "tag": "compute_die",
+   "suggestion": "分成 homogeneous_compute（同一顆運算 chiplet 複製 N 顆，例如本文、Simba）和 heterogeneous_compute（host SoC 加上外掛加速 chiplet，或 NPU 加記憶體 chiplet），對應 dse_dimensions 裡 partition 的 example_values。"
+  },
+  {
+   "tag": "on_chip_sram",
+   "suggestion": "現在的定義是「SRAM 為主要記憶體」，本文用的是 DRAM 前面的多層 SRAM buffer，套不上。建議分成 sram_primary（權重和 KV 全放片上）與 sram_hierarchy_sizing（決定各層 buffer 容量）。"
+  },
+  {
+   "tag": "dnn_inference",
+   "suggestion": "分成 cnn_inference 與 transformer_inference（非 LLM 的 transformer）。本文只評估 CNN（AlexNet、VGG-16、ResNet-50、DarkNet-19），沒有 attention 也沒有 KV。agent 要先知道這點，才能判斷結論能不能用到 LLM decode。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.3981811,
+  "turns": 5
+ }
+}

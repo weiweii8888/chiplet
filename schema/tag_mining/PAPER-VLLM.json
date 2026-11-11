@@ -1,0 +1,150 @@
+{
+ "doc_id": "PAPER-VLLM",
+ "existing_tags": [
+  "paper",
+  "datacenter",
+  "llm_inference",
+  "kv_cache",
+  "bandwidth_capacity",
+  "latency"
+ ],
+ "decisions": [
+  {
+   "decision": "KV cache 記憶體配置方式",
+   "options": [
+    "連續預配到模型最大長度 2048 token（Orca Max）",
+    "連續預配，最多多留 2 倍（Orca Pow2）",
+    "連續預配，事先知道輸出長度（Orca Oracle，理論上限）",
+    "分頁區塊按需配置，不需連續（PagedAttention／vLLM）",
+    "FasterTransformer 加上依 GPU 記憶體設定的最大 batch"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.2（Fig.2：連續預配時 KV 實際使用率只有 20.4–38.2%，vLLM 為 96.3%）；PDF p.4；PDF p.10–11（Fig.12/13）"
+  },
+  {
+   "decision": "KV 區塊大小（block size）",
+   "options": [
+    "每區塊 1、2、4、8、16、32、64、128、256 token",
+    "預設 16 token"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.12（§7.2、Fig.18b）"
+  },
+  {
+   "decision": "KV 跨序列／跨請求共享與重用",
+   "options": [
+    "不共享（每個序列各存一份）",
+    "區塊級共享加 copy-on-write：parallel sampling（2/4/6 條輸出）",
+    "區塊級共享：beam search（beam width 2/4/6）",
+    "跨請求共用 prefix 的 KV 預先快取（1-shot 80 token、5-shot 341 token）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.7（§4.4）；PDF p.11（Fig.14/15：省下 6.1–9.8%／37.6–55.2% 記憶體）；PDF p.12（Fig.16）"
+  },
+  {
+   "decision": "記憶體不足時的搶占與逐出策略",
+   "options": [
+    "FCFS：最晚進來的請求先被搶占",
+    "以序列為單位全逐或全留（all-or-nothing），sequence group 一起排程",
+    "（只提到、沒有比較）區塊級的啟發式逐出"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.8（§4.5）"
+  },
+  {
+   "decision": "被逐出的 KV 怎麼取回",
+   "options": [
+    "swap 到 CPU RAM，再經 PCIe 搬回",
+    "丟掉後重算（把已生成的 token 接回 prompt，一次 prefill 重建）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.8（取捨取決於 CPU–GPU 頻寬與算力）；PDF p.13（§7.3、Fig.19：區塊小時 swap 吃虧，重算的開銷不超過 swap 的 20%）"
+  },
+  {
+   "decision": "依模型大小決定 KV 可用容量與裝置數",
+   "options": [
+    "13B：1×A100 40GB，KV 12GB，15.7K slots",
+    "66B：4×A100，KV 21GB，9.7K slots",
+    "175B：8×A100-80GB，KV 264GB，60.1K slots",
+    "Megatron 式 tensor parallel，KV 依 attention head 分散到各 GPU"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（Table 1、§4.6）；PDF p.11（Fig.12f：KV 容量大、序列短時從 memory-bound 轉成 compute-bound）"
+  },
+  {
+   "decision": "非連續 KV 間接存取的核心代價",
+   "options": [
+    "PagedAttention 核心（經 block table 間接讀取）",
+    "連續存放的 FasterTransformer 注意力核心"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.12（§7.1、Fig.18a：attention kernel 延遲高 20–26%，context 64/128/256，batch 8/32）"
+  },
+  {
+   "decision": "批次排程粒度",
+   "options": [
+    "請求級批次（FasterTransformer 加動態批次）",
+    "迭代級批次（Orca、vLLM）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.3（§2.3）；PDF p.10（baseline）"
+  },
+  {
+   "decision": "對話歷史的 KV 是否跨回合保留",
+   "options": [
+    "不保留，每回合重算，prompt 截到最後 1024 token（文件只用了這一種，沒有比較）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.12（§6.5）"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "kv_policy",
+   "id": "kv_paging",
+   "label": "KV 分頁／區塊配置",
+   "definition": "KV cache 用固定大小區塊按需配置、不必連續存放，並討論區塊大小與碎片。",
+   "why": "沒有它，agent 估算 KV 容量時查不到「實際可用比例」的來源（連續預配只用到 20–38%，分頁可到 96%），算出來的容量需求可能差 2–4 倍；也查不到區塊大小與間接存取開銷的取捨。"
+  },
+  {
+   "group": "kv_policy",
+   "id": "kv_sharing",
+   "label": "KV 共享與前綴重用",
+   "definition": "多個序列或請求共用同一段 KV（共用 prefix、parallel sampling、beam search），寫入時才複製。",
+   "why": "agent harness 的 system prompt 和工具描述大量重複，這正是執行期決定要不要重用 KV 的依據；kv_cache 只寫到「放置與搬移」，查不到能省多少記憶體（6–55%）的文件。"
+  },
+  {
+   "group": "kv_policy",
+   "id": "kv_evict_recover",
+   "label": "KV 逐出與取回",
+   "definition": "記憶體不足時逐出哪些 KV，以及之後取回的方式：offload 到下一層記憶體再搬回，或丟掉後重算。",
+   "why": "查不到「swap 還是重算」的取捨證據；這個取捨決定 edge 設計要不要給 host 連結或第二層記憶體留頻寬，是 hw_dse 和 kv_runtime 共同的查詢條件。"
+  },
+  {
+   "group": "workload",
+   "id": "multi_session",
+   "label": "多 session／多請求同時服務",
+   "definition": "結果會隨同時跑的請求或 session 數（request rate、batch 中的請求數）改變的工作負載。",
+   "why": "同時跑的 session 數是 Tack 決定最佳硬體的關鍵條件，但現有標籤只有 llm_on_device（暗示 batch 小）和 multi_model（多個不同模型），查不到「有掃描同時請求數」的文件。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "kv_cache",
+   "suggestion": "改成一組 kv_policy：配置／分頁（kv_paging）、共享與重用（kv_sharing）、逐出與取回（kv_evict_recover），以後再加量化、稀疏或選擇性注意力、壓縮。kv_cache 本身只留給「KV 放在哪一層記憶體」。這份文件同時涉及前三種，只標 kv_cache 時，agent 分不出它講的是哪一種執行期決策。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "拆成 capacity 和 bandwidth。這份文件只談容量（KV 容量限制了 batch 大小），沒有給頻寬數字；合在一起會讓找頻寬的 agent 誤查到它。DSE 裡容量和頻寬也是兩個獨立的旋鈕（例如 LPDDR 與 HBM 在兩者上的取捨不同）。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "拆成硬體存取延遲（ns 等級，D2D／DRAM）和服務層延遲（s/token、TTFT/TPOT、含排隊）。這份文件的 normalized latency 是端到端每 token 延遲，跟 d2d_latency 的 ns 完全不能比。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4523314,
+  "turns": 6
+ }
+}

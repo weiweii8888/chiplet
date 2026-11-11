@@ -1,0 +1,58 @@
+doc_id: PAPER-EXPERT-STREAMING
+rows:
+- parameter: io_die_count
+  value: 1.0
+  unit: count
+  condition: design=FSE-DP architecture template; scheduler placed in IO die; count inferred from Fig. 1(a)/Fig. 8 (single IO die)
+  location: PDF p.9 Fig. 8
+  quote: The scheduler is implemented in the IO die for task allocation.
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: compute_die_count
+  value: 9.0
+  unit: count
+  condition: design=FSE-DP scalability study; array=3x3; simulation; topology=2D-mesh
+  location: PDF p.10
+  quote: assess the scalability of our spatiotemporal scheduling on different arrays (3 × 3, 4 × 4)
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: process_node
+  value: 28.0
+  unit: nm
+  condition: component=hardware MoE scheduler (on IO die); synthesis only (Synopsys DC, UMC 28nm); scheduler area 0.43 mm2
+  location: PDF p.9
+  quote: as reported by Synopsys Design Compiler in UMC 28-nm technology
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: die_energy_efficiency
+  value: 2.22
+  unit: TOPS/W
+  condition: design=FSE-DP test chip compute die; derived=4.865 TOPS / 2.187 W (upper end of power range); assumes peak TOPS at max power, conservative estimate; precision=not stated
+  location: PDF p.10 Table I
+  quote: 2048 MACs, 0.675-0.9 V, 736.5 -2187 mW
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: package_peak_compute
+  value: 19.46
+  unit: TOPS
+  condition: design=FSE-DP 2x2 test chip; derived=4 dies x 4.865 TOPS; precision=not stated
+  location: PDF p.10 Table I
+  quote: 2.69mm×4.72mm, 4.865 TOPS
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: mem_bus_width
+  value: 512.0
+  unit: bit
+  condition: design=FSE-DP test system; mem_type=DDR3-1600; derived=102.4 GB/s x 8 / 1.6 Gb/s = 512 bit total (128 bit per 25.6 GB/s channel); not stated explicitly in paper
+  location: PDF p.10 Table I
+  quote: DDR3-1600 4×25.6 GB/s, 800 MHz
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: package_tdp
+  value: 60.0
+  unit: W
+  condition: design=FSE-DP DSE constraint; total package power (P_compute + P_D2D + P_DDR) upper limit; die area <=30 mm2
+  location: PDF p.12 Fig. 16
+  quote: the total power consumption of the entire package is less than 60W
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）

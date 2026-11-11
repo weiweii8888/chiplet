@@ -1,0 +1,71 @@
+# 知識庫評測題（golden set）。eval/run_eval.py 會跑兩種測試：
+#   retrieval：直接呼叫 kb.query(**retrieval)，檢查 expect_all／expect_any 的 num_id 有沒有在結果裡（測工具，免費、可重現）
+#   agent：讓 Claude 透過 MCP 只用知識庫工具回答 question，檢查答案有沒有引用該引用的 num_id、有沒有提到該提的事（測 agent 端到端）
+# 題型：lookup 查值；compare 比較或計算；trap 題目前提有錯；gap 知識庫沒有，答案要說沒有；caveat 要提醒數字的性質
+# 每次改 schema、改工具、加資料後重跑；分數下降就是退步。新加的文件要補題目。
+
+questions:
+  - {id: Q01, type: lookup, question: "BoW 2.0 規格在 doubly terminated 模式下，D2D 每 bit 能耗上限是多少？",
+     retrieval: {parameter: d2d_energy_per_bit, text: doubly}, expect_all: [N0022]}
+  - {id: Q02, type: lookup, question: "Simba 的 GRS die-to-die 連線每 bit 能耗範圍是多少？",
+     retrieval: {parameter: d2d_energy_per_bit, text: GRS}, expect_all: [N0037, N0038]}
+  - {id: Q03, type: lookup, question: "Simba 每顆 chiplet 的面積和製程是多少？",
+     retrieval: {text: Simba}, expect_all: [N0033, N0034]}
+  - {id: Q04, type: lookup, question: "Simba 每顆 chiplet 的 INT8 峰值算力是多少 TOPS？",
+     retrieval: {parameter: die_peak_compute, text: INT8}, expect_all: [N0035]}
+  - {id: Q05, type: lookup, question: "Simba 原型的封裝裡有幾顆 chiplet？",
+     retrieval: {parameter: compute_die_count, text: Simba}, expect_all: [N0032]}
+  - {id: Q06, type: lookup, question: "Simba 的 network-on-package 每經過一個 hop 的延遲是多少？",
+     retrieval: {parameter: d2d_latency, text: hop}, expect_all: [N0039]}
+  - {id: Q07, type: lookup, question: "BoW 用一般有機基板（laminate）時，兩顆 die 最遠可以隔多遠？",
+     retrieval: {parameter: d2d_reach, text: laminate}, expect_all: [N0028]}
+  - {id: Q08, type: compare, question: "BoW 在有機基板和矽中介層上的 reach 各是多少？差多少倍？",
+     retrieval: {parameter: d2d_reach}, expect_all: [N0028, N0029]}
+  - {id: Q09, type: lookup, question: "BoW 2.0 有 FEC 和沒有 FEC 時的延遲上限各是多少？",
+     retrieval: {parameter: d2d_latency, text: FEC}, expect_all: [N0024, N0025]}
+  - {id: Q10, type: lookup, question: "BoW 規格給的 bump pitch 範例，有機基板和矽中介層各是多少？",
+     retrieval: {parameter: d2d_bump_pitch}, expect_all: [N0030, N0031]}
+  - {id: Q11, type: lookup, question: "Chiplet Actuary 用的 7nm defect density 是多少？",
+     retrieval: {parameter: defect_density, text: 7nm}, expect_all: [N0043]}
+  - {id: Q12, type: lookup, question: "Chiplet Actuary 假設 D2D 介面佔 die 面積多少比例？",
+     retrieval: {parameter: d2d_area_overhead}, expect_all: [N0051]}
+  - {id: Q13, type: lookup, question: "Chiplet Actuary 邏輯製程的負二項良率模型 cluster 參數 c 是多少？",
+     retrieval: {parameter: yield_cluster_param, text: 邏輯}, expect_all: [N0048]}
+  - {id: Q14, type: lookup, question: "Gemini 論文引用的 7nm 800 mm² 與 200 mm² die 良率各是多少？",
+     retrieval: {parameter: die_yield}, expect_all: [N0057, N0058]}
+  - {id: Q15, type: lookup, question: "Cambricon-LLM 的 NPU 峰值算力是多少？",
+     retrieval: {parameter: die_peak_compute, text: NPU}, expect_all: [N0085]}
+  - {id: Q16, type: lookup, question: "Cambricon-LLM 用的 LPDDR5X 每 channel 頻寬大約多少？",
+     retrieval: {parameter: mem_channel_bandwidth, text: LPDDR5X}, expect_all: [N0086]}
+  - {id: Q17, type: lookup, question: "70B 模型、序列長度 1000、batch 1 時，KV cache 大約多大？",
+     retrieval: {parameter: kv_cache_size}, expect_all: [N0087]}
+  - {id: Q18, type: lookup, question: "Hecaton 用來取代 HBM 的 DDR5-6400，每 channel 頻寬和每 bit 能耗是多少？",
+     retrieval: {text: DDR5}, expect_all: [N0083, N0084]}
+  - {id: Q19, type: lookup, question: "AMD MI300X 的 HBM 總頻寬是多少？",
+     retrieval: {parameter: mem_total_bandwidth, text: MI300X}, expect_all: [N0016]}
+  - {id: Q20, type: compare, question: "MI300X 和 MI325X 的記憶體總容量各是多少？差異來自哪裡？",
+     retrieval: {parameter: mem_total_capacity}, expect_all: [N0014, N0015], mention_any: [HBM3E, 每 stack, stack]}
+  - {id: Q21, type: caveat, question: "Intel Gaudi 3 的 HBM 每 pin 速率是多少？這個數字可靠嗎？",
+     retrieval: {parameter: mem_pin_rate, text: Gaudi}, expect_all: [N0067], mention_any: [推斷, 推算, derived, GHz]}
+  # Q22：2026-11-10 補「對不上」「衝突」，agent 答對但評分漏判
+  - {id: Q22, type: caveat, question: "Gaudi 3 的片上 SRAM 頻寬是多少？",
+     retrieval: {parameter: package_sram_bandwidth}, expect_all: [N0073, N0074], mention_any: [矛盾, 不一致, 不同, 兩個, 對不上, 衝突]}
+  - {id: Q23, type: lookup, question: "MI300 系列用了幾顆 IO die？",
+     retrieval: {parameter: io_die_count}, expect_all: [N0005]}
+  - {id: Q24, type: lookup, question: "Gemini 論文用的 reticle 面積上限是多少？",
+     retrieval: {parameter: reticle_limit_area}, expect_all: [N0052]}
+  - {id: Q25, type: lookup, question: "Hecaton 假設的 UCIe D2D 每 lane 速率是多少？",
+     retrieval: {parameter: d2d_data_rate, text: UCIe}, expect_all: [N0082]}
+  - {id: Q26, type: compare, question: "跨一次 die 傳資料和讀一次外部 DDR5，每 bit 能耗大約差幾倍？請說明用了哪些數字。",
+     retrieval: [{parameter: mem_energy_per_bit}, {parameter: d2d_energy_per_bit}], expect_all: [N0084], expect_any: [N0022, N0023, N0037, N0038]}
+  - {id: Q27, type: compare, question: "用 Chiplet Actuary 的參數，7nm、50 mm² 的單顆 die 良率大約多少？",
+     retrieval: {text: Actuary}, expect_all: [N0043, N0048], mention_any: ["95", "96"]}
+  - {id: Q28, type: gap, question: "LPDDR6 的每 pin 速率是多少？",
+     retrieval: {parameter: mem_pin_rate, text: LPDDR6}, expect_empty: true,
+     mention_any: [沒有, 尚無, 缺, 未收錄, 查不到, 找不到]}
+  - {id: Q29, type: gap, question: "Renesas R-Car X5H 的 UCIe 實測頻寬是多少？請給知識庫裡有出處的數字。",
+     retrieval: {text: Renesas}, expect_empty: true,
+     mention_any: [沒有, 尚無, 候選, 未收錄, 查不到, 找不到, 還沒]}
+  - {id: Q30, type: trap, question: "MI300X 用的 HBM4 每個 stack 容量是多少？",
+     retrieval: {parameter: mem_device_capacity, text: MI300X}, expect_any: [N0012, N0008, N0010],
+     mention_any: [HBM3]}

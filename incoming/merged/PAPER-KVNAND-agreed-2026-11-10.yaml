@@ -1,0 +1,366 @@
+defaults:
+  doc_id: PAPER-KVNAND
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: die_peak_compute
+  value: 32
+  unit: TOPS
+  condition: design=KVNAND NPU (SoC); precision=BF16; tensor core; sparsity=no; simulation config
+  location: PDF p.8 Table I
+  quote: 32 TOPS (BF16 Tensor Core), 4.60 W
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_power
+  value: 4.6
+  unit: W
+  condition: design=KVNAND NPU compute; precision=BF16; excludes 5MB KV buffer SRAM (0.36 W); simulation config
+  location: PDF p.8 Table I
+  quote: 32 TOPS (BF16 Tensor Core), 4.60 W
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_energy_efficiency
+  value: 6.96
+  unit: TOPS/W
+  condition: design=KVNAND NPU; precision=BF16; derived=32 TOPS / 4.60 W; compute only, excludes SRAM power
+  location: PDF p.8 Table I
+  quote: 32 TOPS (BF16 Tensor Core), 4.60 W
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_sram_capacity
+  value: 5
+  unit: MB
+  condition: design=KVNAND-D; SoC-side KV buffer SRAM; power=0.36 W
+  location: PDF p.8 Table I
+  quote: 5MB KV buffers for KVNAND-D, 0.36 W
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_mac_count
+  value: 512
+  unit: count
+  condition: design=KVNAND-C IFC logic die; derived=16 FMACs/plane x 32 planes/die; MAC type=FMAC
+  location: PDF p.8 Table I
+  quote: 16 FMACs + 8 KB KV buffer per plane for KVNAND-C
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_clock_freq
+  value: 400
+  unit: MHz
+  condition: design=KVNAND IFC logic die PE (FMAC)
+  location: PDF p.7
+  quote: 16 FMACs per plane operating at 400MHz
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_peak_compute
+  value: 0.4096
+  unit: TOPS
+  condition: design=KVNAND-C IFC logic die; derived=512 FMAC x 2 OPs x 400 MHz; 原文未直接給 TOPS
+  location: PDF p.8 Table I
+  quote: 16 FMACs + 8 KB KV buffer per plane for KVNAND-C
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: process_node
+  value: 20
+  unit: nm
+  condition: design=KVNAND IFC logic layer; synthesized with Design Compiler and scaled to 20 nm
+  location: PDF p.8
+  quote: is synthesized using Design Compiler and also scaled to 20 nm
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_count
+  value: 1
+  unit: count
+  condition: design=KVNAND; NPU on a separate die in SoC; IFC flash dies counted separately as memory dies
+  location: PDF p.5
+  quote: The NPU is implemented on a separate die
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: memory_die_count
+  value: 16
+  unit: count
+  condition: design=KVNAND-C-16; mem_type=NAND (IFC, SLC); weights+KV co-located in 16 dies
+  location: PDF p.8
+  quote: we use the KVNAND-C-16 configuration
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: memory_die_count
+  value: 8
+  unit: count
+  condition: design=KVNAND-D-(6+2) example; mem_type=NAND (IFC); 8 channels x 1 die per channel; G1=6 weight dies, G2=2 KV dies
+  location: PDF p.8
+  quote: 'KVNAND-D-(6+2): 8 channels × 1 die per channel'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: partition_count_studied
+  value: 1
+  unit: count
+  condition: design=KVNAND-D; DSE-optimal G2 (KV) die count; total=16 IFC dies (G1=15, G2=1); model=LLaMA3.1-8B; context=1K
+  location: PDF p.9
+  quote: G1=15, G2=1 for LLaMA3.1-8B, 1K context-length
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: partition_count_studied
+  value: 4
+  unit: count
+  condition: design=KVNAND-D; DSE-optimal G2 (KV) die count; total=8 IFC dies; model=LLaMA3.1-70B; precision=W4A16; context=100K
+  location: PDF p.10
+  quote: with the optimal configuration reaching 4 dies in G2 at 100K tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_channel_bandwidth
+  value: 8
+  unit: GB/s
+  condition: design=Base-1; mem_type=LPDDR5X; per channel/die; 16Gb die
+  location: PDF p.8 Table I
+  quote: 'DRAM: LPDDR5X, 16Gb, 8GB/s, 7pJ/bit (Base-1)'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_device_capacity
+  value: 2
+  unit: GB
+  condition: design=Base-1; mem_type=LPDDR5X; per DRAM die; 原文 16Gb
+  location: PDF p.8 Table I
+  quote: 'DRAM: LPDDR5X, 16Gb, 8GB/s, 7pJ/bit (Base-1)'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_energy_per_bit
+  value: 7
+  unit: pJ/bit
+  condition: design=Base-1; mem_type=LPDDR5X; DRAM access energy
+  location: PDF p.8 Table I
+  quote: 'DRAM: LPDDR5X, 16Gb, 8GB/s, 7pJ/bit (Base-1)'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 16
+  unit: GB
+  condition: design=Base-1; mem_type=LPDDR5X; derived=8 channels x 1 DRAM die x 16Gb (2 GB)
+  location: PDF p.8
+  quote: one DRAM attached to each of the 8 LPDDR channels
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_bandwidth
+  value: 64
+  unit: GB/s
+  condition: design=Base-1; mem_type=LPDDR5X; derived=8 channels x 8 GB/s; peak
+  location: PDF p.8
+  quote: one DRAM attached to each of the 8 LPDDR channels
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: flash_read_bandwidth
+  value: 4.8
+  unit: GB/s
+  condition: design=KVNAND; mem_type=NAND; interface=ONFI 6.0; per die external I/O; 128Gb die
+  location: PDF p.8 Table I
+  quote: 'NAND Flash: ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_energy_per_bit
+  value: 4.9
+  unit: pJ/bit
+  condition: design=KVNAND; mem_type=NAND; interface=ONFI 6.0; flash interface (I/O) access energy
+  location: PDF p.8 Table I
+  quote: 'NAND Flash: ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_energy_per_bit
+  value: 3
+  unit: pJ/bit
+  condition: design=KVNAND; mem_type=NAND (SLC); internal flash array read energy (not I/O)
+  location: PDF p.8 Table I
+  quote: 3 pJ/bit (read), 7.5 pJ/bit (program)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_energy_per_bit
+  value: 7.5
+  unit: pJ/bit
+  condition: design=KVNAND; mem_type=NAND (SLC); flash program (write) energy, ~2.5x read; tP=75 us
+  location: PDF p.8 Table I
+  quote: 3 pJ/bit (read), 7.5 pJ/bit (program)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_device_capacity
+  value: 16
+  unit: GB
+  condition: design=KVNAND; mem_type=NAND; per IFC die; 原文 128Gb
+  location: PDF p.8 Table I
+  quote: 'NAND Flash: ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 128
+  unit: GB
+  condition: design=KVNAND-D-(4+4); mem_type=NAND; 8 channels x 8 dies; derived=8 dies x 128Gb (16 GB); 與 p.11 flash cost $92.16 / $0.72 per GB 一致
+  location: PDF p.8 Table I
+  quote: 'NAND Flash: ONFI 6.0, 128Gb, 4.8GB/s, 4.9 pJ/bit'
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_bandwidth
+  value: 38.4
+  unit: GB/s
+  condition: design=KVNAND-D 8-channel; mem_type=NAND; interface=ONFI 6.0; derived=8 channels x 4.8 GB/s external; peak
+  location: PDF p.8
+  quote: 8 channels × 1 die per channel
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: flash_read_bandwidth
+  value: 32.77
+  unit: GB/s
+  condition: design=KVNAND; mem_type=NAND (SLC); per die internal array read; derived=4 KB page / tR 4 us = 1.024 GB/s per plane x 32 planes
+  location: PDF p.6
+  quote: each plane reads a 4 KB page in 4
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_cost_per_gb
+  value: 0.52
+  unit: USD/GB
+  condition: mem_type=NAND; SLC mode (1.8 Gb/mm2) converted from TLC $0.11/GB; incl. hybrid bonding & peripheral die; before yield adjustment
+  location: PDF p.11
+  quote: results in $0.52/GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_cost_per_gb
+  value: 0.72
+  unit: USD/GB
+  condition: mem_type=NAND (SLC IFC die); incl. 1.22x area, 2x hybrid bonding I/O, yield 58%
+  location: PDF p.11
+  quote: leading to $0.72/GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_yield
+  value: 58
+  unit: percent
+  condition: die=KVNAND IFC flash die (SLC, hybrid bonding); 1.22x area and 2x HB I/O vs normal; conservative estimate
+  location: PDF p.11
+  quote: the yield can be conservatively estimated as 58% (normal, 80% yield base)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_yield
+  value: 80
+  unit: percent
+  condition: die=normal 3D NAND flash die (baseline yield base for estimate)
+  location: PDF p.11
+  quote: the yield can be conservatively estimated as 58% (normal, 80% yield base)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: model_weight_size
+  value: 22.4
+  unit: GB
+  condition: model=Mixtral-8x7B; FFN expert weights only; precision=INT4; 8 experts x 32 layers x 87.5 MB
+  location: PDF p.4
+  quote: the FFN weights total roughly 22.4 GB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 8
+  unit: GB
+  condition: typical smartphone DRAM; lower bound; edge-device DRAM limit
+  location: PDF p.1
+  quote: 16 GB on smartphones, <64 GB on laptops
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 16
+  unit: GB
+  condition: typical smartphone DRAM; upper bound; edge-device DRAM limit
+  location: PDF p.1
+  quote: 16 GB on smartphones, <64 GB on laptops
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_capacity
+  value: 64
+  unit: GB
+  condition: typical laptop DRAM; upper bound (<64 GB)
+  location: PDF p.1
+  quote: 16 GB on smartphones, <64 GB on laptops
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 128
+  unit: tokens
+  condition: evaluation context length; lower bound of evaluated set (128/1K/10K/100K)
+  location: PDF p.9 Fig. 12
+  quote: At 128 context length, it achieves 1.98× and
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 10
+  unit: tokens/s
+  condition: design=KVNAND; model=LLaMA3.1-8B; context=100K; batch=1; simulated
+  location: PDF p.12
+  quote: delivering an inference throughput of 10 tokens/s on LLaMA3.1-8B
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 9.93
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=LLaMA3.1-8B; precision=full-precision; context=100K; batch=1; simulated (SSDsim/NVSim)
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 33.42
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=LLaMA3.1-8B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 17.66
+  unit: tokens/s
+  condition: design=Base-1 (IFC + LPDDR5X DRAM); model=LLaMA3.1-8B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 3.51
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=LLaMA3.1-70B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 1.78
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=LLaMA3.1-70B; precision=full-precision; context=100K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 4.69
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=LLaMA2-7B (MHA); precision=full-precision; context=100K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 1.29
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=OPT-30B (MHA); precision=full-precision; context=100K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 2.92
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected); model=Mixtral-8x7B (GQA, MoE); precision=full-precision; context=100K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 3
+  unit: tokens/s
+  condition: reliability analysis assumption; model=65B; continuous decoding for 5 years on KVNAND
+  location: PDF p.11
+  quote: running on KVNAND at 3 tokens/s
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok

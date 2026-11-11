@@ -1,0 +1,18 @@
+doc_id: PAPER-MONAD
+rows:
+- parameter: compute_die_count
+  value: 36.0
+  unit: count
+  condition: design=Monad integration-stage design space; bound=upper; network nodes in placement field up to 36, chiplets cannot exceed network nodes
+  location: PDF p.6
+  quote: placement depends on network nodes (up to 36)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: partition_count_studied
+  value: 2.0
+  unit: count
+  condition: design=Monad TT-decomposition case study; chiplets per high-dimensional workload (C4,3 and C5,2); result=28% cost reduction vs monolithic; pkg=passive interposer; network=ring
+  location: PDF p.8 Fig. 10
+  quote: Using two chiplets can bring 28% cost reduction
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）

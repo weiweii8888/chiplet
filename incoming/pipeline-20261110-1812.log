@@ -1,0 +1,110 @@
+== 2026-11-10 18:12:21 開始；文件：PAPER-VLLM PAPER-SGLANG PAPER-MOONCAKE PAPER-DISTSERVE PAPER-KIVI PAPER-H2O PAPER-STREAMINGLLM PAPER-CACHEGEN PAPER-SHADOWKV PAPER-KELLE PAPER-KVNAND；claude=/home/weiwei888/.vscode-server/extensions/anthropic.claude-code-2.1.322-linux-x64/resources/native-binary/claude
+== 18:12:21 抽取 run A（三篇平行）
+PAPER-SGLANG-A: 12 rows, 0 leads, 39s, $0.42623639999999996
+PAPER-MOONCAKE-A: 9 rows, 2 leads, 44s, $0.4595
+PAPER-DISTSERVE-A: 20 rows, 1 leads, 59s, $0.4533604
+PAPER-VLLM-A: 23 rows, 1 leads, 66s, $0.4517312
+PAPER-KIVI-A: 11 rows, 6 leads, 56s, $0.419126
+PAPER-STREAMINGLLM-A: 18 rows, 2 leads, 63s, $0.492431
+PAPER-CACHEGEN-A: 25 rows, 6 leads, 74s, $0.49857609999999997
+PAPER-H2O-A: 30 rows, 0 leads, 77s, $0.8301352
+PAPER-SHADOWKV-A: 29 rows, 1 leads, 77s, $0.5442638
+PAPER-KELLE-A: 38 rows, 3 leads, 97s, $0.5373055999999999
+PAPER-KVNAND-A: 66 rows, 17 leads, 175s, $0.7249039000000002
+== 18:17:39 抽取 run B（三篇平行）
+PAPER-MOONCAKE-B: 10 rows, 3 leads, 39s, $0.4453632
+PAPER-SGLANG-B: 10 rows, 0 leads, 40s, $0.4116128
+PAPER-VLLM-B: 21 rows, 2 leads, 55s, $0.4149511
+PAPER-DISTSERVE-B: 20 rows, 0 leads, 59s, $0.4398787
+PAPER-KIVI-B: 11 rows, 6 leads, 48s, $0.38049540000000004
+PAPER-STREAMINGLLM-B: 27 rows, 3 leads, 78s, $0.5201082
+PAPER-CACHEGEN-B: 28 rows, 6 leads, 76s, $0.498567
+PAPER-H2O-B: 29 rows, 0 leads, 95s, $0.8525618
+PAPER-SHADOWKV-B: 38 rows, 2 leads, 92s, $0.5682
+PAPER-KELLE-B: 28 rows, 3 leads, 89s, $0.504513
+PAPER-KVNAND-B: 67 rows, 15 leads, 207s, $0.7745191
+== 18:23:36 比對、驗證、入庫
+附加 20 列：N0147～N0166
+| PAPER-VLLM | A 23 | B 21 | 一致 20 | 入庫 20 | 待人看 4 | 線索 2 | $0.87 |
+附加 8 列：N0167～N0174
+| PAPER-SGLANG | A 12 | B 10 | 一致 8 | 入庫 8 | 待人看 6 | 線索 0 | $0.84 |
+附加 8 列：N0175～N0182
+| PAPER-MOONCAKE | A 9 | B 10 | 一致 9 | 入庫 8 | 待人看 2 | 線索 3 | $0.90 |
+警告： batch第10列: 和 batch第9列 衝突（同文件、同參數、同 condition，值 1024.0 vs 128.0）；兩筆都留，進人工複核
+附加 18 列：N0183～N0200
+| PAPER-DISTSERVE | A 20 | B 20 | 一致 18 | 入庫 18 | 待人看 4 | 線索 1 | $0.89 |
+附加 9 列：N0201～N0209
+| PAPER-KIVI | A 11 | B 11 | 一致 9 | 入庫 9 | 待人看 4 | 線索 7 | $0.80 |
+附加 27 列：N0210～N0236
+| PAPER-H2O | A 30 | B 29 | 一致 27 | 入庫 27 | 待人看 5 | 線索 0 | $1.68 |
+附加 16 列：N0237～N0252
+| PAPER-STREAMINGLLM | A 18 | B 27 | 一致 17 | 入庫 16 | 待人看 12 | 線索 4 | $1.01 |
+附加 25 列：N0253～N0277
+| PAPER-CACHEGEN | A 25 | B 28 | 一致 25 | 入庫 25 | 待人看 3 | 線索 7 | $1.00 |
+附加 24 列：N0278～N0301
+| PAPER-SHADOWKV | A 29 | B 38 | 一致 27 | 入庫 24 | 待人看 16 | 線索 2 | $1.11 |
+附加 27 列：N0302～N0328
+| PAPER-KELLE | A 38 | B 28 | 一致 28 | 入庫 27 | 待人看 11 | 線索 4 | $1.04 |
+附加 45 列：N0329～N0373
+| PAPER-KVNAND | A 66 | B 67 | 一致 45 | 入庫 45 | 待人看 43 | 線索 20 | $1.50 |
+== 18:23:40 全庫驗證（含出處）
+出處檢查：{'ok': 373}
+文件 36 筆；數字 373 筆（已複核 0）
+  文件依場景： {'generic': 16, 'datacenter': 14, 'edge_embedded': 3, 'edge_mobile': 3, 'edge_automotive': 1}
+  數字依性質： {'vendor_claim': 39, 'spec_limit': 16, 'measured': 85, 'assumed': 167, 'derived': 66}
+
+各維度缺口（P1 優先；「僅對照」表示只有 datacenter 來源，edge 還是缺）：
+  compute_die（運算 die）：P1 7/7；P2 3/3
+  partition（切分方式）：P1 1/1；P2 1/3 缺 expansion_chiplet_max 僅對照 io_die_count
+  memory（記憶體）：P1 4/5 缺 mem_bus_width；P2 4/4
+  d2d（die-to-die 介面）：P1 5/5；P2 4/4
+  workload_ref（工作負載參考（edge LLM 與硬體的連結））：P1 3/3；P2 2/2
+  thermal_power（熱與供電）：P1 1/1；P2 0/1 僅對照 package_tdp
+  package（封裝技術）：P2 1/3 缺 package_bump_pitch, bonding_yield
+  cost（成本與良率）：P2 4/7 缺 nre_cost, package_cost, wafer_cost
+  system（產品整體（設計案例用））：P1 1/1；P2 0/1 僅對照 package_sram_bandwidth
+警告： numbers N0115: compute_die_area=993.0 超出 R-RANGE-DIE-AREA 範圍 [0.1, 858]：單顆 die 不能超過 reticle 上限；wafer-scale 是例外，要在 condition 註明
+警告： numbers N0192: 和 N0191 衝突（同文件、同參數、同 condition，值 1024.0 vs 128.0）；兩筆都留，進人工複核
+
+0 個錯誤，2 個警告
+== 18:23:43 評測（retrieval＋agent）
+Q01 agent ✓ 
+Q02 agent ✓ 
+Q03 agent ✓ 
+Q04 agent ✓ 
+Q05 agent ✓ 
+Q06 agent ✓ 
+Q07 agent ✓ 
+Q08 agent ✓ 
+Q09 agent ✓ 
+Q10 agent ✓ 
+Q11 agent ✓ 
+Q12 agent ✓ 
+Q13 agent ✓ 
+Q14 agent ✓ 
+Q15 agent ✓ 
+Q16 agent ✓ 
+Q17 agent ✓ 
+Q18 agent ✓ 
+Q19 agent ✓ 
+Q20 agent ✓ 
+Q21 agent ✓ 
+Q22 agent ✓ 
+Q23 agent ✓ 
+Q24 agent ✓ 
+Q25 agent ✓ 
+Q26 agent ✓ 
+Q27 agent ✗ 沒提到 ['95', '96'] 任何一個
+Q28 agent ✓ 
+Q29 agent ✓ 
+Q30 agent ✓ 
+# 知識庫評測 20261110-1824
+
+- 題數 30
+- retrieval：30/30
+- agent（claude-opus-5-5，effort medium）：29/30；平均 4.0 輪；費用約 $1.14
+- 依題型：lookup 21/21、compare 3/4、caveat 2/2、gap 2/2、trap 1/1
+
+| 題 | 題型 | retrieval | agent | 說明 |
+報告：eval/results/20261110-1824.md
+== 2026-11-10 18:24:46 PIPELINE DONE

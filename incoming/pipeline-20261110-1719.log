@@ -1,0 +1,5 @@
+== 2026-11-10 17:19:47 開始；文件：PAPER-NN-BATON PAPER-MONAD PAPER-EXPERT-STREAMING；claude=/home/weiwei888/.vscode-server/extensions/anthropic.claude-code-2.1.322-linux-x64/resources/native-binary/claude
+== 17:19:47 抽取 run A（三篇平行）
+PAPER-MONAD-A: 16 rows, 4 leads, 53s, $0.3763566
+PAPER-EXPERT-STREAMING-A: 25 rows, 10 leads, 78s, $0.5183230000000001
+PAPER-NN-BATON-A: 24 rows, 16 leads, 121s, $0.6136238

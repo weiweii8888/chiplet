@@ -1,0 +1,149 @@
+{
+ "doc_id": "PAPER-GEMINI",
+ "existing_tags": [
+  "generic",
+  "datacenter",
+  "proprietary_d2d",
+  "organic_substrate",
+  "compute_die",
+  "io_die",
+  "bandwidth_capacity",
+  "energy",
+  "latency",
+  "area",
+  "cost_yield",
+  "dnn_inference",
+  "dse",
+  "cost_model",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "固定總算力下的運算 chiplet 數（切分粒度）",
+   "options": [
+    "72 TOPs：X_cut、Y_cut ∈ {1,2,3,6}",
+    "128／512 TOPs：X_cut、Y_cut ∈ {1,2,4,8}",
+    "Simba 式細切（36 顆） vs Gemini 找到的 2 顆",
+    "結果：128 TOPs 最佳 1–4 顆、512 TOPs 最佳 2–4 顆；切太細時成本、能耗、效能三者一起變差"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（Table I）；PDF p.10（Sec. VI-B1、VII-A1、Fig. 6a）"
+  },
+  {
+   "decision": "核心粒度：每核 MAC 數、每核 GLB 容量、核心總數",
+   "options": [
+    "MAC/Core ∈ {512,1024,2048,4096,8192}",
+    "GBUF/Core ∈ {256 KB … 8192 KB}",
+    "核心數 8／16／32／64；EDP 隨核心數先降後升，pipeline 深度約 9 層後飽和"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（Table I）；PDF p.10–11（Sec. VII-A2、Fig. 6b、Fig. 7）"
+  },
+  {
+   "decision": "頻寬配置：DRAM、NoC、D2D 三者之間怎麼分",
+   "options": [
+    "DRAM_BW ∈ {0.5,1,2} GB/s per TOPs",
+    "NoC_BW ∈ {8,16,32,64,128} GB/s",
+    "D2D_BW ∈ {NoC/4, NoC/2, NoC}",
+    "結果：S-Arch 約 40% 晶片面積花在 D2D，G-Arch 把這些面積改給頻寬與 buffer"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（Table I）；PDF p.10（Sec. VI-B1）"
+  },
+  {
+   "decision": "多核／多 chiplet 上的層映射策略（含 DRAM 資料放置），以及要不要和架構一起探索",
+   "options": [
+    "Layer-sequential vs layer-pipeline",
+    "LP 的啟發式條狀核心分配（Tangram） vs Gemini 的 SA 編碼搜尋",
+    "資料進出：指定某顆 DRAM vs 交錯分散到所有 DRAM（FD=0）",
+    "架構與映射共同最佳化 vs 架構固定只調映射（S-Arch+G-Map）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3（Sec. II-B）；PDF p.5–6（Sec. IV-A、IV-C）；PDF p.7（Sec. V-B）；PDF p.10（Fig. 5）；PDF p.12（Sec. VII-C、Fig. 9）"
+  },
+  {
+   "decision": "同一顆 chiplet 拿去組多種算力等級的產品（重用） vs 每個等級各自最佳化",
+   "options": [
+    "用 Simba chiplet 組成",
+    "用另一等級的最佳 chiplet 組成（1×512T-chiplet → 128T；8×128T-chiplet → 512T）",
+    "Joint Optimal（兩個等級一起做 DSE）",
+    "各自最佳"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.11–12（Sec. VII-B、Fig. 8）"
+  },
+  {
+   "decision": "DSE 目標函數的權重 MC^α·E^β·D^γ（決定最佳架構落在哪裡）",
+   "options": [
+    "MC·E·D（預設）",
+    "MC²·E·D",
+    "MC·E²·D",
+    "MC·E·D²"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.6（Sec. V-A）；PDF p.10（Fig. 6）；PDF p.11（Fig. 7）"
+  },
+  {
+   "decision": "D2D 能耗模型：時脈內嵌（SerDes，閒置也耗電） vs 時脈轉送（GRS、UCIe，按傳輸位元計能耗）",
+   "options": [
+    "clock-embedded：D2D 數 × 每個 D2D 功耗 × 延遲",
+    "clock-forwarded：通訊量 × 每單位能耗（實驗預設用 GRS）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8（Sec. V-B2）；PDF p.9（Sec. VI-A1）"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "partition",
+   "id": "chiplet_granularity_sweep",
+   "label": "切分粒度掃描",
+   "definition": "文件在固定總算力或總面積下比較不同 chiplet 數，並給出最佳切分數。",
+   "why": "現有的 compute_die／io_die 只說明有哪些 die，分不出「只是用了多顆 die」和「真的掃過切幾顆最好」；沒有這個標籤，agent 找 partition_count_studied 的起點時，查不到 Gemini、NN-Baton 這類有最佳值曲線的文件。"
+  },
+  {
+   "group": "method",
+   "id": "mapping_hw_codesign",
+   "label": "映射與硬體共同探索",
+   "definition": "最佳硬體是在同時最佳化 dataflow／層映射（或資料放置）的前提下得到的，而不是先固定映射再比硬體。",
+   "why": "dse 標籤分不出結論是不是依賴映射：Gemini 指出只換映射就能大幅降低延遲與能耗，而 S-Arch 用 T-Map 的成績差。沒有這個標籤，agent 拿不同文件的最佳硬體互相比較時，不知道有些結論換了映射就會變。"
+  },
+  {
+   "group": "partition",
+   "id": "chiplet_reuse",
+   "label": "chiplet 跨產品重用",
+   "definition": "用同一顆 chiplet 組成不同算力等級的產品，並和各等級各自最佳化的設計做比較（含 NRE 考量）。",
+   "why": "dse_dimensions 的 cost note 說 edge 用 chiplet 的理由主要是重用與 NRE，但現有標籤只有 cost_yield。沒有這個標籤，agent 查不到量化重用代價的文件，例如 Gemini 的 Joint Optimal 比各自最佳的 MC·E·D 平均高 34%。"
+  },
+  {
+   "group": "workload",
+   "id": "batch_sweep",
+   "label": "跨 batch 評估",
+   "definition": "文件在不同 batch（例如 1 與 64）下回報效能、能耗或最佳硬體，可以看出結論對 batch 敏不敏感。",
+   "why": "Tack 的最佳硬體取決於 batch／session 數，但現有 workload 標籤只說是哪類模型。沒有這個標籤，agent 分不出哪些文件有 batch=1（接近 edge 延遲情境）的數據；Gemini 的 DSE 只用 batch 64，batch 1 只拿來評估，這點也需要被看見。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "分成 mem_bandwidth_capacity（外部 DRAM 頻寬與容量）、interconnect_bandwidth（NoC／D2D 頻寬配置）、on_chip_buffer（每核或每 die 的 SRAM／GLB 容量）。Gemini 三種都當 DSE 參數掃，合在同一個標籤裡查不出是哪一種。"
+  },
+  {
+   "tag": "cost_yield",
+   "suggestion": "依 dse_dimensions 的 cost 參數分成 silicon_yield_cost（die 面積與良率）、package_cost（基板面積 × 縮放係數 × 單價）、nre_cost（重用、攤提）。Gemini 的 MC 量化了 silicon、DRAM、package 三項，NRE 只做定性討論；不分開的話，agent 會以為它有 NRE 數字。"
+  },
+  {
+   "tag": "dnn_inference",
+   "suggestion": "分成 dnn_cnn 和 dnn_transformer_nonllm（非自迴歸、沒有 KV cache）。Gemini 預設工作負載是 Transformer，結果比 CNN 結果更接近 LLM prefill，但跟 decode 和 KV 無關；混在一起時，agent 不知道哪些結果能拿來推估 LLM。"
+  },
+  {
+   "tag": "proprietary_d2d",
+   "suggestion": "按訊號方式或能耗模型分，不按廠商分：d2d_clock_forwarded（GRS、UCIe 類，按位元計能耗）和 d2d_serdes（時脈內嵌，閒置也耗電）。目前 NV-HBI（中介層、高頻寬）和 Simba 的 GRS（有機基板）都歸在同一個標籤，用在有機基板的 edge 設計時無法區分。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.43813209999999997,
+  "turns": 6
+ }
+}

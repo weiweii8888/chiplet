@@ -1,0 +1,370 @@
+{
+ "doc_id": "PAPER-SHADOWKV",
+ "rows": [
+  {
+   "parameter": "decode_throughput",
+   "value": 455.14,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=60K; batch=48; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 160.62 (8) 455.14 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 160.62,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=60K; batch=8 (GPU 放得下的最大 batch)",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 160.62 (8) 455.14 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 239.51,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=122K; batch=24; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 80.77 (4) 239.51 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 80.77,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=122K; batch=4",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 80.77 (4) 239.51 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 119.01,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=12; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 40.37 (2) 119.01 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 40.37,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=2",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 40.37 (2) 119.01 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 472.77,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=60K; batch=48; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 160.93 (8) 472.77 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 160.93,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=60K; batch=8",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 160.93 (8) 472.77 (48)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 245.9,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=122K; batch=24; sparse_budget=1.56%; 3.04x vs full attn",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 80.78 (4) 245.90 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 80.78,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Llama-3.1-8B (8 KV heads); precision=BF16; context=122K; batch=4",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 80.78 (4) 245.90 (24)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 615.89,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=60K; batch=50; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 241.05 (12) 615.89 (50)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 241.05,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=60K; batch=12",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 241.05 (12) 615.89 (50)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 293.4,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=122K; batch=25; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 122.67 (6) 293.40 (25)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 122.67,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=122K; batch=6",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 122.67 (6) 293.40 (25)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 136.51,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=244K; batch=12; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 61.13 (3) 136.51 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 61.13,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=244K; batch=3",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 61.13 (3) 136.51 (12)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 544.36,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=60K; batch=42; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 204.81 (10) 544.36 (42)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 204.81,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=60K; batch=10",
+   "location": "PDF p.8 Table 3",
+   "quote": "60K 204.81 (10) 544.36 (42)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 260.03,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=122K; batch=21; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 101.44 (5) 260.03 (21)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 101.44,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=122K; batch=5",
+   "location": "PDF p.8 Table 3",
+   "quote": "122K 101.44 (5) 260.03 (21)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 118.55,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=244K; batch=10; sparse_budget=1.56%",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 46.74 (2) 118.55 (10)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 46.74,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention baseline; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=244K; batch=2",
+   "location": "PDF p.8 Table 3",
+   "quote": "244K 46.74 (2) 118.55 (10)",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 89.69,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M; precision=BF16; context=60K; batch=2（小 batch 對照）",
+   "location": "PDF p.8 Table 4",
+   "quote": "60K 89.69 126.61 159.41 184.92",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 89.19,
+   "unit": "tokens/s",
+   "condition": "design=Full KV baseline; hw=NVIDIA A100; model=Llama-3-8B-1M; precision=BF16; context=60K; batch=2",
+   "location": "PDF p.8 Table 4",
+   "quote": "60K 89.19 111.44 126.73 142.62",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 53.46,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M; precision=BF16; context=488K; batch=6（此 context 下最大可跑 batch；Full KV 全部 OOM）",
+   "location": "PDF p.8 Table 4",
+   "quote": "488K 29.82 41.01 47.13 50.85 53.46 OOM",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 45.32,
+   "unit": "tokens/s",
+   "condition": "design=ShadowKV; hw=NVIDIA A100; model=未明寫（Sec 5.2 指向 Llama-3-8B-1M）; context=1M; batch=3",
+   "location": "PDF p.18 Table 14",
+   "quote": "0.21 tokens/s OOM 9.34 tokens/s 45.32 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 9.34,
+   "unit": "tokens/s",
+   "condition": "design=Quest with KV offloaded to CPU; hw=NVIDIA A100; context=1M; batch=3",
+   "location": "PDF p.18 Table 14",
+   "quote": "0.21 tokens/s OOM 9.34 tokens/s 45.32 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "decode_throughput",
+   "value": 0.21,
+   "unit": "tokens/s",
+   "condition": "design=Full Attention with KV offloaded to CPU; hw=NVIDIA A100; context=1M; batch=3",
+   "location": "PDF p.18 Table 14",
+   "quote": "0.21 tokens/s OOM 9.34 tokens/s 45.32 tokens/s",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 2000,
+   "unit": "GB/s",
+   "condition": "product=NVIDIA A100; mem_type=HBM2e; 理論峰值，論文用來推算等效頻寬與無限 batch 的 throughput; 原文 2 TB/s",
+   "location": "PDF p.8",
+   "quote": "theoretical memory bandwidth (2 TB/s) for attention computations",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 131072,
+   "unit": "tokens",
+   "condition": "eval=RULER 主實驗; models=Llama-3-8B-1M/GLM-4-9B-1M/Llama-3.1-8B/Yi-9B-200K; 原文 128K",
+   "location": "PDF p.7",
+   "quote": "excellent performance on 128K contexts",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 4096,
+   "unit": "tokens",
+   "condition": "eval=LongBench; 下限（只測長於 4K 的樣本）; 原文 4K",
+   "location": "PDF p.7",
+   "quote": "only test on samples longer than 4K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 16384,
+   "unit": "tokens",
+   "condition": "eval=Needle In A Haystack; 下限; 原文 16K",
+   "location": "PDF p.8",
+   "quote": "context windows, ranging from 16K to 1M tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1048576,
+   "unit": "tokens",
+   "condition": "eval=Needle In A Haystack; 上限; 原文 1M",
+   "location": "PDF p.8",
+   "quote": "context windows, ranging from 16K to 1M tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 8192,
+   "unit": "tokens",
+   "condition": "eval=RULER with MInference prefill; 下限; 原文 8K",
+   "location": "PDF p.8",
+   "quote": "we tested it on RULER with contexts scaling from 8K to 256K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 262144,
+   "unit": "tokens",
+   "condition": "eval=RULER with MInference prefill; 上限; 原文 256K",
+   "location": "PDF p.8",
+   "quote": "we tested it on RULER with contexts scaling from 8K to 256K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 499712,
+   "unit": "tokens",
+   "condition": "eval=throughput sweep; model=Llama-3-8B-1M; hw=A100; Table 4 最長 context; 原文 488K",
+   "location": "PDF p.8 Table 4",
+   "quote": "488K 29.82 41.01 47.13 50.85 53.46 OOM",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1048576,
+   "unit": "tokens",
+   "condition": "eval=RULER scalability; model=Llama-3-8B-1M; 原文 1M",
+   "location": "PDF p.17 Table 11",
+   "quote": "on 1M contexts while the Llama-3-70B-1M is evaluated on 512K contexts",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 524288,
+   "unit": "tokens",
+   "condition": "eval=RULER scalability; model=Llama-3-70B-1M; 原文 512K",
+   "location": "PDF p.17 Table 11",
+   "quote": "on 1M contexts while the Llama-3-70B-1M is evaluated on 512K contexts",
+   "value_kind": "assumed"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "context_length",
+   "value": 214000,
+   "unit": "tokens",
+   "cited_ref": "[61]",
+   "note": "InfiniteBench average length 214K (PDF p.20, benchmark property cited from InfiniteBench paper)"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1000000,
+   "unit": "tokens",
+   "cited_ref": "[2, 49]",
+   "note": "Intro: long-context LLMs handle extensive contexts of up to 1M tokens (PDF p.1)"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 92,
+  "cost_usd": 0.5682,
+  "turns": 5
+ }
+}

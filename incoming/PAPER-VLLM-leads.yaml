@@ -1,0 +1,12 @@
+doc_id: PAPER-VLLM
+leads:
+- parameter: mem_total_capacity
+  value: 80
+  unit: GB
+  cited_ref: '[17]'
+  note: 'p.4: from NVIDIA A100 to H100, FLOPS increases by more than 2x but GPU memory stays at 80GB maximum (supporting claim cited to [17], AI and memory wall)'
+- parameter: context_length
+  value: 2048
+  unit: tokens
+  cited_ref: '[62]'
+  note: OPT model max sequence length 2048 tokens comes from the OPT paper [62]; this paper also uses it as its own setup (rows above)

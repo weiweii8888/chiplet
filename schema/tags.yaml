@@ -1,0 +1,65 @@
+# 固定標籤清單：catalog.csv 的 tags 欄只能用這裡的 id（多個用 ; 分隔）
+# 要新增標籤先跟學長確認，再改這個檔
+# 2026-11-09 加入 scenario 組（catalog 每列至少要有一個 scenario 標籤）與 edge 相關標籤
+
+scenario:
+  edge_embedded: 嵌入式／edge AI 加速器（主要對象）
+  edge_automotive: 車用 AI SoC
+  edge_mobile: 手機／AI PC 等終端 SoC
+  datacenter: 資料中心加速器（只當對照組）
+  generic: 方法或標準，不限場景（例如 UCIe、成本模型）
+
+doc_type:            # catalog.csv 的 type 欄
+  textbook: 教科書章節
+  spec: 規格書（標準組織發布）
+  whitepaper: 白皮書／產品技術文件（廠商發布）
+  paper: 論文
+  case: 設計案例卡
+
+d2d_interface:
+  ucie: UCIe
+  bow: BoW（OCP ODSA Bunch of Wires）
+  aib: AIB（CHIPS Alliance）
+  proprietary_d2d: 私有 D2D（NV-HBI、Infinity Fabric、NVLink-C2C 等）
+
+package:
+  interposer_2_5d: 2.5D 矽中介層（如 CoWoS-S）
+  bridge: 嵌入式橋接（如 EMIB、CoWoS-L 的 LSI）
+  hybrid_bonding_3d: 3D 堆疊／hybrid bonding（如 SoIC、Foveros）
+  organic_substrate: 有機基板（standard package）
+  fan_out: 扇出型封裝（例如 InFO）
+
+partition:
+  compute_die: 運算 die
+  io_die: IO die
+  memory_die: 記憶體／快取 die
+
+memory:
+  hbm: HBM
+  lpddr: LPDDR
+  cxl_memory: CXL 記憶體擴充
+  on_chip_sram: 片上 SRAM 為主要記憶體
+  lpddr_on_package: LPDDR 放在封裝內（memory on package）
+  nand_flash: 權重或 KV 放 NAND flash
+  pim: 記憶體內運算（PIM）
+
+metric:
+  bandwidth_capacity: 頻寬與容量
+  energy: 能耗（pJ/bit 等）
+  latency: 延遲
+  area: 面積與密度
+  cost_yield: 成本與良率
+  thermal_power: 熱與供電
+
+workload:
+  llm_inference: LLM 推論
+  llm_training: LLM 訓練
+  kv_cache: KV cache 放置與搬移
+  dnn_inference: 一般 DNN 推論
+  llm_on_device: 端側 LLM 推論（batch 小、功耗受限）
+  multi_model: 同時跑多個模型（AR/VR、車用多感測器）
+
+method:
+  dse: 設計空間探索方法
+  cost_model: 成本模型
+  simulator: 模擬器／評估器

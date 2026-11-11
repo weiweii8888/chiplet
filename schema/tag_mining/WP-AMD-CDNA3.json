@@ -1,0 +1,178 @@
+{
+ "doc_id": "WP-AMD-CDNA3",
+ "existing_tags": [
+  "datacenter",
+  "proprietary_d2d",
+  "hybrid_bonding_3d",
+  "compute_die",
+  "io_die",
+  "hbm",
+  "bandwidth_capacity",
+  "thermal_power",
+  "llm_inference",
+  "llm_training"
+ ],
+ "decisions": [
+  {
+   "decision": "同質複製 vs 異質切分（含各 die 用不同製程）",
+   "options": [
+    "CDNA 2（MI200）：兩顆相同的 die，每顆都有運算、記憶體、通訊，用 interposer bridge 相連",
+    "CDNA 3（MI300）：約十多顆分工的 chiplet，XCD 只做運算（TSMC 5nm），IOD 放 IO、LLC 與 HBM 介面（TSMC 6nm）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "運算 die 的大小與數量（切小 die 並關掉部分 CU 以提高良率）",
+   "options": [
+    "MI200 的大運算 die",
+    "較小的 XCD（實體 40 CU，啟用 38 CU，關 2 個管良率），每個封裝放 6～8 顆，最多 304 CU"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "CPU 與加速器放同一封裝 vs 獨立 GPU 外接 host",
+   "options": [
+    "MI300X／MI325X：8 XCD，經 x16 PCIe Gen5 接 host CPU",
+    "MI300A：6 XCD＋3 CCD（Zen 4），用 25% 的加速器算力換 CPU 的位置"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3"
+  },
+  {
+   "decision": "CPU／加速器的記憶體模型：統一記憶體 vs 各自分開",
+   "options": [
+    "CDNA 2：CPU 用 DDR、GPU 用 HBM，兩者用 coherent link 相連",
+    "MI300A：CPU 和 GPU 共用 128GB HBM3，沒有 host/device 拷貝，也不需要 DDR"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.12"
+  },
+  {
+   "decision": "運算 die 疊在 IO/base die 上（3D）vs 平面並排",
+   "options": [
+    "CDNA 2：兩顆 die 平面放置，用 interposer bridge 相連",
+    "CDNA 3：每兩顆 XCD 垂直疊在一顆 IOD 上，用 Infinity Fabric 串起來"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "快取階層：在 base die 加大型 memory-side LLC，以及 L2 的角色",
+   "options": [
+    "沒有 LLC，L2 兼負較多面向記憶體的功能（CDNA 2，每個 L2 有 32 channel）",
+    "每個 XCD 一個 4MB writeback L2，負責合併流量；IOD 上放 256MB Infinity Cache（每個 HBM channel 2MB，不參與 coherence），頻寬分層為 L2 51.6、LLC 17.2、HBM 5.3 TB/s"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9"
+  },
+  {
+   "decision": "HBM 世代、每 stack 容量與 pin 速率",
+   "options": [
+    "HBM2e（MI250X）：3.2 Gbps，128GB，3.2 TB/s",
+    "HBM3（MI300X／MI300A）：5.2 Gbps，每 stack 24GB／16GB，192GB／128GB，5.3 TB/s",
+    "HBM3E（MI325X）：6.0 Gbps，每 stack 32GB，256GB，6.0 TB/s"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.11"
+  },
+  {
+   "decision": "運算單元支援哪些數值格式（低精度換吞吐量與容量）",
+   "options": [
+    "FP64",
+    "FP32",
+    "TF32",
+    "FP16",
+    "BF16",
+    "FP8 E5M2（訓練）",
+    "FP8 E4M3（推論）",
+    "INT8"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8"
+  },
+  {
+   "decision": "Matrix core 的結構化稀疏（4:2）vs dense",
+   "options": [
+    "dense",
+    "4:2 結構化稀疏，吞吐量加倍（每 CU 每 clock 8K ops）；這是 weight／activation 稀疏，不是稀疏注意力"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.8"
+  },
+  {
+   "decision": "單顆加速器切成幾個分區（算力分區＋記憶體分區），同時服務多少個獨立工作",
+   "options": [
+    "SPX（1 個分區，8 XCD，192GB）",
+    "DPX（2 個分區，每區 96GB）",
+    "QPX（4 個分區，每區 48GB）",
+    "CPX（8 個分區，每區 1 XCD、24GB）",
+    "記憶體分區 NPS1 或 NPS4（分區數不能多於 GPU 分區數）",
+    "MI300A 最多 3 個分區（TPX）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.14"
+  },
+  {
+   "decision": "封裝之間的 scale-up 拓樸與 link 設定",
+   "options": [
+    "8 顆 GPU 全連接，每顆 7 條 x16 Infinity Fabric，P2P 共 896 GB/s",
+    "4 顆 APU 全連接，每對之間 2 條 link，共 384 GB/s",
+    "link 速率最高 32 Gbps；其中一條可改設成 x16 PCIe Gen5"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.15"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "memory",
+   "id": "unified_memory",
+   "label": "CPU／加速器統一記憶體",
+   "definition": "CPU 與加速器共用同一個實體記憶體池，host 與 device 之間不用互相拷貝。",
+   "why": "沒有這個標籤，agent 找不到「KV 逐出或卸載到 host 記憶體時不需要拷貝、但會和 CPU 搶同一份容量與頻寬」的文件。edge SoC 幾乎都是這種架構，MI300A 是資料中心的對照例。"
+  },
+  {
+   "group": "workload",
+   "id": "multi_session",
+   "label": "多 session／多租戶同時服務",
+   "definition": "文件處理一顆加速器同時服務多個獨立 session 或使用者的情況，例如硬體分區、記憶體分區、隔離，或每個 session 分到多少資源。",
+   "why": "Tack 的關鍵工作負載條件「同時跑的 session 數」目前沒有標籤可用（multi_model 指的是 AR/VR 或車用的多個模型）。少了它，agent 查不到「切成 N 個分區時，每個 session 分到多少記憶體可以放 KV」這類資料。"
+  },
+  {
+   "group": "precision",
+   "id": "low_precision_format",
+   "label": "低精度數值格式（FP8／INT8／INT4 等）",
+   "definition": "文件給出低精度格式的硬體支援、吞吐量倍數，或容量與精度之間的取捨。",
+   "why": "Tack 的設計期決策包含 KV 精度，現有標籤卻完全沒有精度這個軸。少了它，agent 查不到哪些硬體原生支援 FP8 E4M3 這類格式、低精度能換多少吞吐量，也就無法判斷把 KV 量化到某個精度在硬體上划不划算。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "拆成 mem_capacity（放不放得下權重與 KV）和 mem_bandwidth（decode 速度上限）兩個標籤，因為它們對應不同決策。這份文件同時有片上快取頻寬（L2 51.6、LLC 17.2 TB/s）、HBM 頻寬（5.3／6.0 TB/s）、HBM 容量（128～256GB）和封裝間 I/O（896 GB/s），全部標成同一個標籤就分不出來。"
+  },
+  {
+   "tag": "hybrid_bonding_3d",
+   "suggestion": "拆成 logic_on_logic_3d（運算 die 疊在 IO/base die 上，例如這份的 XCD-on-IOD）和 memory_on_logic_3d（SRAM 或 DRAM 疊在運算 die 上）。後者直接關係到 edge 的 KV 容量與頻寬，前者主要影響切分方式。另外，鍵合方式（hybrid bonding 或 microbump）建議放到數字的 condition，不要放進標籤名稱。"
+  },
+  {
+   "tag": "compute_die",
+   "suggestion": "拆成 accel_die（NPU/GPU 運算 die）和 cpu_die（CPU chiplet）。MI300A 同時有 XCD 和 CCD，現有標籤無法表達「host CPU 和加速器放在同一個封裝」，而這正是 edge 常見的 host_soc+accel 切分。"
+  },
+  {
+   "tag": "io_die",
+   "suggestion": "區分單純的 io_die，以及 active_base_die（base die 上放了大型 LLC 和記憶體控制器，運算 die 疊在它上面）。這份文件的 256MB Infinity Cache 在 IOD 裡，用 memory_die 或 on_chip_sram 都會標錯，只標 io_die 又會漏掉「base die 放 LLC」這個設計決策。"
+  },
+  {
+   "tag": "proprietary_d2d",
+   "suggestion": "把同一個私有協定的兩種用途分開：封裝內的 die-to-die（XCD 和 IOD 之間）是一種，封裝之間的 scale-up link（7×x16 Infinity Fabric、32 Gbps）建議另外用 scale_up_link 之類的標籤。這份文件兩種都有，混在一起時，查 D2D 能耗或頻寬密度的 agent 會撈到不相干的板級 link。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.6388670000000001,
+  "turns": 6
+ }
+}

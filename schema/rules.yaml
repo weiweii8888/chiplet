@@ -1,0 +1,61 @@
+# 驗證規則：tools/check.py 讀這個檔。加規則只要加 YAML，不用改程式。
+# 規則類型：
+#   range      數值要落在物理上合理的區間（抓單位寫錯、小數點錯）
+# 內建、不用寫在這裡的檢查：格式、單位、出處（--provenance）、重複與衝突
+# 每條規則附 test：pass 是該過的值，fail 是該擋的值；check.py 每次都會先跑 test，確保規則本身沒寫壞
+# severity：error 擋入庫；warn 只提醒
+# status：proposed（只列出不計）→ warn → active
+
+rules:
+  - {id: R-RANGE-MEM-PIN, type: range, param: mem_pin_rate, min: 0.5, max: 20, severity: error, status: active,
+     why: LPDDR4 到 HBM4 的 pin 速率都在這區間；超出多半是 MT/s 沒換算或 GB/Gb 混用,
+     test: {pass: 8.533, fail: 8533}}
+  - {id: R-RANGE-D2D-ENERGY, type: range, param: d2d_energy_per_bit, min: 0.01, max: 10, severity: error, status: active,
+     why: 已知 D2D 介面都在 0.1～2 pJ/bit 附近；超出多半是 fJ 或 nJ 沒換算,
+     test: {pass: 0.5, fail: 500}}
+  - {id: R-RANGE-MEM-ENERGY, type: range, param: mem_energy_per_bit, min: 0.3, max: 100, severity: error, status: active,
+     why: 外部記憶體存取能耗約 1～30 pJ/bit,
+     test: {pass: 19, fail: 0.01}}
+  - {id: R-RANGE-DIE-AREA, type: range, param: compute_die_area, min: 0.1, max: 858, severity: warn, status: active,
+     why: 單顆 die 不能超過 reticle 上限；wafer-scale 是例外，要在 condition 註明,
+     test: {pass: 6, fail: 2000}}
+  - {id: R-RANGE-NODE, type: range, param: process_node, min: 1, max: 180, severity: error, status: active,
+     why: 製程節點以 nm 記,
+     test: {pass: 5, fail: 0.005}}
+  - {id: R-RANGE-DIE-TOPS, type: range, param: die_peak_compute, min: 0.001, max: 5000, severity: warn, status: active,
+     why: 單 die 峰值算力；超出多半是 GOPS 沒換算,
+     test: {pass: 4, fail: 4000000}}
+  - {id: R-RANGE-TOPS-W, type: range, param: die_energy_efficiency, min: 0.01, max: 1000, severity: warn, status: active,
+     why: 數位加速器多在 1～100 TOPS/W；類比或記憶體內運算可能更高，超出要確認,
+     test: {pass: 10, fail: 100000}}
+  - {id: R-RANGE-DIE-POWER, type: range, param: die_power, min: 0.001, max: 1500, severity: error, status: active,
+     why: 功耗以 W 記；超出多半是 mW 沒換算,
+     test: {pass: 2.5, fail: 2500}}
+  - {id: R-RANGE-D2D-RATE, type: range, param: d2d_data_rate, min: 0.5, max: 128, severity: error, status: active,
+     why: 每 lane 速率以 GT/s 記,
+     test: {pass: 16, fail: 16000}}
+  - {id: R-RANGE-D2D-LAT, type: range, param: d2d_latency, min: 0.1, max: 1000, severity: warn, status: active,
+     why: D2D 延遲以 ns 記,
+     test: {pass: 4, fail: 0.001}}
+  - {id: R-RANGE-MEM-BW, type: range, param: mem_total_bandwidth, min: 1, max: 50000, severity: error, status: active,
+     why: 總頻寬以 GB/s 記；TB/s 要乘 1000,
+     test: {pass: 5300, fail: 5.3e6}}
+  - {id: R-RANGE-MEM-CAP, type: range, param: mem_total_capacity, min: 0.01, max: 2048, severity: error, status: active,
+     why: 容量以 GB 記,
+     test: {pass: 16, fail: 16384}}
+  - {id: R-RANGE-SRAM, type: range, param: die_sram_capacity, min: 0.001, max: 2048, severity: warn, status: active,
+     why: SRAM 容量以 MB 記；KB 要除 1024,
+     test: {pass: 16, fail: 65536}}
+  - {id: R-RANGE-DEFECT, type: range, param: defect_density, min: 0.01, max: 1, severity: warn, status: active,
+     why: 以每 cm2 計；超出多半是每 mm2 或每 m2,
+     test: {pass: 0.09, fail: 9}}
+  - {id: R-RANGE-KV-TOKEN, type: range, param: kv_bytes_per_token, min: 0.001, max: 10, severity: warn, status: active,
+     why: 以 MB/token 記；常見模型約 0.01～3 MB/token,
+     test: {pass: 0.33, fail: 330}}
+  - {id: R-RANGE-YIELD, type: range, param: die_yield, min: 0, max: 100, severity: error, status: active,
+     why: 百分比,
+     test: {pass: 75, fail: 0.75e3}}
+  - {id: R-RANGE-BONDING, type: range, param: bonding_yield, min: 0, max: 100, severity: error, status: active,
+     why: 百分比, test: {pass: 99, fail: 120}}
+  - {id: R-RANGE-OVERHEAD, type: range, param: d2d_area_overhead, min: 0, max: 100, severity: error, status: active,
+     why: 百分比, test: {pass: 10, fail: 1000}}

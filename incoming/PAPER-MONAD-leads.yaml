@@ -1,0 +1,22 @@
+doc_id: PAPER-MONAD
+leads:
+- parameter: d2d_energy_per_bit
+  value: 0.25
+  unit: pJ/bit
+  cited_ref: '[31]'
+  note: UCIe white paper; quoted on PDF p.8 as die-to-die energy, compared against SRAM 0.81 pJ/bit
+- parameter: mem_energy_per_bit
+  value: 0.81
+  unit: pJ/bit
+  cited_ref: '[28]'
+  note: NN-Baton; this is on-chip SRAM access energy, not external memory, so it may not fit mem_energy_per_bit (no exact SRAM-energy param in schema); PDF p.8
+- parameter: d2d_shoreline_bw_density
+  value: 6
+  unit: ratio
+  cited_ref: '[31]'
+  note: silicon interposer microbumps give 6x higher interconnect density than organic substrate; ratio only, no absolute value; PDF p.2
+- parameter: compute_die_area
+  value: 331
+  unit: mm2
+  cited_ref: '[11]'
+  note: TPU v1 die area 28nm, from Jouppi et al. ISCA 2017; also kept in rows as this paper's cost-study setup, so check for duplicates against any existing TPU entry

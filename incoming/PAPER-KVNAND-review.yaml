@@ -1,0 +1,346 @@
+doc_id: PAPER-KVNAND
+rows:
+- parameter: die_sram_capacity
+  value: 0.26
+  unit: MB
+  condition: design=KVNAND IFC logic die; global buffer; 原文 260 KB (以 1 MB=1000 KB 換算); area=0.4095 mm2; power=18.4 mW
+  location: PDF p.8 Table I
+  quote: 260 KB Global buffer
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 0.256
+  unit: MB
+  condition: design=KVNAND-C IFC logic die; per-plane KV buffers only; derived=8 KB/plane x 32 planes = 256 KB; 不含 260 KB global buffer
+  location: PDF p.8 Table I
+  quote: 16 FMACs + 8 KB KV buffer per plane for KVNAND-C
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_mac_count
+  value: 16.0
+  unit: count
+  condition: design=KVNAND IFC logic; per plane (not per die); GQA h/k=8 bandwidth-compute balance
+  location: PDF p.7
+  quote: 16 FMACs per plane operating at 400MHz
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_power
+  value: 0.448
+  unit: W
+  condition: design=KVNAND-C IFC logic layer added units; derived=32 planes x (6.98 mW FMAC+KV buf + 5.24 mW ECC dec + 1.2 mW ECC enc) + 18.4 mW global buffer = 447.84 mW; 不含 flash array 讀寫能耗
+  location: PDF p.8 Table I
+  quote: 6.98 mW per plane
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: memory_die_count
+  value: 8.0
+  unit: count
+  condition: design=Base-1 baseline (Lincoln-style); mem_type=LPDDR5X DRAM; 1 DRAM die per LPDDR channel, 8 channels; plus 8 IFC dies
+  location: PDF p.8
+  quote: one DRAM attached to each of the 8 LPDDR channels
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: mem_device_capacity
+  value: 16.59
+  unit: GB
+  condition: design=KVNAND; mem_type=NAND (SLC, 96 WL layers); per die raw array; 原文 132.75 Gb per die (32 planes x 4.1484 Gb); 132.75/8
+  location: PDF p.8 Table I
+  quote: 4.1484 Gb per plane, 132.75 Gb per die
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.128
+  unit: MB/token
+  condition: model=LLaMA3-8B; GQA; precision=FP16/BF16; 原文 128KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'llama3-8B (KV: 128KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.064
+  unit: MB/token
+  condition: model=LLaMA3-8B; GQA; precision=INT8 KV; 原文 64KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'llama3-8B-int8 (KV: 64KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.819
+  unit: MB/token
+  condition: model=LLaMA2-13B; MHA; precision=FP16; 原文 819KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'llama2-13B (KV: 819KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 1.4336
+  unit: MB/token
+  condition: model=OPT-30B; MHA; precision=FP16; 原文 1433.6KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'OPT-30B (KV: 1433.6KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 2.56
+  unit: MB/token
+  condition: model=LLaMA-65B; MHA; precision=FP16; 原文 2560KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'llama-65B (KV: 2560KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.328
+  unit: MB/token
+  condition: model=LLaMA2-70B; GQA; precision=FP16; 原文 328KB/token
+  location: PDF p.3 Fig. 3
+  quote: 'llama2-70B (KV: 328KB/token)'
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.128
+  unit: MB/token
+  condition: model=Mixtral-8x7B; GQA; precision=BF16; KV_per_tk = 2 x l x k x d/h x 2B = 128KB
+  location: PDF p.3
+  quote: generating one token with GQA yields a KV cache size of
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: model_weight_size
+  value: 0.0875
+  unit: GB
+  condition: model=Mixtral-8x7B; one routed expert (~175M params); precision=INT4; 原文 87.5 MB
+  location: PDF p.4
+  quote: 175M parameters, or 87.5 MB under INT4 quantization
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 100000.0
+  unit: tokens
+  condition: evaluation context length; upper bound of evaluated set; Base-1 OOM here
+  location: PDF p.9
+  quote: At a 100K-token context, it achieves
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 50000.0
+  unit: tokens
+  condition: reliability analysis; 1K input + 1K output tokens per request; KVNAND-D 8-die supports ~50K
+  location: PDF p.11
+  quote: At a 50K context length (with 1K input and 1K output tokens per request)
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 34.06
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=LLaMA3.1-8B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 3.57
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=LLaMA3.1-70B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 1.85
+  unit: tokens/s
+  condition: design=Base-1 (IFC + LPDDR5X DRAM); model=LLaMA3.1-70B; precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 37.96
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=LLaMA2-7B (MHA); precision=full-precision; context=128; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 5.45
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=Mixtral-8x7B (GQA, MoE); precision=full-precision; context=1K; batch=1; simulated
+  location: PDF p.9 Fig. 12
+  quote: 'Fig. 12: Throughput of Base-1, Base-2, KVNAND-C, and KVNAND-D under 1K, 10K, 100K context length.'
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 0.254
+  unit: MB
+  condition: design=KVNAND; component=IFC logic die global buffer; 原文 260 KB（÷1024）; area=0.4095 mm2; power=18.4 mW total
+  location: PDF p.8 Table I
+  quote: 260 KB Global buffer
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 0.25
+  unit: MB
+  condition: design=KVNAND-C; component=IFC logic die per-plane KV buffers; 算法=8 KB/plane × 32 planes = 256 KB; 不含 260 KB global buffer
+  location: PDF p.8 Table I
+  quote: 16 FMACs + 8 KB KV buffer per plane for KVNAND-C
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: die_mac_count
+  value: 64.0
+  unit: count
+  condition: design=KVNAND (weight-GEMV baseline sizing, MHA); component=IFC logic die; 算法=2 FMACs/plane × 32 planes; 4 KB page in 4 us
+  location: PDF p.6
+  quote: (i.e., 2FMACs at 400MHz)
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: die_power
+  value: 0.2234
+  unit: W
+  condition: design=KVNAND-C; component=IFC logic die PE+KV buffer only; 算法=6.98 mW/plane × 32 planes = 223.36 mW; 不含 ECC 與 global buffer
+  location: PDF p.8 Table I
+  quote: 0.0737 mm2, 6.98 mW per plane
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: die_energy_efficiency
+  value: 1.83
+  unit: TOPS/W
+  condition: design=KVNAND-C; component=IFC logic per plane (16 FMACs + 8 KB KV buffer); 算法=16×2×400 MHz=12.8 GOPS / 6.98 mW; peak; 只算 PE+buffer
+  location: PDF p.8 Table I
+  quote: 0.0737 mm2, 6.98 mW per plane
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: memory_die_count
+  value: 16.0
+  unit: count
+  condition: design=Base-1 (scaled Lincoln); 8 IFC NAND dies + 8 LPDDR DRAM dies; 算法=8 channels × (1 IFC + 1 DRAM)
+  location: PDF p.8
+  quote: one IFC die and one DRAM attached to each of the 8 LPDDR channels
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: flash_read_bandwidth
+  value: 32.0
+  unit: GB/s
+  condition: design=naive KV-in-flash on Lincoln architecture (motivation study); mem_type=NAND; internal read bandwidth; 4 dies in parallel（原文未明說 per die 或總和）
+  location: PDF p.3
+  quote: with an internal read bandwidth of 32 GB/s, assuming ideal KV cache access and 4 dies in parallel
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: mem_total_capacity
+  value: 256.0
+  unit: GB
+  condition: design=KVNAND-C-16; mem_type=NAND SLC; 算法=16 dies × 128Gb (16 GB)
+  location: PDF p.8
+  quote: we use the KVNAND-C-16 configuration
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.125
+  unit: MB/token
+  condition: model=Mixtral-8x7B; GQA; precision=BF16; 原文 128KB/token（÷1024）; KV=2×l×k×d/h×2B
+  location: PDF p.3
+  quote: 128KB in BF16
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.125
+  unit: MB/token
+  condition: model=LLaMA3-8B; GQA; precision=FP16; 原文 128KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'llama3-8B (KV: 128KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.0625
+  unit: MB/token
+  condition: model=LLaMA3-8B; GQA; precision=INT8; 原文 64KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'llama3-8B-int8 (KV: 64KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.7998
+  unit: MB/token
+  condition: model=LLaMA2-13B; MHA; precision=FP16; 原文 819KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'llama2-13B (KV: 819KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 1.4
+  unit: MB/token
+  condition: model=OPT-30B; MHA; precision=FP16; 原文 1433.6KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'OPT-30B (KV: 1433.6KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 2.5
+  unit: MB/token
+  condition: model=LLaMA-65B; MHA; precision=FP16; 原文 2560KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'llama-65B (KV: 2560KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: kv_bytes_per_token
+  value: 0.3203
+  unit: MB/token
+  condition: model=LLaMA2-70B; GQA; precision=FP16; 原文 328KB/token（÷1024）
+  location: PDF p.3 Fig. 3
+  quote: 'llama2-70B (KV: 328KB/token)'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 102400.0
+  unit: tokens
+  condition: evaluation context length (longest); 原文 100K，以 1024 計
+  location: PDF p.9
+  quote: At a 100K-token context, it achieves
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 51200.0
+  unit: tokens
+  condition: design=KVNAND-D 8-die 16 GB/die config 支援的最大 context; 原文 ~50K，以 1024 計
+  location: PDF p.11
+  quote: which supports up to ∼50K context length
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 34.39
+  unit: tokens/s
+  condition: design=KVNAND-D (DSE-selected G1/G2); model=LLaMA3.1-8B; precision=full-precision; context=128; batch=1; method=simulation
+  location: PDF p.9 Fig. 12
+  quote: '34.39'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 23.45
+  unit: tokens/s
+  condition: design=KVNAND-D; model=LLaMA3.1-8B; precision=full-precision; context=10K; batch=1; method=simulation
+  location: PDF p.9 Fig. 12
+  quote: '23.45'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 36.33
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=LLaMA3.1-8B; precision=full-precision; context=128; batch=1; method=simulation
+  location: PDF p.9 Fig. 12
+  quote: '36.33'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 4.22
+  unit: tokens/s
+  condition: design=KVNAND-C-16; model=LLaMA3.1-8B; precision=full-precision; context=100K; batch=1; method=simulation
+  location: PDF p.9 Fig. 12
+  quote: '4.22'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 33.21
+  unit: tokens/s
+  condition: design=KVNAND-D; model=LLaMA2-7B; precision=full-precision; context=1K; batch=1; method=simulation
+  location: PDF p.9 Fig. 12
+  quote: '33.21'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）

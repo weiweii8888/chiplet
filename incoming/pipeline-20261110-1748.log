@@ -1,0 +1,77 @@
+== 2026-11-10 17:48:40 開始；文件：PAPER-NN-BATON PAPER-MONAD PAPER-EXPERT-STREAMING；claude=/home/weiwei888/.vscode-server/extensions/anthropic.claude-code-2.1.322-linux-x64/resources/native-binary/claude
+== 17:48:40 抽取 run A（三篇平行）
+PAPER-NN-BATON-A: 已有結果，略過
+PAPER-MONAD-A: 已有結果，略過
+PAPER-EXPERT-STREAMING-A: 已有結果，略過
+== 17:48:40 抽取 run B（三篇平行）
+PAPER-MONAD-B: 16 rows, 4 leads, 59s, $0.33916340000000006
+PAPER-NN-BATON-B: 22 rows, 14 leads, 96s, $0.4947321
+PAPER-EXPERT-STREAMING-B: 30 rows, 17 leads, 97s, $0.5135263999999999
+== 17:50:18 比對、驗證、入庫
+附加 20 列：N0088～N0107
+| PAPER-NN-BATON | A 24 | B 22 | 一致 20 | 入庫 20 | 待人看 6 | 線索 16 | $1.11 |
+警告： batch第8列: compute_die_area=993.0 超出 R-RANGE-DIE-AREA 範圍 [0.1, 858]：單顆 die 不能超過 reticle 上限；wafer-scale 是例外，要在 condition 註明
+附加 15 列：N0108～N0122
+| PAPER-MONAD | A 16 | B 16 | 一致 15 | 入庫 15 | 待人看 2 | 線索 4 | $0.72 |
+附加 24 列：N0123～N0146
+| PAPER-EXPERT-STREAMING | A 25 | B 30 | 一致 24 | 入庫 24 | 待人看 7 | 線索 18 | $1.03 |
+== 17:50:18 全庫驗證（含出處）
+出處檢查：{'ok': 146}
+文件 25 筆；數字 146 筆（已複核 0）
+  文件依場景： {'generic': 11, 'datacenter': 10, 'edge_embedded': 2, 'edge_mobile': 2, 'edge_automotive': 1}
+  數字依性質： {'vendor_claim': 38, 'spec_limit': 11, 'measured': 20, 'assumed': 55, 'derived': 22}
+
+各維度缺口（P1 優先；「僅對照」表示只有 datacenter 來源，edge 還是缺）：
+  compute_die（運算 die）：P1 6/7 缺 die_energy_efficiency；P2 2/3 缺 die_sram_bandwidth
+  partition（切分方式）：P1 1/1；P2 1/3 缺 expansion_chiplet_max 僅對照 io_die_count
+  memory（記憶體）：P1 3/5 缺 mem_bus_width 僅對照 mem_total_capacity；P2 1/4 缺 flash_read_bandwidth, mem_cost_per_gb 僅對照 mem_device_capacity
+  d2d（die-to-die 介面）：P1 5/5；P2 4/4
+  workload_ref（工作負載參考（edge LLM 與硬體的連結））：P1 1/3 缺 kv_bytes_per_token, model_weight_size；P2 0/2 缺 decode_throughput, context_length
+  thermal_power（熱與供電）：P1 1/1；P2 0/1 僅對照 package_tdp
+  package（封裝技術）：P2 1/3 缺 package_bump_pitch, bonding_yield
+  cost（成本與良率）：P2 4/7 缺 nre_cost, package_cost, wafer_cost
+  system（產品整體（設計案例用））：P1 1/1；P2 0/1 僅對照 package_sram_bandwidth
+警告： numbers N0115: compute_die_area=993.0 超出 R-RANGE-DIE-AREA 範圍 [0.1, 858]：單顆 die 不能超過 reticle 上限；wafer-scale 是例外，要在 condition 註明
+
+0 個錯誤，1 個警告
+== 17:50:19 評測（retrieval＋agent）
+Q01 agent ✓ 
+Q02 agent ✓ 
+Q03 agent ✓ 
+Q04 agent ✓ 
+Q05 agent ✓ 
+Q06 agent ✓ 
+Q07 agent ✓ 
+Q08 agent ✓ 
+Q09 agent ✓ 
+Q10 agent ✓ 
+Q11 agent ✓ 
+Q12 agent ✓ 
+Q13 agent ✓ 
+Q14 agent ✓ 
+Q15 agent ✓ 
+Q16 agent ✓ 
+Q17 agent ✓ 
+Q18 agent ✓ 
+Q19 agent ✓ 
+Q20 agent ✓ 
+Q21 agent ✓ 
+Q22 agent ✗ 沒提到 ['矛盾', '不一致', '不同', '兩個'] 任何一個
+Q23 agent ✓ 
+Q24 agent ✓ 
+Q25 agent ✓ 
+Q26 agent ✓ 
+Q27 agent ✓ 
+Q28 agent ✓ 
+Q29 agent ✓ 
+Q30 agent ✓ 
+# 知識庫評測 20261110-1751
+
+- 題數 30
+- retrieval：30/30
+- agent（claude-opus-5-5，effort medium）：29/30；平均 4.2 輪；費用約 $1.34
+- 依題型：lookup 21/21、compare 4/4、caveat 1/2、gap 2/2、trap 1/1
+
+| 題 | 題型 | retrieval | agent | 說明 |
+報告：eval/results/20261110-1751.md
+== 2026-11-10 17:51:39 PIPELINE DONE

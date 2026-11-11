@@ -1,0 +1,130 @@
+{
+ "doc_id": "PAPER-DISTSERVE",
+ "existing_tags": [
+  "datacenter",
+  "paper",
+  "llm_inference",
+  "kv_cache",
+  "latency",
+  "bandwidth_capacity",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "prefill 與 decode 放在同一組運算資源，還是拆到不同資源（disaggregation）",
+   "options": [
+    "同一組資源搭配 continuous batching（vLLM）",
+    "同一組資源搭配 chunked-prefill piggyback（DeepSpeed-MII）",
+    "prefill instance 與 decode instance 分到不同 GPU"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.2"
+  },
+  {
+   "decision": "prefill 和 decode 各自用多少運算資源（兩種 instance 的數量比例）",
+   "options": [
+    "兩個 phase 共用同一份資源配置",
+    "依 TTFT／TPOT 要求分別配置（例如 2 GPU 給 prefill、1 GPU 給 decode；多個 prefill instance 對一個 decode instance）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "每個 phase 的模型平行方式與平行度",
+   "options": [
+    "intra-op（tensor parallel）",
+    "inter-op（pipeline parallel）",
+    "replication",
+    "TP/PP 組合（附錄 Table 3：OPT-175B 的 prefill 用 TP3/PP3，decode 用 TP4/PP3）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  },
+  {
+   "decision": "每個 phase 的 batch 大小",
+   "options": [
+    "prefill：總 token 數接近能吃滿算力的長度 L_m 就停，batch 保持小",
+    "decode：盡量放大 batch，上限由存放 KV 的記憶體容量決定"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.6"
+  },
+  {
+   "decision": "chunked prefill 要不要做、chunk 切多大",
+   "options": [
+    "不切 chunk，KV 讀取量 O(N)",
+    "切成 N 個 chunk：每段都要重讀前面的 KV，讀取量 O(N^2)，而且 chunk 小於飽和點時 prefill 會變慢"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "依互連頻寬決定 prefill／decode instance 怎麼擺，讓 KV 走高頻寬鏈路",
+   "options": [
+    "high node-affinity：兩種 instance 可以放在任意節點，KV 走 InfiniBand",
+    "low node-affinity：同一個 pipeline stage 的 prefill 段和 decode 段放在同一節點，KV 只走 NVLink"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7"
+  },
+  {
+   "decision": "KV 從 prefill 傳到 decode 用推（push）還是拉（pull）",
+   "options": [
+    "push：prefill 做完就推給 decode",
+    "pull：decode 需要時才去拿，KV 先留在 prefill 端的記憶體當排隊緩衝"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.8"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "workload",
+   "id": "phase_disaggregation",
+   "label": "prefill／decode 分離",
+   "definition": "文件把 prefill（受算力限制）和 decode（受頻寬限制）拆開，分配不同的運算資源、平行方式或硬體。",
+   "why": "llm_inference 和 kv_cache 都沒辦法表示「兩個 phase 用不同資源」。設計期要問的是「要不要用一顆偏算力的 die 加一顆偏頻寬的 die 來做異質 chiplet」，這時 agent 篩不出這類文件。"
+  },
+  {
+   "group": "mapping",
+   "id": "model_parallel_mapping",
+   "label": "模型平行切分（TP／PP）",
+   "definition": "文件比較把模型用 tensor parallel、pipeline parallel 或 replication 切到多個運算單元的做法，以及這些做法對延遲和互連流量的影響。",
+   "why": "partition 組只描述實體 die 的種類（compute、io、memory），不描述模型怎麼對映到多顆 die。做 chiplet 切分或決定 D2D 頻寬時，agent 查不到「TP 的加速效果被通訊打折，例如本文的加速係數 K」這類證據。"
+  },
+  {
+   "group": "workload",
+   "id": "multi_session_serving",
+   "label": "多請求併發服務",
+   "definition": "工作負載是多個請求依某個到達率同時進來、會排隊，結論和到達率或併發數有關。",
+   "why": "Tack 的工作負載條件包含同時跑的 session 數，但現有標籤只有 llm_on_device（單一使用者、batch 小）和 multi_model（多個模型）。agent 分不出哪些文件的結論只在高併發下才成立。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "kv_cache",
+   "suggestion": "改成依決策細分：kv_transfer（跨裝置或跨 die 搬 KV，本文的 prefill→decode 傳輸，例如 OPT-66B 在 10 rps 下約需 90 Gbps，見 p.6）、kv_capacity（KV 佔用的容量限制 batch，見 p.6）、kv_quantization、kv_eviction、kv_reuse。目前一個標籤同時涵蓋放置和搬移，Tack 在執行期要決定的「保留／量化／逐出／重用」查不到對應文件。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "細分成 ttft（首 token 延遲）、tpot（每個輸出 token 的延遲）、slo_goodput（滿足 SLO 前提下的最大請求率）。本文的結論全建立在 TTFT 和 TPOT 分開設 SLO 上；只標 latency 的話，查不到「decode 受頻寬限制，所以 TPOT 由記憶體頻寬決定」這類能直接轉成硬體需求的證據。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "拆成 mem_bandwidth、mem_capacity、interconnect_bandwidth。本文講的頻寬是 GPU 之間的互連（NVLink 600 GB/s 對比跨節點 25 Gbps），容量指的是 GPU 記憶體能不能放下權重和 KV。混在一起時，agent 會把互連的數字誤當成 DRAM 頻寬。"
+  },
+  {
+   "tag": "simulator",
+   "suggestion": "拆成 analytical_model（roofline 或排隊論，例如本文的 M/D/1 和附錄 A 的 GEMM 延遲模型）、simulator（例如 LLMCompass、PLENA，或本文的離散事件模擬器）、real_hw_measurement（例如 H100、A100 實機）。本文三種都有，而且附錄 Table 2 驗證模擬器和實機誤差小於 2%（p.12）；Tack 需要依評估方式篩選文件。"
+  },
+  {
+   "tag": "dse",
+   "suggestion": "拆成 hw_dse（硬體設計空間）和 deployment_search（固定硬體下搜尋平行度與擺放）。本文的 Algorithm 1 和 2 屬於後者，所以這次沒有標 dse；如果不拆，查硬體 DSE 的 agent 會撈到部署層的搜尋。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4390072,
+  "turns": 5
+ }
+}

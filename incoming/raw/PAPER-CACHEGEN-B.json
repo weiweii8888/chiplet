@@ -1,0 +1,308 @@
+{
+ "doc_id": "PAPER-CACHEGEN",
+ "rows": [
+  {
+   "parameter": "kv_cache_size",
+   "value": 622,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=8-bit quantization baseline; precision=INT8; accuracy=1.00",
+   "location": "PDF p.2 Table 1",
+   "quote": "8-bit quantization 622 1.00",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 176,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=CacheGen (compressed bitstream); accuracy=0.98",
+   "location": "PDF p.2 Table 1",
+   "quote": "CacheGen (this paper) 176 0.98",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 282,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=H2O token dropping (論文自己跑的 baseline); accuracy=0.97",
+   "location": "PDF p.2 Table 1",
+   "quote": "H2O [153] 282 0.97",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 71,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=CacheGen on H2O; accuracy=0.97",
+   "location": "PDF p.2 Table 1",
+   "quote": "CacheGen on H2O 71 0.97",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 492,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=LLMLingua context compression (論文自己跑的 baseline); accuracy=0.94",
+   "location": "PDF p.2 Table 1",
+   "quote": "LLMLingua [72] 492 0.94",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 183,
+   "unit": "MB",
+   "condition": "model=Mistral-7B; dataset=LongChat; method=CacheGen on LLMLingua; accuracy=0.94",
+   "location": "PDF p.2 Table 1",
+   "quote": "CacheGen on LLMLingua 183 0.94",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.0662,
+   "unit": "MB/token",
+   "condition": "model=Mistral-7B; precision=INT8 (8-bit quantization baseline); 算法=Table 1 的 622 MB ÷ LongChat 中位 context 長度 9.4K tokens（Table 2）; 近似值",
+   "location": "PDF p.2 Table 1",
+   "quote": "8-bit quantization 622 1.00",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.0187,
+   "unit": "MB/token",
+   "condition": "model=Mistral-7B; method=CacheGen compressed; 算法=Table 1 的 176 MB ÷ LongChat 中位 context 長度 9.4K tokens（Table 2）; 近似值",
+   "location": "PDF p.2 Table 1",
+   "quote": "CacheGen (this paper) 176 0.98",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 19000,
+   "unit": "MB",
+   "condition": "model=Llama-34B; context≈80,000 tokens (Amazon 2023 annual report); precision 未註明（未壓縮）; 原文 19 GB",
+   "location": "PDF p.3",
+   "quote": "with the model of Llama-34B produces a KV cache of 19 GB",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.2375,
+   "unit": "MB/token",
+   "condition": "model=Llama-34B; precision 未註明; 算法=19 GB(19000 MB) ÷ 80,000 tokens",
+   "location": "PDF p.3",
+   "quote": "~80,000 tokens [20], with the model of Llama-34B produces a KV cache of 19 GB",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 140,
+   "unit": "MB",
+   "condition": "model=Llama-7B; method=CacheGen 預設 medium encoding level; per chunk (預設 chunk 長度 1.5K tokens)",
+   "location": "PDF p.7",
+   "quote": "140 MB per chunk for Llama 7B",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 5000,
+   "unit": "MB",
+   "condition": "model=Llama-13B; context=8.5K tokens; CacheGen 多個編碼版本合計的儲存量; 論文粗估; 原文 5GB",
+   "location": "PDF p.18",
+   "quote": "8.5K-token context in Llama-13B takes roughly 5GB",
+   "value_kind": "measured"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1400,
+   "unit": "tokens",
+   "condition": "評估資料集 4 個、662 個 context 的下限",
+   "location": "PDF p.2",
+   "quote": "662 contexts with 1.4 K to 16 K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 16000,
+   "unit": "tokens",
+   "condition": "評估資料集 4 個、662 個 context 的上限",
+   "location": "PDF p.2",
+   "quote": "662 contexts with 1.4 K to 16 K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 9200,
+   "unit": "tokens",
+   "condition": "dataset=LongChat; insight 實驗用 100 個 context; 下限",
+   "location": "PDF p.4",
+   "quote": "which contains 100 long contexts between 9.2K and 9.6K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 9600,
+   "unit": "tokens",
+   "condition": "dataset=LongChat; insight 實驗用 100 個 context; 上限",
+   "location": "PDF p.4",
+   "quote": "which contains 100 long contexts between 9.2K and 9.6K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 32000,
+   "unit": "tokens",
+   "condition": "models=Mistral-7B/Llama-34B/Llama-70B fine-tuned long-context 版本可接受的上限",
+   "location": "PDF p.8",
+   "quote": "they can take long contexts (up to 32K)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 9400,
+   "unit": "tokens",
+   "condition": "dataset=LongChat; 200 contexts; statistic=median",
+   "location": "PDF p.8 Table 2",
+   "quote": "LongChat [90] 200 9.4K 164 9.6K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 9600,
+   "unit": "tokens",
+   "condition": "dataset=LongChat; 200 contexts; statistic=P95",
+   "location": "PDF p.8 Table 2",
+   "quote": "LongChat [90] 200 9.4K 164 9.6K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 9300,
+   "unit": "tokens",
+   "condition": "dataset=TriviaQA; 200 contexts; statistic=median",
+   "location": "PDF p.8 Table 2",
+   "quote": "TriviaQA [75] 200 9.3K 4497 15K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 15000,
+   "unit": "tokens",
+   "condition": "dataset=TriviaQA; 200 contexts; statistic=P95",
+   "location": "PDF p.8 Table 2",
+   "quote": "TriviaQA [75] 200 9.3K 4497 15K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 14000,
+   "unit": "tokens",
+   "condition": "dataset=NarrativeQA; 200 contexts; statistic=median",
+   "location": "PDF p.8 Table 2",
+   "quote": "NarrativeQA [81] 200 14K 1916 15K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 15000,
+   "unit": "tokens",
+   "condition": "dataset=NarrativeQA; 200 contexts; statistic=P95",
+   "location": "PDF p.8 Table 2",
+   "quote": "NarrativeQA [81] 200 14K 1916 15K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 5900,
+   "unit": "tokens",
+   "condition": "dataset=WikiText; 62 contexts; statistic=median",
+   "location": "PDF p.8 Table 2",
+   "quote": "WikiText [102] 62 5.9K 4548 14.8K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 14800,
+   "unit": "tokens",
+   "condition": "dataset=WikiText; 62 contexts; statistic=P95",
+   "location": "PDF p.8 Table 2",
+   "quote": "WikiText [102] 62 5.9K 4548 14.8K",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 16000,
+   "unit": "tokens",
+   "condition": "model=Mistral-7B; 頻寬敏感度實驗 (Fig. 11) 固定的 context 長度",
+   "location": "PDF p.10",
+   "quote": "text length at 16K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 100,
+   "unit": "tokens",
+   "condition": "model=Mistral-7B; context 長度掃描 (Fig. 12 right) 下限; network=3 Gbps",
+   "location": "PDF p.10",
+   "quote": "input lengths from 0.1K to 15K tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 15000,
+   "unit": "tokens",
+   "condition": "model=Mistral-7B; context 長度掃描 (Fig. 12 right) 上限; network=3 Gbps",
+   "location": "PDF p.10",
+   "quote": "input lengths from 0.1K to 15K tokens",
+   "value_kind": "assumed"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "context_length",
+   "value": 2000,
+   "unit": "tokens",
+   "cited_ref": "[24]",
+   "note": "ChatGPT 的 context window 2K tokens (PDF p.1)"
+  },
+  {
+   "parameter": "context_length",
+   "value": 100000,
+   "unit": "tokens",
+   "cited_ref": "[24]",
+   "note": "Claude 的 context window 100K tokens (PDF p.1)"
+  },
+  {
+   "parameter": "context_length",
+   "value": 80000,
+   "unit": "tokens",
+   "cited_ref": "[20]",
+   "note": "Amazon 2023 annual report 約 80,000 tokens (PDF p.3)；論文用它算出 Llama-34B KV cache 19 GB（已抽為 derived）"
+  },
+  {
+   "parameter": "context_length",
+   "value": 10000,
+   "unit": "tokens",
+   "cited_ref": "[67]",
+   "note": "FiD：context 從 1K 增到 10K tokens，accuracy 由 40% 升到 48% (PDF p.3)"
+  },
+  {
+   "parameter": "context_length",
+   "value": 24000,
+   "unit": "tokens",
+   "cited_ref": "[35]",
+   "note": "Retro：context 從 6K 增到 24K tokens，生成品質明顯提升 (PDF p.3)"
+  },
+  {
+   "parameter": "context_length",
+   "value": 3000,
+   "unit": "tokens",
+   "cited_ref": "[17, 58]",
+   "note": "3K context 的 prefill 延遲仍要約 2 秒 (PDF p.1)"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 76,
+  "cost_usd": 0.498567,
+  "turns": 5
+ }
+}

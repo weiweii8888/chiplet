@@ -1,0 +1,124 @@
+{
+ "doc_id": "PAPER-SGLANG",
+ "existing_tags": [
+  "datacenter",
+  "llm_inference",
+  "kv_cache",
+  "latency"
+ ],
+ "decisions": [
+  {
+   "decision": "請求結束後要不要保留 KV 給之後的呼叫重用，以及快取用什麼資料結構",
+   "options": [
+    "請求完成就丟掉 KV（vLLM 等既有引擎的做法，每個請求都重算）",
+    "表格式快取（No Tree-Structure）",
+    "radix tree 前綴快取（RadixAttention），可以多層共用前綴"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.4; PDF p.9（Fig.8c 消融）"
+  },
+  {
+   "decision": "KV 逐出策略與記憶體池怎麼配",
+   "options": [
+    "LRU、先逐出葉節點；有 reference counter 的節點（執行中的請求還在用）不能逐出",
+    "預先切一塊固定大小的快取池",
+    "快取和執行中的請求共用同一個記憶體池、動態分配，等待中的請求夠多時把快取全部逐出，換更大的 batch"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "請求排程順序（為了提高前綴快取命中率）",
+   "options": [
+    "cache-aware：最長共享前綴優先（離線時等同 DFS，可證最佳）",
+    "FCFS",
+    "隨機順序"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.6; PDF p.9（Fig.8c）"
+  },
+  {
+   "decision": "前端要不要把共享前綴的結構告訴 runtime（fork 時送前綴 hint、程式內平行）",
+   "options": [
+    "fork 時先把前綴當 hint 送出，再送其餘 prompt",
+    "不送 hint（No Frontend Hint）",
+    "關掉 interpreter 端的平行（No Frontend Parallelism）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.5; PDF p.9"
+  },
+  {
+   "decision": "重排 prompt／context 的順序，拉長可共用的前綴",
+   "options": [
+    "保持原本的 prompt 順序",
+    "用 GPT-4 重排 IR 節點，把常數段移到前面（15 個模板裡 12 個成功，可共用前綴平均多 60 token）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.19; PDF p.20"
+  },
+  {
+   "decision": "受限解碼（JSON／regex）怎麼做",
+   "options": [
+    "逐 token 用 FSM 遮罩",
+    "compressed FSM，把只有一條路的轉移合併，一次前向傳遞解多個 token（throughput 1.6×）",
+    "每個請求各自重做 FSM 前處理，或整批重用（不重用會慢 2.4×）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.6; PDF p.9"
+  },
+  {
+   "decision": "只能透過 API 呼叫的模型：多個 gen 要不要合併成一次呼叫",
+   "options": [
+    "每個 gen 各打一次 API",
+    "API speculative execution：第一次呼叫忽略 stop 條件多生成一些，再拿去比對後面的 primitive"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.6; PDF p.7; PDF p.9"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "kv_runtime（新組，執行期 KV 決策）",
+   "id": "kv_reuse",
+   "label": "KV 跨請求保留與重用",
+   "definition": "請求結束後保留 KV，讓之後共用前綴或相同內容的請求直接拿來用，不必重做 prefill。",
+   "why": "現在的 kv_cache 定義是「放置與搬移」，查不到「要不要留下前文 KV 給下一次呼叫用」的文件。Tack 決定前文保留或重用時，會跟 KV offload、KV 量化的論文混在一起。"
+  },
+  {
+   "group": "kv_runtime（新組，執行期 KV 決策）",
+   "id": "kv_eviction",
+   "label": "KV 逐出策略",
+   "definition": "KV 記憶體不夠時決定逐出誰（LRU、葉節點優先、reference count 保護、和執行中的 batch 搶記憶體）。",
+   "why": "Tack 的「逐出」決策現在沒有標籤可以對應，只能從全文去撈 LRU、evict 這些字，也沒辦法和只做保留或只做量化的文件分開。"
+  },
+  {
+   "group": "kv_runtime（新組，執行期 KV 決策）",
+   "id": "cache_aware_scheduling",
+   "label": "快取感知的請求排程",
+   "definition": "排請求或呼叫的順序時，以提高 KV 命中率為目標（例如最長共享前綴優先），而不是 FCFS。",
+   "why": "agent harness 可以自己決定多個 session 或呼叫的先後順序。少了這個標籤，查不到「排程順序對命中率、batch 大小和延遲的影響」，這篇的 FCFS／隨機／cache-aware 比較就埋在 kv_cache 底下。"
+  },
+  {
+   "group": "workload",
+   "id": "prefix_sharing",
+   "label": "多請求共用前綴",
+   "definition": "工作負載裡有多個請求或呼叫共用相同前綴（system prompt、few-shot 範例、多輪對話歷史、fork 出來的分支、同一張圖），文件有量化可共用比例或命中率。",
+   "why": "這是會改變硬體需求的工作負載條件：這篇 Fig.8a 顯示，在固定的 24 GB 顯存下，命中率越高 batch 越大、throughput 越高，實際需要的 KV 容量會跟著變。少了這個標籤，做設計期記憶體容量 DSE 時，查不到「共用前綴程度」這個條件，也找不到命中率資料（benchmark 50–99%，Chatbot Arena 52.4%／74.1%）。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "kv_cache",
+   "suggestion": "現在一個標籤同時涵蓋放置、搬移和所有執行期策略。建議拆成 kv_placement（放在哪一層記憶體、offload／搬移，服務硬體 DSE）、kv_reuse、kv_eviction、kv_quantization（KV 精度）、kv_compression（稀疏注意力、context 壓縮）。這篇只屬於 kv_reuse 和 kv_eviction，但現在會和 KV offload 到 DRAM 或 flash 的硬體論文混在一起。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "建議拆成 ttft（首 token 延遲，主要由 prefill 決定，KV 重用改善的就是這個）、decode_latency（每 token 延遲，主要受記憶體頻寬限制，是硬體 DSE 在看的）、e2e_latency（整個程式或請求的總延遲）。另外 metric 組沒有 throughput，這篇的主要指標 programs/s、tokens/s 沒有標籤可用。這篇三種延遲都有報：首 token 延遲 1.7×、總延遲 3.7×、Fig.8b。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4126513,
+  "turns": 7
+ }
+}

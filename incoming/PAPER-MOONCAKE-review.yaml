@@ -1,0 +1,19 @@
+doc_id: PAPER-MOONCAKE
+rows:
+- parameter: context_length
+  value: 182.0
+  unit: tokens
+  condition: workload=Mooncake open-source request trace (Kimi, 1-hour sample); stat=average OUTPUT length (generated tokens, not input context); scenario=datacenter
+  location: PDF p.7
+  quote: an average input length of 8,590 tokens and an average output length of 182 tokens
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 8590.0
+  unit: tokens
+  condition: workload=Mooncake open-source request trace (Kimi, 1-hour sample, 23,608 entries); stat=average input length; avg_output=182 tokens; model=dummy LLaMA2-70B; scenario=datacenter
+  location: PDF p.7
+  quote: with an average input length of 8,590 tokens and an average output length of 182 tokens
+  value_kind: measured
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 MOONCAKE.pdf p.7

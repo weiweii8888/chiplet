@@ -1,0 +1,199 @@
+defaults:
+  doc_id: PAPER-EXPERT-STREAMING
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: compute_die_count
+  value: 4
+  unit: count
+  condition: design=FSE-DP test chip; topology=2x2 MCM; process=Samsung 5nm; d2d=UCIe-compliant
+  location: PDF p.9
+  quote: integrated its RTL into a fabricated 4-chiplet prototype
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_count
+  value: 16
+  unit: count
+  condition: design=FSE-DP scalability study; topology=4x4 chiplet array (studied 2x2, 3x3, 4x4); model=Qwen3-MoE-A3B; dataset=C4; simulation; upper bound of studied range
+  location: PDF p.13 Fig. 18
+  quote: We then analyzed scalability from 2 × 2 to 4 × 4 chiplet arrays
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: process_node
+  value: 5
+  unit: nm
+  condition: design=FSE-DP test chip compute die; foundry=Samsung; 1P13M CMOS
+  location: PDF p.10 Table I
+  quote: Samsung 5nm 1P13M CMOS, 800 MHz
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: die_clock_freq
+  value: 800
+  unit: MHz
+  condition: design=FSE-DP test chip compute die; process=Samsung 5nm
+  location: PDF p.10 Table I
+  quote: Samsung 5nm 1P13M CMOS, 800 MHz
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: die_mac_count
+  value: 2048
+  unit: count
+  condition: design=FSE-DP test chip compute die; per die; process=Samsung 5nm
+  location: PDF p.10 Table I
+  quote: 2048 MACs, 0.675-0.9 V, 736.5 -2187 mW
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: die_power
+  value: 0.7365
+  unit: W
+  condition: design=FSE-DP test chip compute die; lower bound of range; voltage range 0.675-0.9 V (lower end presumably at 0.675 V); 原文 736.5 mW
+  location: PDF p.10 Table I
+  quote: 2048 MACs, 0.675-0.9 V, 736.5 -2187 mW
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: die_power
+  value: 2.187
+  unit: W
+  condition: design=FSE-DP test chip compute die; upper bound of range; voltage range 0.675-0.9 V (upper end presumably at 0.9 V); 原文 2187 mW
+  location: PDF p.10 Table I
+  quote: 2048 MACs, 0.675-0.9 V, 736.5 -2187 mW
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: die_peak_compute
+  value: 4.865
+  unit: TOPS
+  condition: design=FSE-DP test chip compute die; per die; 2048 MACs; precision=unspecified; sparsity=unspecified; process=Samsung 5nm
+  location: PDF p.10 Table I
+  quote: 2.69mm×4.72mm, 4.865 TOPS
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_area
+  value: 12.6968
+  unit: mm2
+  condition: design=FSE-DP test chip compute die; process=Samsung 5nm; derived=2.69 mm x 4.72 mm
+  location: PDF p.10 Table I
+  quote: 2.69mm×4.72mm, 4.865 TOPS
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_area
+  value: 30
+  unit: mm2
+  condition: design=FSE-DP DSE; constraint=per-die area upper limit; model=Qwen3-MoE-A3B; dataset=C4; 64 input tokens
+  location: PDF p.12
+  quote: upper limit of the die area to 30
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: device_power_budget
+  value: 60
+  unit: W
+  condition: design=FSE-DP DSE; constraint=total package power (compute+D2D+DDR) upper limit; model=Qwen3-MoE-A3B; dataset=C4
+  location: PDF p.12 Fig. 16
+  quote: the total power consumption of the entire package is less than 60W
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_aggregate_bw
+  value: 288
+  unit: GB/s
+  condition: design=FSE-DP test chip; NoP=2D mesh; multiple UCIe D2D IPs; dir=unspecified; also the fixed D2D BW in DSE Fig. 16(a)
+  location: PDF p.10 Table I
+  quote: '2D Mesh, Multiple UCIe D2D IPs: 288 GB/s'
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_data_rate
+  value: 4
+  unit: GT/s
+  condition: design=FSE-DP test chip; spec=UCIe-compliant; lower bound of range; 原文 4 Gbps/pin
+  location: PDF p.10 Table I
+  quote: '4-24 Gbps/pin, FDI-to-FDI Latency: 4.02 ns'
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_data_rate
+  value: 24
+  unit: GT/s
+  condition: design=FSE-DP test chip; spec=UCIe-compliant; upper bound of range; 原文 24 Gbps/pin
+  location: PDF p.10 Table I
+  quote: '4-24 Gbps/pin, FDI-to-FDI Latency: 4.02 ns'
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_latency
+  value: 4.02
+  unit: ns
+  condition: design=FSE-DP test chip; spec=UCIe-compliant; measure=FDI-to-FDI
+  location: PDF p.10 Table I
+  quote: '4-24 Gbps/pin, FDI-to-FDI Latency: 4.02 ns'
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_aggregate_bw
+  value: 512
+  unit: GB/s
+  condition: design=FSE-DP DSE; required D2D BW when on-chip buffer fixed at 14 MB; equivalent to 3 UCIe x32 modules; model=Qwen3-MoE-A3B; dataset=C4; dir=unspecified
+  location: PDF p.12 Fig. 16
+  quote: even up to 512GB/s, which is equivalent to 3 UCIe
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_module_width
+  value: 32
+  unit: count
+  condition: design=FSE-DP DSE; spec=UCIe; module=x32
+  location: PDF p.12
+  quote: equivalent to 3 UCIe (× 32) modules
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_channel_bandwidth
+  value: 25.6
+  unit: GB/s
+  condition: design=FSE-DP evaluation config; mem_type=DDR3-1600; per channel; 4 channels
+  location: PDF p.10 Table I
+  quote: DDR3-1600 4×25.6 GB/s, 800 MHz
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_bandwidth
+  value: 102.4
+  unit: GB/s
+  condition: design=FSE-DP evaluation config; mem_type=DDR3-1600; derived=4 x 25.6 GB/s; peak
+  location: PDF p.10 Table I
+  quote: DDR3-1600 4×25.6 GB/s, 800 MHz
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_pin_rate
+  value: 1.6
+  unit: Gb/s
+  condition: design=FSE-DP evaluation config; mem_type=DDR3-1600; derived=1600 MT/s / 1000
+  location: PDF p.10 Table I
+  quote: DDR3-1600 4×25.6 GB/s, 800 MHz
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_total_bandwidth
+  value: 48
+  unit: GB/s
+  condition: design=FSE-DP DSE; scope=per die DDR BW; requirement for utilization >= 60% under die area <= 30 mm2 and package power < 60 W; model=Qwen3-MoE-A3B; dataset=C4; D2D BW fixed 288 GB/s; simulation
+    result
+  location: PDF p.12
+  quote: 48 GB/s of DDR bandwidth per die and 16MB or more of on-chip memory are required
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_sram_capacity
+  value: 16
+  unit: MB
+  condition: design=FSE-DP DSE; per die; lower bound required for utilization >= 60% under die area <= 30 mm2 and package power < 60 W; model=Qwen3-MoE-A3B; dataset=C4; simulation result
+  location: PDF p.12
+  quote: 48 GB/s of DDR bandwidth per die and 16MB or more of on-chip memory are required
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_sram_capacity
+  value: 14
+  unit: MB
+  condition: design=FSE-DP DSE Fig. 16(b); on-chip buffer fixed; model=Qwen3-MoE-A3B; dataset=C4; 64 input tokens
+  location: PDF p.12 Fig. 16
+  quote: (b) Fix buffer size at 14MB.
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_sram_capacity
+  value: 32
+  unit: MB
+  condition: design=FSE-DP; scope=whole multi-chiplet system on-chip memory usage (not per die); upper bound (less than 32 MB); about one-fifth of EP/Hydra; simulation
+  location: PDF p.11 Fig. 12
+  quote: the on-chip memory overhead of the multi-chiplet system to less than 32 MB
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok

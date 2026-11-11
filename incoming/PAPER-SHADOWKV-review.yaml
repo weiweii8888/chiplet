@@ -1,0 +1,133 @@
+doc_id: PAPER-SHADOWKV
+rows:
+- parameter: mem_total_bandwidth
+  value: 31.5
+  unit: GB/s
+  condition: link=PCIe CPU→GPU (offloaded value cache fetch); 等效頻寬公式中的 B_PCIe 假設值; 這是 host 記憶體經 PCIe 的頻寬，不是加速器本地記憶體頻寬; scenario=datacenter
+  location: PDF p.6
+  quote: 31.5 GB/s
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: mem_total_bandwidth
+  value: 7200.0
+  unit: GB/s
+  condition: design=ShadowKV; product=A100; 理論等效頻寬（非實體頻寬）; 由公式 B=2S·B_GPU/(S/C+2(K+O)C+(1-α)KC·B_GPU/B_PCIe) 算出，C=8, S=128K, K=256, O=48, B_PCIe=31.5 GB/s, B_GPU=2 TB/s; 原文 7.2 TB/s
+  location: PDF p.6
+  quote: is calculated as 7.2 TB/s, which is 3.6× higher than A100 memory bandwidth
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: decode_throughput
+  value: 122.67
+  unit: tokens/s
+  condition: design=Full Attention baseline; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=122K; batch=6
+  location: PDF p.8 Table 3
+  quote: 122K 122.67 (6) 293.40 (25)
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 61.13
+  unit: tokens/s
+  condition: design=Full Attention baseline; hw=NVIDIA A100; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=244K; batch=3
+  location: PDF p.8 Table 3
+  quote: 244K 61.13 (3) 136.51 (12)
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 101.44
+  unit: tokens/s
+  condition: design=Full Attention baseline; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=122K; batch=5
+  location: PDF p.8 Table 3
+  quote: 122K 101.44 (5) 260.03 (21)
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 46.74
+  unit: tokens/s
+  condition: design=Full Attention baseline; hw=NVIDIA A100; model=Yi-9B-200K (4 KV heads); precision=BF16; context=244K; batch=2
+  location: PDF p.8 Table 3
+  quote: 244K 46.74 (2) 118.55 (10)
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 89.69
+  unit: tokens/s
+  condition: design=ShadowKV; hw=NVIDIA A100; model=Llama-3-8B-1M; precision=BF16; context=60K; batch=2（小 batch 對照）
+  location: PDF p.8 Table 4
+  quote: 60K 89.69 126.61 159.41 184.92
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 89.19
+  unit: tokens/s
+  condition: design=Full KV baseline; hw=NVIDIA A100; model=Llama-3-8B-1M; precision=BF16; context=60K; batch=2
+  location: PDF p.8 Table 4
+  quote: 60K 89.19 111.44 126.73 142.62
+  value_kind: measured
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 4096.0
+  unit: tokens
+  condition: eval=LongBench; 下限（只測長於 4K 的樣本）; 原文 4K
+  location: PDF p.7
+  quote: only test on samples longer than 4K
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 8192.0
+  unit: tokens
+  condition: eval=RULER with MInference prefill; 下限; 原文 8K
+  location: PDF p.8
+  quote: we tested it on RULER with contexts scaling from 8K to 256K
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 262144.0
+  unit: tokens
+  condition: eval=RULER with MInference prefill; 上限; 原文 256K
+  location: PDF p.8
+  quote: we tested it on RULER with contexts scaling from 8K to 256K
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 499712.0
+  unit: tokens
+  condition: eval=throughput sweep; model=Llama-3-8B-1M; hw=A100; Table 4 最長 context; 原文 488K
+  location: PDF p.8 Table 4
+  quote: 488K 29.82 41.01 47.13 50.85 53.46 OOM
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 1048576.0
+  unit: tokens
+  condition: eval=RULER scalability; model=Llama-3-8B-1M; 原文 1M
+  location: PDF p.17 Table 11
+  quote: on 1M contexts while the Llama-3-70B-1M is evaluated on 512K contexts
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 119.01
+  unit: tokens/s
+  condition: design=ShadowKV; hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=12; sparse_budget=1.56%
+  location: PDF p.8 Table 3
+  quote: 40.37 (2) 119.01 (12)
+  value_kind: measured
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 SHADOWKV.pdf p.8
+- parameter: decode_throughput
+  value: 293.4
+  unit: tokens/s
+  condition: design=ShadowKV; hw=A100 GPU; model=GLM-4-9B-1M (4 KV heads); precision=BF16; context=122K; batch=25; sparse_budget=1.56%
+  location: PDF p.8 Table 3
+  quote: 122.67 (6) 293.40 (25)
+  value_kind: measured
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 SHADOWKV.pdf p.8
+- parameter: decode_throughput
+  value: 40.37
+  unit: tokens/s
+  condition: design=Full Attention baseline (largest batch fitting in GPU); hw=A100 GPU; model=Llama-3-8B-1M (8 KV heads); precision=BF16; context=244K; batch=2
+  location: PDF p.8 Table 3
+  quote: 40.37 (2) 119.01 (12)
+  value_kind: measured
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 SHADOWKV.pdf p.8

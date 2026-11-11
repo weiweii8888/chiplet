@@ -1,0 +1,26 @@
+doc_id: PAPER-CACHEGEN
+rows:
+- parameter: kv_bytes_per_token
+  value: 0.0187
+  unit: MB/token
+  condition: model=Mistral-7B; method=CacheGen compressed; 算法=Table 1 的 176 MB ÷ LongChat 中位 context 長度 9.4K tokens（Table 2）; 近似值
+  location: PDF p.2 Table 1
+  quote: CacheGen (this paper) 176 0.98
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 9200.0
+  unit: tokens
+  condition: dataset=LongChat; insight 實驗用 100 個 context; 下限
+  location: PDF p.4
+  quote: which contains 100 long contexts between 9.2K and 9.6K tokens
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 9600.0
+  unit: tokens
+  condition: dataset=LongChat; 200 contexts; statistic=P95
+  location: PDF p.8 Table 2
+  quote: LongChat [90] 200 9.4K 164 9.6K
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）

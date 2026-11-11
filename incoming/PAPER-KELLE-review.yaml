@@ -1,0 +1,91 @@
+doc_id: PAPER-KELLE
+rows:
+- parameter: die_mac_count
+  value: 1024.0
+  unit: count
+  condition: design=motivation study simulated edge platform (Sec 3.1); array=32x32 systolic; precision=INT8
+  location: PDF p.3
+  quote: with a 32 × 32 systolic array for 8-bit MAC operations
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 6.25
+  unit: MB
+  condition: design=Kelle accelerator; scope=total on-chip memory; derived=2MB weight SRAM + 4MB KV eDRAM + 0.25MB activation eDRAM
+  location: PDF p.6
+  quote: a 2MB SRAM stores the weights, while activations and KV vectors are held in a 256KB activation eDRAM and 4MB KV cache eDRAM
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 4.0
+  unit: MB
+  condition: design=motivation study edge system (Sec 3.1); mem=SRAM; lower point; workload=LLaMA2-7B
+  location: PDF p.3
+  quote: 4MB and 8MB of SRAM executing the LLaMA2-7B models
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: die_sram_capacity
+  value: 8.0
+  unit: MB
+  condition: design=motivation study edge system (Sec 3.1); mem=SRAM; upper point; 1.27x avg speedup vs 4MB but +29% power, +26% area
+  location: PDF p.3
+  quote: 4MB and 8MB of SRAM executing the LLaMA2-7B models
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: mem_total_capacity
+  value: 16.0
+  unit: GB
+  condition: design=motivation study simulated edge platform (Sec 3.1); mem_type=DRAM
+  location: PDF p.3
+  quote: 16GB DRAM with 64GB/s bandwidth
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: mem_total_bandwidth
+  value: 64.0
+  unit: GB/s
+  condition: design=motivation study simulated edge platform (Sec 3.1); mem_type=DRAM
+  location: PDF p.3
+  quote: 16GB DRAM with 64GB/s bandwidth
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 512.0
+  unit: tokens
+  condition: design=Kelle HW eval; task=Lambada; decoding (generation) length, lower bound; batch=16
+  location: PDF p.10
+  quote: decoding length is set to 512, 2048, 5120, and 8192
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 2048.0
+  unit: tokens
+  condition: design=Kelle HW eval; task=TriviaQA; decoding (generation) length; batch=16
+  location: PDF p.10
+  quote: decoding length is set to 512, 2048, 5120, and 8192
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 5120.0
+  unit: tokens
+  condition: design=Kelle HW eval; task=Qasper; decoding (generation) length; batch=16
+  location: PDF p.10
+  quote: decoding length is set to 512, 2048, 5120, and 8192
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 8192.0
+  unit: tokens
+  condition: design=Kelle accuracy eval; task=PG19 text generation (Cold Compress); sequence generation length
+  location: PDF p.8
+  quote: setting the sequence generation length to 8192
+  value_kind: assumed
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 8192.0
+  unit: tokens
+  condition: design=Kelle HW eval; task=PG19; decoding (generation) length, upper bound; batch=16
+  location: PDF p.10
+  quote: decoding length is set to 512, 2048, 5120, and 8192
+  value_kind: assumed
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 KELLE.pdf p.10

@@ -1,0 +1,12 @@
+doc_id: PAPER-SHADOWKV
+leads:
+- parameter: context_length
+  value: 214000
+  unit: tokens
+  cited_ref: '[61]'
+  note: InfiniteBench average length 214K (PDF p.20, benchmark property cited from InfiniteBench paper)
+- parameter: context_length
+  value: 1000000
+  unit: tokens
+  cited_ref: '[2, 49]'
+  note: 'Intro: long-context LLMs handle extensive contexts of up to 1M tokens (PDF p.1)'

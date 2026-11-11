@@ -1,0 +1,39 @@
+Q01 agent ✓ 
+Q02 agent ✓ 
+Q03 agent ✓ 
+Q04 agent ✓ 
+Q05 agent ✓ 
+Q06 agent ✓ 
+Q07 agent ✓ 
+Q08 agent ✓ 
+Q09 agent ✓ 
+Q10 agent ✓ 
+Q11 agent ✓ 
+Q12 agent ✓ 
+Q13 agent ✓ 
+Q14 agent ✓ 
+Q15 agent ✓ 
+Q16 agent ✓ 
+Q17 agent ✓ 
+Q18 agent ✓ 
+Q19 agent ✓ 
+Q20 agent ✓ 
+Q21 agent ✓ 
+Q22 agent ✓ 
+Q23 agent ✓ 
+Q24 agent ✓ 
+Q25 agent ✓ 
+Q26 agent ✓ 
+Q27 agent ✓ 
+Q28 agent ✓ 
+Q29 agent ✓ 
+Q30 agent ✓ 
+# 知識庫評測 20261110-1753
+
+- 題數 30
+- retrieval：30/30
+- agent（claude-opus-5-5，effort medium）：30/30；平均 4.1 輪；費用約 $1.11
+- 依題型：lookup 21/21、compare 4/4、caveat 2/2、gap 2/2、trap 1/1
+
+| 題 | 題型 | retrieval | agent | 說明 |
+報告：eval/results/20261110-1753.md

@@ -1,0 +1,134 @@
+{
+ "doc_id": "WP-INTEL-GAUDI3",
+ "existing_tags": [
+  "datacenter",
+  "proprietary_d2d",
+  "bridge",
+  "compute_die",
+  "hbm",
+  "bandwidth_capacity",
+  "thermal_power",
+  "llm_inference",
+  "llm_training"
+ ],
+ "decisions": [
+  {
+   "decision": "是否把運算切成多顆 die（單一大 die 對比同質雙 compute die）",
+   "options": [
+    "Gaudi 2：單一 7nm die",
+    "Gaudi 3：兩顆相同的 5nm compute die，經 interposer bridge 相連，D2D 對軟體透明，行為等同一顆大 die"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3"
+  },
+  {
+   "decision": "矩陣運算單元的粒度（少數大陣列對比大量小核）",
+   "options": [
+    "8 個 256x256 MME，每個每週期吃 512B 輸入",
+    "256 個 16x16 小核（等效 64K MAC，合計每週期吃 8192B 輸入，約 16 倍）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.13"
+  },
+  {
+   "decision": "片上 SRAM 的組織與配置（共用 LLC 或分片 L2，按 tensor 配置）",
+   "options": [
+    "96MB 當統一的 L3",
+    "切成 4 片 24MB L2（每片給 2 MME＋16 TPC，I/O 吞吐約 L3 的 2 倍）",
+    "allocation hint：放 L2、放 L3、或兩者都放，由軟體按 I/O tensor 動態決定"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.16"
+  },
+  {
+   "decision": "記憶體容量與頻寬怎麼配，以及模型大小決定瓶頸在哪",
+   "options": [
+    "Gaudi 2：6 顆 HBM2e／96GB／2.46TB/s",
+    "Gaudi 3：8 顆 HBM2e／128GB／3.7TB/s",
+    "13B 以下的模型：受頻寬限制，加速約等於頻寬比（約 1.5 倍）",
+    "70B 等大模型：受容量限制，容量讓 batch 能加大，加速超過 2 倍"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.30"
+  },
+  {
+   "decision": "多出來的記憶體容量拿來做什麼",
+   "options": [
+    "加大 batch",
+    "避免重算",
+    "避免模型平行切分（省掉網路通訊）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.16"
+  },
+  {
+   "decision": "運算精度",
+   "options": [
+    "FP8（E4M3／E5M2，MME 內建 on-the-fly scaling）",
+    "BF16",
+    "FP16",
+    "TF32",
+    "FP32（MME 各精度都用 FP32 累加）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.13"
+  },
+  {
+   "decision": "運算和通訊要不要重疊（異質引擎排程）",
+   "options": [
+    "依序執行：GEMM→all-reduce→norm，中間經 cache／HBM，延遲長",
+    "切 slice，讓 MME→NIC→TPC 以 producer-consumer 管線執行，中繼結果放 cache"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.29"
+  },
+  {
+   "decision": "板卡形式與 scale-up 拓撲",
+   "options": [
+    "OAM 900W，8 卡 all-to-all（每卡 21 個 200GbE 埠連其他卡，3 個埠對外）",
+    "PCIe 卡 600W，經 top board 4 卡互連（每卡 18 條 200GbE）"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.4"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "compute_arch",
+   "id": "matrix_unit_granularity",
+   "label": "矩陣單元粒度",
+   "definition": "文件比較或說明矩陣運算單元的大小與數量（少數大陣列對比大量小核），以及它對輸入頻寬和小 GEMM 利用率的影響。",
+   "why": "edge decode 的 batch 小、GEMM 小，陣列尺寸決定利用率和 SRAM 頻寬需求；現在沒有任何標籤能篩出「有談陣列粒度和小 GEMM 利用率」的文件，agent 只能翻全文。"
+  },
+  {
+   "group": "workload",
+   "id": "bottleneck_crossover",
+   "label": "瓶頸分界條件",
+   "definition": "文件寫出在什麼工作負載條件（模型大小、batch、context 長度、session 數）下，效能改由頻寬、容量或算力決定。",
+   "why": "Tack 做 DSE 需要「工作負載條件對應到哪個資源先卡住」；bandwidth_capacity 只表示文件裡有頻寬或容量的數字，agent 查不到哪些文件真的給了分界，例如本文 p.30 的 13B 和 70B 分界。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "on_chip_sram",
+   "suggestion": "拆成 sram_main_memory（SRAM 就是主要記憶體，權重或 KV 全放片上）和 sram_cache（SRAM 當 LLC 或軟體管理的快取，搭配 HBM 或 LPDDR，含 L2／L3 與 per-tensor 配置策略）。Gaudi 3 有 96MB SRAM，但依現有定義不能標，這份文件按 tensor 配置 cache 的作法（對應 KV 放片上還是放 DRAM）因此查不到。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "拆成 mem_bandwidth 和 mem_capacity。本文 p.16、p.30 把兩者的效果分開講（頻寬決定小模型的速度，容量決定 batch 和能不能避免切分）；合成一個標籤，agent 分不出文件有沒有討論容量的效果。"
+  },
+  {
+   "tag": "proprietary_d2d",
+   "suggestion": "定義裡把同一封裝內的 die-to-die（NV-HBI、Infinity Fabric、Gaudi 3 的雙 die 互連）和跨封裝的 chip-to-chip（NVLink-C2C、Gaudi 3 的 24x200GbE RoCE）混在一起。建議拆成 proprietary_d2d（封裝內）和 chip_to_chip_link（跨封裝），不然搜 D2D 能耗或頻寬時會混進 scale-out 的數字。"
+  },
+  {
+   "tag": "bridge",
+   "suggestion": "拆成 bridge_in_organic（EMIB 這類，有機基板內嵌橋接，成本較低，edge 可能用得到）和 bridge_in_interposer（CoWoS-L 的 LSI，仍是 RDL 中介層，成本接近 2.5D）。兩者對 edge 的成本判斷差很多。本文只寫「interposer bridge」（p.3），所以給這份文件下 bridge 標籤本身就不確定；本文可能只能歸到後者或標成未知。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.5027446000000001,
+  "turns": 6
+ }
+}

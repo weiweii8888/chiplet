@@ -1,0 +1,23 @@
+# 設計案例卡模板：複製成 cards/CASE-<產品>.yaml 再填
+# 數字不要直接寫在這裡：先記進 numbers.csv，這裡只引用 num_id
+
+case_id: CASE-XXX            # 也要在 catalog.csv 加一列，type=case
+product: ""                  # 例：AMD Instinct MI300X
+vendor: ""
+year:
+sources: []                  # catalog.csv 的 doc_id，例：[WP-AMD-CDNA3]
+
+workload: ""                 # 這顆晶片主要服務什麼工作負載（LLM 推論／訓練…）
+
+design:                      # 對到 schema/dse_dimensions.yaml 的維度
+  compute_die: {choice: "", numbers: []}   # numbers 填 num_id，例：[N0012, N0013]
+  partition:   {choice: "", numbers: []}
+  memory:         {choice: "", numbers: []}
+  d2d:         {choice: "", numbers: []}
+  package:     {choice: "", numbers: []}
+  thermal_power: {choice: "", numbers: []}
+
+why: ""                      # 文件裡怎麼解釋這些選擇（附 doc_id 與頁碼）
+kv_implication: ""           # 對 KV／長 context 的意義，例：總 HBM 容量可放幾個 session 的 KV（標明是自己推算）
+compare_with: []             # 可對照的其他案例卡
+open_questions: []           # 文件沒交代、還要查的地方

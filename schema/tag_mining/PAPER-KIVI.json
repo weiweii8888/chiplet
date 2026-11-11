@@ -1,0 +1,132 @@
+{
+ "doc_id": "PAPER-KIVI",
+ "existing_tags": [
+  "generic",
+  "datacenter",
+  "paper",
+  "llm_inference",
+  "kv_cache",
+  "bandwidth_capacity"
+ ],
+ "decisions": [
+  {
+   "decision": "KV cache 用幾位元存",
+   "options": [
+    "16bit（基準）",
+    "4bit 逐 token 量化",
+    "2bit 各種量化方向組合（模擬量化）",
+    "KIVI-4",
+    "KIVI-2"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.3（Table 1）; PDF p.8（Table 3：Llama-2-7B／13B、Falcon-7B、Mistral-7B）"
+  },
+  {
+   "decision": "K 與 V 各沿哪個方向分組量化",
+   "options": [
+    "K 逐 token／V 逐 token",
+    "K 逐 channel／V 逐 channel",
+    "K 逐 token／V 逐 channel",
+    "K 逐 channel／V 逐 token（KIVI 採用）"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.3（Table 1，OB1–OB3）; PDF p.4（Table 2 相對誤差）; PDF p.8（Table 3）"
+  },
+  {
+   "decision": "最近的 token 留幾個不量化（全精度殘差窗口長度 R）",
+   "options": [
+    "不留窗口、全部量化（模擬量化）",
+    "R=32",
+    "R=64",
+    "R=96",
+    "R=128"
+   ],
+   "serves": "kv_runtime",
+   "evidence": "PDF p.5（演算法：最近 R 個 token 用全精度）; PDF p.6（GSM8K 上 KIVI 和模擬量化的差距來自這個窗口）; PDF p.7（residual length 消融）; PDF p.14（Table 7：R128 對 R32）"
+  },
+  {
+   "decision": "量化分組大小 G（每組各存一份 scale／zero-point，G 越小，每個 token 的 KV 位元組越多）",
+   "options": [
+    "G=32",
+    "G=64",
+    "G=128"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.7（group size 消融：32 和 64 差不多，128 明顯變差）"
+  },
+  {
+   "decision": "KV 精度要不要隨 attention 架構調整（MHA 對 MQA／GQA）",
+   "options": [
+    "MHA 模型（Llama-2）用 2bit",
+    "MQA 模型（Falcon-7B）用 2bit 或 4bit",
+    "GQA 模型（Llama-3-8B、Mistral-7B-v0.2）用 2bit 或 4bit"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.6（Falcon-7B 本身 KV 已壓縮很多，2bit 掉分大，要用 4bit）; PDF p.14（Table 8、9：GQA 模型在 LongBench 上的結果）"
+  },
+  {
+   "decision": "固定記憶體下，KV 壓縮換來的空間拿去加大 batch（同時處理的請求數）",
+   "options": [
+    "FP16 基準",
+    "KIVI-2 R=128",
+    "KIVI-2 R=32",
+    "batch 一路加到 OOM（A100 80GB、Llama-2-7B、ShareGPT 長度分布）"
+   ],
+   "serves": "both",
+   "evidence": "PDF p.7–8（4.2.4 節與 Fig. 5：峰值記憶體與吞吐對 batch 的曲線，batch 最多大 4 倍、吞吐提高 2.35–3.47 倍）"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "kv_policy（新組：執行期 KV 決策）",
+   "id": "kv_quantization",
+   "label": "KV 量化／降精度",
+   "definition": "文件比較 KV cache 用多少位元存、怎麼分組量化，或哪些 token 保留全精度。",
+   "why": "現在的 kv_cache 指的是「放置與搬移」，agent 查「KV 能壓到幾 bit、精度掉多少」時，會和 offloading、paging 類文件混在一起，分不出來；KV 精度又是硬體 DSE 的一個維度，需要能直接篩出來。"
+  },
+  {
+   "group": "metric",
+   "id": "model_quality",
+   "label": "模型品質（準確率／分數）",
+   "definition": "文件報告壓縮、量化或逐出之後的任務準確率、F1、ROUGE、perplexity 或 NIAH 檢索率。",
+   "why": "metric 組只有硬體指標。執行期的 KV 決策本質上是拿品質換記憶體；少了這個標籤，agent 找不到「某個精度或策略下品質掉多少」的文件，硬體 DSE 也沒辦法把 KV 精度下限當限制條件。"
+  },
+  {
+   "group": "workload",
+   "id": "long_context",
+   "label": "長 context",
+   "definition": "文件有在長序列上評估或分析（例如 ≥8K token、LongBench、needle-in-a-haystack）。",
+   "why": "context 長度是決定 KV 佔多少記憶體、最佳硬體長什麼樣的主要工作負載條件。現有標籤沒辦法篩出「有長 context 證據」的文件，agent 只能逐篇翻實驗設定。"
+  },
+  {
+   "group": "workload",
+   "id": "batch_scaling",
+   "label": "batch／同時 session 數掃描",
+   "definition": "文件掃描 batch 大小或同時請求數，並報告記憶體用量、吞吐或延遲隨它的變化。",
+   "why": "同時跑的 session 數是 Tack 硬體 DSE 的關鍵條件。現有的 llm_on_device 只代表 batch 小，沒有標籤能指出「有記憶體或吞吐對 batch 曲線」的文件（例如本文 Fig. 5），agent 拿不到容量和並行度之間的換算依據。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "kv_cache",
+   "suggestion": "現在的定義是「放置與搬移」，但實際會被拿來標所有和 KV 有關的文件。建議把它收窄成 kv_placement（放在哪一層：SRAM、DRAM、flash、卸載），演算法類的執行期決策移到新的 kv_policy 組：kv_quantization、kv_eviction、kv_reuse（前綴或跨 session 重用）、sparse_attention、context_compression，正好對應 Tack 的保留、量化、逐出、重用、稀疏、壓縮。本文只能標 kv_quantization。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "拆成 capacity 和 bandwidth。本文只量了容量（峰值記憶體少 2.6 倍、batch 大 4 倍），沒有量頻寬。合在一起時，agent 會以為這份文件有頻寬數字；硬體 DSE 裡，容量決定 LPDDR 顆數，頻寬決定 DRAM 技術，兩者是不同的決策。"
+  },
+  {
+   "tag": "llm_inference",
+   "suggestion": "依階段拆成 llm_prefill 和 llm_decode（或另加一個階段標籤）。KIVI 在 prefill 時用精確的 KV，只有 decode 時讀量化後的 KV；它的效益來自 decode 受記憶體限制這一點。兩個階段的瓶頸不同，硬體結論也不同。"
+  },
+  {
+   "tag": "generic",
+   "suggestion": "現在把「方法不限場景」和「數字在哪個平台量的」混在一起。KIVI 的方法是通用的，但效率數字全部來自 A100 80GB、batch 數百，用 scenario=edge 查詢時會一併被當成 edge 參考。建議 catalog 的 scenario 只描述方法適用的範圍，另外加 eval_platform 組（例如 gpu_datacenter、edge_soc、simulator、analytical），或在數字的 condition 欄強制記錄平台。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.3724055,
+  "turns": 5
+ }
+}

@@ -1,0 +1,168 @@
+defaults:
+  doc_id: PAPER-NN-BATON
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: partition_count_studied
+  value: 4
+  unit: count
+  condition: design=NN-Baton DSE; total_MAC=2048; per-chiplet area<=2 mm2; best=4-chiplet x 4 cores x 16 lanes x 8-size vector-MAC; benchmarks=AlexNet/VGG-16/ResNet-50/DarkNet-19; precision=INT8; 算法=NN-Baton
+    pre-design flow 模擬結果
+  location: PDF p.1
+  quote: the 4-chiplet implementation with 4 cores and 16 lanes of 8-size vector-MAC
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: partition_count_studied
+  value: 2
+  unit: count
+  condition: design=NN-Baton DSE; total_MAC=4096; per-chiplet area<=3 mm2; best=2-chiplet x 8 cores x 16 lanes x 16-vector-size; benchmarks=VGG-16/ResNet-50 (512x512), DarkNet-19 (224x224); 算法=NN-Baton
+    DSE 模擬結果（約5800個有效點）
+  location: PDF p.11 Fig. 15
+  quote: configurations of 2- ... 8-core, 16-lane, and 16-vector-size
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_area
+  value: 2
+  unit: mm2
+  condition: design=NN-Baton DSE; 每顆 chiplet 面積上限（DSE 限制條件）; total_MAC=2048; 只含 SRAM、RF、MAC 與 off-chip PHY
+  location: PDF p.1
+  quote: For a 2048-MAC system under a 2 mm
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_area
+  value: 3
+  unit: mm2
+  condition: design=NN-Baton DSE; 每顆 chiplet 面積上限（DSE 限制條件）; total_MAC=4096
+  location: PDF p.11 Fig. 15
+  quote: we apply a chiplet area constraint of 3 mm
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_mac_count
+  value: 512
+  unit: count
+  condition: design=NN-Baton 2048-MAC 最佳點; 算法=4 cores x 16 lanes x 8-size vector-MAC = 512 MAC/chiplet; compute_die_count=4
+  location: PDF p.1
+  quote: the 4-chiplet implementation with 4 cores and 16 lanes of 8-size vector-MAC
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_mac_count
+  value: 2048
+  unit: count
+  condition: design=NN-Baton 4096-MAC 最佳點; 算法=8 cores x 16 lanes x 16-vector-size = 2048 MAC/chiplet; compute_die_count=2
+  location: PDF p.11
+  quote: configurations of 2- ... 8-core, 16-lane, and 16-vector-size
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: die_mac_count
+  value: 512
+  unit: count
+  condition: design=NN-Baton 逐層 mapping 案例設定; 算法=8 cores x 8 lanes x 8-size vector MAC = 512 MAC/chiplet; compute_die_count=4; precision=INT8
+  location: PDF p.8
+  quote: hardware model with 4 chiplets, 8 cores, 8 lanes of 8- ... size vector MAC, 1.5KB O-L1, 800B A-L1, 18KB W-L1
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_count
+  value: 4
+  unit: count
+  condition: design=NN-Baton 逐層 mapping 案例設定（Sec. VI-A）; 8 cores/chiplet; 與 Simba 比較時也是 4-chiplet
+  location: PDF p.8
+  quote: hardware model with 4 chiplets, 8 cores, 8 lanes of 8-
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_count
+  value: 1
+  unit: count
+  condition: design=NN-Baton 探索範圍下限; pkg=directional ring network on package
+  location: PDF p.2
+  quote: the directional ring network on package interconnecting 1-to-8 chiplets
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: compute_die_count
+  value: 8
+  unit: count
+  condition: design=NN-Baton 探索範圍上限; pkg=directional ring network on package
+  location: PDF p.2
+  quote: the directional ring network on package interconnecting 1-to-8 chiplets
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_clock_freq
+  value: 500
+  unit: MHz
+  condition: design=NN-Baton 能耗模型; MAC 以 16 nm 縮放後的操作頻率; precision=INT8
+  location: PDF p.8
+  quote: running at 500MHz frequency
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: process_node
+  value: 16
+  unit: nm
+  condition: design=NN-Baton 能耗／面積模型; 由 28 nm 合成結果縮放到 16 nm，以配合 GRS macro
+  location: PDF p.8
+  quote: Scaled to 16 nm technology to match the GRS macro
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: process_node
+  value: 28
+  unit: nm
+  condition: design=NN-Baton; 運算 core 的合成製程（UMC 28 nm, Synopsys DC），之後縮放到 16 nm
+  location: PDF p.8
+  quote: synthesize a computation core in the UMC 28 nm process technology
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: die_peak_compute
+  value: 0.512
+  unit: TOPS
+  condition: design=NN-Baton 2048-MAC 4-chiplet 最佳點; precision=INT8; 算法=512 MAC/chiplet x 2 ops x 500 MHz; 頻率取自 p.8
+  location: PDF p.10
+  quote: With 2048 MAC units in total, there are up to 63 possibilities
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: package_peak_compute
+  value: 2.048
+  unit: TOPS
+  condition: design=NN-Baton 2048-MAC 系統; precision=INT8; no sparsity; 算法=2048 MAC x 2 ops x 500 MHz; 頻率取自 p.8
+  location: PDF p.10
+  quote: With 2048 MAC units in total, there are up to 63 possibilities
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_energy_per_bit
+  value: 1.17
+  unit: pJ/bit
+  condition: design=NN-Baton 能耗模型; D2D=GRS (ground-referenced signaling); process=16 nm; 數值引用自 [66]，作為本文評估設定
+  location: PDF p.8
+  quote: The average GRS energy in our evaluation is 1.17
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_energy_per_bit
+  value: 3.34
+  unit: pJ/bit
+  condition: design=NN-Baton 背景說明; 每 1-bit 傳輸經過一對 D2D PHY 的能耗; 與 Table I／Sec. V 的 1.17 pJ/bit 不一致，可能含其他開銷，需人工確認
+  location: PDF p.3
+  quote: each 1-bit transfer consumes 3.34 pJ energy
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: d2d_phy_area
+  value: 0.38
+  unit: mm2
+  condition: design=NN-Baton 面積模型; D2D=GRS macro; process=16 nm; 數值引用自 [66]
+  location: PDF p.8
+  quote: The average GRS energy in our evaluation is 1.17 ... with a 0.38 mm
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: mem_energy_per_bit
+  value: 8.75
+  unit: pJ/bit
+  condition: design=NN-Baton 能耗模型; mem_type=DRAM（未指明型號）; 經 DDR PHY 存取; process=16 nm 系統; 數值引用自 [22, 71]
+  location: PDF p.8
+  quote: The DRAM power is estimated to be 8.75
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: memory_die_count
+  value: 4
+  unit: count
+  condition: design=NN-Baton 4-chiplet 系統; mem_type=DRAM; 每顆 chiplet 配一顆 global DRAM（N_P 顆），透過 crossbar 共享; Fig. 2 標示 memory bus on package
+  location: PDF p.7
+  quote: four DRAMs are integrated into the system
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok

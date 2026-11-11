@@ -1,0 +1,121 @@
+{
+ "doc_id": "PAPER-SGLANG",
+ "rows": [
+  {
+   "parameter": "mem_total_capacity",
+   "value": 24,
+   "unit": "GB",
+   "condition": "product=NVIDIA A10G; per_GPU; mem_type=GDDR6(未在原文註明); role=實驗硬體(AWS EC2 G5); 場景=datacenter 對照; 用途=Llama-7B 單卡實驗",
+   "location": "PDF p.7",
+   "quote": "A10G GPUs (24GB). We run 7B models on a single A10G GPU",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 80,
+   "unit": "GB",
+   "condition": "product=NVIDIA A100G(原文寫法); per_GPU; role=實驗硬體; 場景=datacenter 對照",
+   "location": "PDF p.7",
+   "quote": "We run some additional experiments on A100G (80GB) GPUs.",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 192,
+   "unit": "GB",
+   "condition": "product=8x NVIDIA A10G; model=Mixtral-8x7B; parallelism=tensor parallel; 算法=8 GPU × 24 GB; 場景=datacenter 對照",
+   "location": "PDF p.18",
+   "quote": "running Mixtral-8x7B on 8 A10G (24GB) GPUs",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 320,
+   "unit": "GB",
+   "condition": "product=4x NVIDIA A100G; model=Llama-2-70B; parallelism=tensor parallel; 算法=4 GPU × 80 GB; 場景=datacenter 對照",
+   "location": "PDF p.18",
+   "quote": "running Llama-70B on 4 A100G (80GB) GPUs",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "model_weight_size",
+   "value": 14,
+   "unit": "GB",
+   "condition": "model=Llama-2-7B; params=7B; precision=FP16; 算法=7e9 params × 2 bytes; 下限(論文模型參數量範圍 7B~70B 的最小值)",
+   "location": "PDF p.7",
+   "quote": "the number of parameters ranges from 7 billion to 70 billion, and we use float16 precision",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "model_weight_size",
+   "value": 140,
+   "unit": "GB",
+   "condition": "model=Llama-2-70B; params=70B; precision=FP16; 算法=70e9 params × 2 bytes; 上限(論文模型參數量範圍 7B~70B 的最大值)",
+   "location": "PDF p.7",
+   "quote": "the number of parameters ranges from 7 billion to 70 billion, and we use float16 precision",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 256,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat; turns=4; 每輪輸入長度下限(256-512 隨機取樣); 非整段 context 長度",
+   "location": "PDF p.7",
+   "quote": "where the input of each turn is randomly sampled between 256-512 tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 512,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat; turns=4; 每輪輸入長度上限(256-512 隨機取樣); 非整段 context 長度",
+   "location": "PDF p.7",
+   "quote": "where the input of each turn is randomly sampled between 256-512 tokens",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 4,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat (short); 每輪輸出長度下限(4-8 tokens); 輸出長度而非 context",
+   "location": "PDF p.7",
+   "quote": "Multi-turn chat (short) means short output (4-8 tokens)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 8,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat (short); 每輪輸出長度上限(4-8 tokens); 輸出長度而非 context",
+   "location": "PDF p.7",
+   "quote": "Multi-turn chat (short) means short output (4-8 tokens)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 256,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat (long); 每輪輸出長度下限(256-512 tokens); 輸出長度而非 context",
+   "location": "PDF p.7",
+   "quote": "multi-turn chat (long) means long output (256-512 tokens)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 512,
+   "unit": "tokens",
+   "condition": "workload=multi-turn chat (long); 每輪輸出長度上限(256-512 tokens); 輸出長度而非 context",
+   "location": "PDF p.7",
+   "quote": "multi-turn chat (long) means long output (256-512 tokens)",
+   "value_kind": "assumed"
+  }
+ ],
+ "leads": [],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "A",
+  "seconds": 39,
+  "cost_usd": 0.42623639999999996,
+  "turns": 5
+ }
+}

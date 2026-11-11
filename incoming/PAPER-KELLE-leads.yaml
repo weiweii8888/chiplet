@@ -1,0 +1,22 @@
+doc_id: PAPER-KELLE
+leads:
+- parameter: die_sram_capacity
+  value: 4
+  unit: MB
+  cited_ref: '[2]'
+  note: NVIDIA Jetson Orin NX edge GPU has only 4MB L3 cache (PDF p.1)
+- parameter: mem_total_bandwidth
+  value: 64
+  unit: GB/s
+  cited_ref: '[72]'
+  note: Kelle's 16GB LPDDR4 at 64GB/s is described as similar to the DRAM in Google Coral edge device (PDF p.3, p.10)
+- parameter: memory_die_count
+  value: null
+  unit: count
+  cited_ref: '[90]'
+  note: 'Cambricon-LLM: chiplet-based hybrid architecture with NPU and a dedicated NAND flash chip for on-device 70B LLM inference (PDF p.3); 原文沒給數字，建議讀原論文'
+- parameter: mem_total_capacity
+  value: 16
+  unit: GB
+  cited_ref: '[72]'
+  note: Google Coral edge TPU dev board DRAM, which Kelle's 16GB DRAM is said to resemble (PDF p.3, p.10)

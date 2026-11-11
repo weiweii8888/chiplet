@@ -1,0 +1,101 @@
+doc_id: PAPER-STREAMINGLLM
+rows:
+- parameter: decode_throughput
+  value: 0.428
+  unit: tokens/s
+  condition: design=sliding window with re-computation (baseline); model=Llama-2-13B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; cache_size=4096; 換算=1000/2335 ms per-token
+    latency (Fig. 10 bar value 2335 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  reason: 只有 A 抽到（B 沒有同參數同值）
+- parameter: context_length
+  value: 256.0
+  unit: tokens
+  condition: design=StreamingLLM; 效率實驗 cache size（attention window size）下限; model=Llama-2-7B/13B; hw=NVIDIA A6000
+  location: PDF p.9 Fig. 10
+  quote: plotted against the cache size (attention window size) on the X-axis
+  value_kind: assumed
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 32.26
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-7B; cache=512; hw=single NVIDIA A6000; derived=1000/31 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 28.57
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-7B; cache=1024; hw=single NVIDIA A6000; derived=1000/35 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 22.22
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-7B; cache=2048; hw=single NVIDIA A6000; derived=1000/45 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 15.87
+  unit: tokens/s
+  condition: design=sliding window w/ re-computation baseline; model=Llama-2-7B; cache=256; hw=single NVIDIA A6000; derived=1000/63 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 19.23
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-13B; cache=512; hw=single NVIDIA A6000; derived=1000/52 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 16.67
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-13B; cache=1024; hw=single NVIDIA A6000; derived=1000/60 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 13.33
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-13B; cache=2048; hw=single NVIDIA A6000; derived=1000/75 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 10.1
+  unit: tokens/s
+  condition: design=sliding window w/ re-computation baseline; model=Llama-2-13B; cache=256; hw=single NVIDIA A6000; derived=1000/99 ms per-token latency（Fig. 10 讀值）
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: decode_throughput
+  value: 0.425
+  unit: tokens/s
+  condition: design=sliding window w/ re-computation baseline; model=Llama-2-13B; cache=4096; hw=single NVIDIA A6000; derived=1000/2355 ms per-token latency（Fig. 10 讀值）; 與 StreamingLLM 106 ms 相比即 22.2x
+    speedup
+  location: PDF p.9 Fig. 10
+  quote: 'Figure 10: Comparison of per-token decoding latency and memory usage between the sliding window approach'
+  value_kind: derived
+  reason: 只有 B 抽到（A 沒有同參數同值）
+- parameter: context_length
+  value: 400000.0
+  unit: tokens
+  condition: models=Falcon-7B, MPT-7B, Pythia-12B, Llama-2-7B; dataset=concatenated PG19; 評估文本長度; 原文 400K tokens
+  location: PDF p.5 Table 2
+  quote: evaluated on 400K tokens in the concatenated PG19 test set
+  value_kind: assumed
+  ai_check: A/B 一致
+  reason: A/B 一致但出處檢查失敗：引句有 1/1 段不在 STREAMINGLLM.pdf p.5

@@ -1,0 +1,37 @@
+doc_id: PAPER-KIVI
+leads:
+- parameter: kv_cache_size
+  value: 3000000
+  unit: MB
+  cited_ref: (Pope et al., 2023)
+  note: PDF p.1：540B PaLM, batch=512, context=2048 時 KV cache 約 3TB（原文 3TB，以十進位換成 MB）；約為模型參數大小的 3 倍
+- parameter: context_length
+  value: 2048
+  unit: tokens
+  cited_ref: (Pope et al., 2023)
+  note: PaLM-540B 例子用的 context 長度，batch 512；PDF p.1
+- parameter: kv_cache_size
+  value: 1200000
+  unit: MB
+  cited_ref: (Sheng et al., 2023)
+  note: PDF p.3：OPT-175B, batch=512, l_prompt=512, l_gen=32 時 KV cache 1.2TB（原文 1.2TB），為模型權重的 3.8 倍
+- parameter: model_weight_size
+  value: 316
+  unit: GB
+  cited_ref: (Sheng et al., 2023)
+  note: PDF p.3：由 1.2TB / 3.8 推得 OPT-175B 權重約 316 GB（derived；FP16 175B 理論值約 350 GB，需核對）
+- parameter: context_length
+  value: 161
+  unit: tokens
+  cited_ref: (Kwon et al., 2023)
+  note: PDF p.7：ShareGPT 資料集平均 input prompt 長度 l_prompt=161（KIVI 效率實驗用的合成工作負載）
+- parameter: context_length
+  value: 338
+  unit: tokens
+  cited_ref: (Kwon et al., 2023)
+  note: PDF p.7：ShareGPT 資料集平均 output 長度 l_gen=338
+- parameter: model_weight_size
+  value: 1000
+  unit: GB
+  cited_ref: (Pope et al., 2023)
+  note: PDF p.1：由 'KV cache alone can take 3TB. This is 3 times the size of the model's parameters' 推得 PaLM 540B 權重約 1TB（derived，未直接寫出）

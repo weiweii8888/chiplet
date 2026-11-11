@@ -1,0 +1,230 @@
+# chiplet 在 DSE 裡的設計維度，以及每個維度要從文件抽哪些數字
+# 2026-11-09 改為 edge 版：主要對象是跑 LLM 的嵌入式／edge AI 加速器，資料中心加速器只當對照組
+# numbers.csv 的 parameter 欄只能用這裡 params 底下的 id
+#
+# 每個參數的欄位：
+#   unit       numbers.csv 必須用的單位
+#   priority   P1＝DSE 第一版一定要有；P2＝讓模型更準；P3＝只當參考或資料中心對照
+#   why        這個數字在 DSE 裡拿來算什麼
+#   replaces   對應的舊參數 id（2026-11-09 轉換時用；轉換紀錄見 tools/migrate_edge.py）
+#   aliases    文件裡常見的說法：用 grep 找候選頁，也讓 LLM 知道哪些寫法算同一個參數
+#   pitfalls   抽數字時容易犯的錯，每踩到一次就加一條
+#
+# 情境寫在 numbers.csv 的 condition 欄，建議固定用這些 key：
+#   product、precision（INT8/INT4/FP16/BF16）、mem_type（LPDDR4X/LPDDR5/LPDDR5X/LPDDR6/HBM3/NAND）、
+#   mem_loc（on_package/on_board）、pkg（organic/interposer/bridge/fan_out/3d）、spec（UCIe-2.0、BoW-2.0…）、dir（uni/bi）
+
+schema_version: 2
+
+scope:
+  target: 跑 LLM 的嵌入式／edge AI 加速器（功耗約數 W 到數十 W、die 小、通常沒有 HBM、成本敏感）
+  reference: 資料中心加速器只當對照組，catalog 標 datacenter
+
+dimensions:
+
+  compute_die:
+    name: 運算 die
+    example_values: [1, 2, 4, 8]
+    params:
+      compute_die_count: {unit: count, priority: P1, replaces: compute_die_count,
+        why: 封裝內加速器 die 數，決定總算力與 D2D 流量,
+        aliases: [chiplets, dies, tiles, MCM, multi-chip]}
+      compute_die_area: {unit: mm2, priority: P1, replaces: compute_die_area,
+        why: 算良率與成本；edge 的 die 通常很小（數 mm2 到 100 多 mm2）,
+        aliases: [die size, die area, "mm²"]}
+      process_node: {unit: nm, priority: P1, replaces: process_node,
+        why: 決定每 mm2 算力、能耗與晶圓成本,
+        aliases: [technology node, nm, FinFET, CMOS]}
+      die_peak_compute: {unit: TOPS, priority: P1, replaces: die_peak_compute,
+        why: 單 die 峰值算力（condition 註明精度與是否含 sparsity）,
+        aliases: [TOPS, TFLOPS, GOPS, peak throughput],
+        pitfalls: [GOPS 要換算成 TOPS 並在 condition 記原值, "1 MAC = 2 OPs，論文常混用"]}
+      die_energy_efficiency: {unit: TOPS/W, priority: P1,
+        why: edge 首先受功耗限制，TOPS/W 是最常被比較的指標,
+        aliases: [TOPS/W, GOPS/W, energy efficiency, pJ/op, pJ/MAC],
+        pitfalls: ["pJ/MAC 可換算 TOPS/W，但要註明是否只算 PE 陣列", 峰值效率和實測效率分開記]}
+      die_power: {unit: W, priority: P1,
+        why: 單 die 功耗；乘 die 數再加 D2D 功耗就是封裝功耗，拿來對照功耗預算,
+        aliases: [power, power consumption, mW, TDP],
+        pitfalls: [mW 換成 W 並在 condition 記原值, 註明是峰值、典型還是某個工作負載下量到的]}
+      die_sram_capacity: {unit: MB, priority: P1, replaces: die_sram_capacity,
+        why: edge 加速器常靠片上 SRAM 放權重和 KV；容量決定要不要常去外部記憶體,
+        aliases: [SRAM, global buffer, on-chip memory, scratchpad, KB, MB],
+        pitfalls: [KB 換成 MB, 分清楚每個 PE 的 buffer 和整顆 die 的總量]}
+      die_mac_count: {unit: count, priority: P2,
+        why: 學術 DSE（NN-Baton、Simba、Gemini）常用 MAC／PE 數描述算力，配合頻率換算 TOPS,
+        aliases: [MACs, PEs, MAC units, processing elements]}
+      die_clock_freq: {unit: MHz, priority: P2,
+        why: 和 MAC 數一起換算峰值算力；也影響功耗,
+        aliases: [frequency, clock, MHz, GHz]}
+      die_sram_bandwidth: {unit: GB/s, priority: P2,
+        why: 片上 SRAM 頻寬，決定運算單元能不能吃飽,
+        aliases: [SRAM bandwidth, buffer bandwidth]}
+      reticle_limit_area: {unit: mm2, priority: P3, replaces: reticle_limit_area,
+        why: edge 的 die 遠小於 reticle 上限，只當參考}
+
+  partition:
+    name: 切分方式
+    example_values: [monolithic, homogeneous_compute, host_soc+accel_chiplet, npu+memory_chiplet, cpu+accel+memory]
+    params:
+      io_die_count: {unit: count, priority: P2, replaces: io_die_count,
+        why: IO 或 host SoC 是否獨立成 die；edge 常見「一顆 host SoC＋外掛加速 chiplet」,
+        aliases: [IO die, IOD, host die, base die, SoC die]}
+      memory_die_count: {unit: count, priority: P1,
+        why: 封裝內記憶體 die 數（LPDDR on-package、NAND flash chiplet 等），決定容量與頻寬能不能拉高,
+        aliases: [memory on package, MoP, flash die, DRAM die]}
+      expansion_chiplet_max: {unit: count, priority: P2,
+        why: 平台最多能外掛幾顆加速 chiplet，代表同一顆 SoC 能延伸多少算力,
+        aliases: [up to, scalable, chiplet expansion]}
+      partition_count_studied: {unit: count, priority: P2,
+        why: 論文 DSE 找到的最佳切分數（condition 註明總算力或總面積），給 DSE 當起點,
+        aliases: [granularity, number of chiplets, optimal],
+        pitfalls: [一定要記是在什麼總規模下的最佳值，例如「2048 MAC、每 chiplet ≤ 2 mm2」]}
+      stacked_cache_capacity: {unit: MB, priority: P3, replaces: stacked_cache_capacity,
+        why: 3D 堆疊快取；edge 少見，只當參考}
+
+  memory:
+    name: 記憶體
+    example_values: [SRAM-only, LPDDR4X, LPDDR5, LPDDR5X, LPDDR6, NAND-flash, HBM3(對照)]
+    note: 記憶體種類寫在 condition 的 mem_type；放封裝內或板上寫 mem_loc
+    params:
+      mem_total_capacity: {unit: GB, priority: P1, replaces: total_hbm_capacity,
+        why: 整個加速器可用的外部記憶體總量，決定模型權重和 KV 放不放得下,
+        aliases: [memory capacity, GB, DRAM size]}
+      mem_total_bandwidth: {unit: GB/s, priority: P1, replaces: total_hbm_bandwidth,
+        why: 外部記憶體總頻寬；decode 讀權重和 KV 的上限,
+        aliases: [memory bandwidth, GB/s, TB/s],
+        pitfalls: [TB/s 換成 GB/s, 註明是峰值還是實測]}
+      mem_bus_width: {unit: bit, priority: P1,
+        why: 總匯流排寬度（例如 64、128、256 bit）；乘 pin 速率除 8 等於總頻寬，可做一致性檢查,
+        aliases: [bus width, x16, x32, bit interface, channels]}
+      mem_pin_rate: {unit: Gb/s, priority: P1, replaces: hbm_pin_rate,
+        why: 每 pin 速率（規格值與產品值分開記）,
+        aliases: [data rate, MT/s, Gbps, speed bin],
+        pitfalls: ["MT/s 數字除以 1000 就是 Gb/s，condition 記原值", 廠商常把 Gb/s 寫成 GHz（Gaudi 3 白皮書即是）]}
+      mem_energy_per_bit: {unit: pJ/bit, priority: P1, replaces: [hbm_energy_per_bit, dram_energy_per_bit],
+        why: 搬權重和 KV 的能耗；edge 功耗的大宗,
+        aliases: [pJ/bit, pJ/b, access energy, I/O energy],
+        pitfalls: [分清楚只算 I/O 還是含 DRAM core]}
+      mem_channel_bandwidth: {unit: GB/s, priority: P2, replaces: dram_channel_bandwidth,
+        why: 每 channel 頻寬，用來組出不同 channel 數的設計點}
+      mem_device_capacity: {unit: GB, priority: P2, replaces: hbm_stack_capacity,
+        why: 每顆記憶體（一個 LPDDR package 或一個 HBM stack）的容量}
+      flash_read_bandwidth: {unit: GB/s, priority: P2,
+        why: 權重放 NAND flash 的方案（Cambricon-LLM、KVNAND）用的讀取頻寬,
+        aliases: [flash bandwidth, NAND, read throughput]}
+      mem_cost_per_gb: {unit: USD/GB, priority: P2,
+        why: edge 很在意成本；LPDDR、HBM、flash 每 GB 價格差很多}
+      hbm_stack_count: {unit: count, priority: P3, replaces: hbm_stack_count, why: 只當資料中心對照}
+      hbm_interface_width: {unit: bit, priority: P3, replaces: hbm_interface_width, why: 只當資料中心對照}
+      hbm_channels: {unit: count, priority: P3, replaces: hbm_channels, why: 只當資料中心對照}
+      hbm_stack_height: {unit: count, priority: P3, replaces: hbm_stack_height, why: 只當資料中心對照}
+      hbm_footprint: {unit: mm2, priority: P3, replaces: hbm_footprint, why: 只當資料中心對照}
+
+  d2d:
+    name: die-to-die 介面
+    example_values: [UCIe-standard, UCIe-advanced, BoW, AIB, proprietary]
+    note: edge 多用有機基板（standard package），成本低，所以 UCIe-S、BoW 的數字優先
+    params:
+      d2d_energy_per_bit: {unit: pJ/bit, priority: P1, replaces: d2d_energy_per_bit,
+        why: 跨 die 搬資料的能耗；切越多 die 越吃功耗,
+        aliases: [pJ/bit, pJ/b, energy efficiency]}
+      d2d_shoreline_bw_density: {unit: GB/s/mm, priority: P1, replaces: d2d_shoreline_bw_density,
+        why: 每 mm die 邊長能出多少頻寬；小 die 的邊長很短，這個值決定 die 能切多小,
+        aliases: [beachfront, shoreline, Tb/s/mm, Gb/s/mm],
+        pitfalls: [Tb/s/mm 換成 GB/s/mm（乘 125）, 註明是有機基板還是中介層]}
+      d2d_data_rate: {unit: GT/s, priority: P1, replaces: d2d_data_rate,
+        why: 每 lane 速率,
+        aliases: [GT/s, Gb/s/wire, Gbps/lane, data rate]}
+      d2d_latency: {unit: ns, priority: P1, replaces: d2d_latency,
+        why: 跨 die 存取延遲,
+        aliases: [latency, ns]}
+      d2d_aggregate_bw: {unit: GB/s, priority: P1, replaces: d2d_aggregate_bw,
+        why: 產品實際的 die 間總頻寬（註明單向或雙向）}
+      d2d_bump_pitch: {unit: um, priority: P2, replaces: d2d_bump_pitch,
+        why: 決定頻寬密度與能用哪種封裝}
+      d2d_reach: {unit: mm, priority: P2, replaces: d2d_reach,
+        why: 兩顆 die 最遠能隔多遠}
+      d2d_module_width: {unit: count, priority: P2,
+        why: 一個 D2D module 有幾條 data lane（例如 UCIe standard x16、advanced x64）,
+        aliases: [lanes, module, x16, x64]}
+      d2d_phy_area: {unit: mm2, priority: P2,
+        why: 一個 D2D PHY 佔多少面積；edge 的 die 小，面積佔比明顯,
+        aliases: [PHY area, macro area]}
+      d2d_areal_bw_density: {unit: GB/s/mm2, priority: P3, replaces: d2d_areal_bw_density,
+        why: 主要用在 3D 堆疊；edge 先不優先}
+
+  workload_ref:
+    name: 工作負載參考（edge LLM 與硬體的連結）
+    params:
+      kv_cache_size: {unit: MB, priority: P1, replaces: kv_cache_size,
+        why: 特定模型、序列長度、batch 下的 KV cache 大小，對照記憶體容量,
+        pitfalls: [一定要記模型、序列長度、batch、精度]}
+      kv_bytes_per_token: {unit: MB/token, priority: P1,
+        why: 每個 token 的 KV 大小；乘 context 長度就是 KV 總量，edge 長 context 的硬限制,
+        pitfalls: [註明模型架構（層數、KV head 數、head 維度）與精度]}
+      model_weight_size: {unit: GB, priority: P1,
+        why: 模型權重佔多少記憶體（註明參數量與量化精度）}
+      decode_throughput: {unit: tokens/s, priority: P2,
+        why: 實測或模擬的 decode 速度，用來校正 DSE 的效能模型,
+        pitfalls: [註明硬體、模型、精度、batch、context 長度]}
+      context_length: {unit: tokens, priority: P2,
+        why: 論文或 trace 裡的典型 context 長度，接學弟 A 的 agent trace}
+
+  thermal_power:
+    name: 熱與供電
+    params:
+      device_power_budget: {unit: W, priority: P1,
+        why: 裝置可給加速器的功耗預算，是 edge DSE 的硬限制}
+      package_tdp: {unit: W, priority: P2, replaces: package_tdp,
+        why: 封裝總功耗上限（資料中心產品多半落在這裡）}
+      power_density_limit: {unit: W/mm2, priority: P3, replaces: power_density_limit,
+        why: 3D 堆疊的散熱限制}
+
+  package:
+    name: 封裝技術
+    example_values: [organic, fan_out, 2.5D_interposer, bridge, 3D_stacking]
+    params:
+      package_substrate_area: {unit: mm2, priority: P2, replaces: package_substrate_area,
+        why: 封裝基板總面積，限制能放多少 die 與記憶體}
+      package_bump_pitch: {unit: um, priority: P2, replaces: package_bump_pitch,
+        why: 封裝可支援的 micro-bump／bond pitch}
+      bonding_yield: {unit: percent, priority: P2, replaces: bonding_yield,
+        why: 封裝組裝良率，進成本模型}
+      interposer_max_area: {unit: mm2, priority: P3, replaces: interposer_max_area,
+        why: 中介層最大面積；edge 少用中介層}
+      package_max_hbm_sites: {unit: count, priority: P3, replaces: package_max_hbm_sites,
+        why: 只當資料中心對照}
+
+  cost:
+    name: 成本與良率
+    note: 在 edge 的 die 大小下，切 chiplet 的良率好處很小；edge 用 chiplet 的理由多半是重用與 NRE，所以 nre_cost 與 package_cost 優先
+    params:
+      nre_cost: {unit: USD, priority: P2, replaces: nre_cost,
+        why: 一次性設計成本，chiplet 重用的效益來源}
+      package_cost: {unit: USD, priority: P2, replaces: package_cost,
+        why: 封裝成本}
+      defect_density: {unit: defects/cm2, priority: P2, replaces: defect_density,
+        why: 算 die 良率}
+      yield_cluster_param: {unit: "-", priority: P2, replaces: yield_cluster_param,
+        why: 負二項良率模型的 cluster 參數 c，和 defect_density 一起算良率}
+      d2d_area_overhead: {unit: percent, priority: P2, replaces: d2d_area_overhead,
+        why: D2D 介面佔 die 面積的比例，切越多 die 越吃面積}
+      wafer_cost: {unit: USD, priority: P2, replaces: wafer_cost,
+        why: 每片晶圓成本（註明製程）}
+      substrate_cost_per_area: {unit: USD/mm2, priority: P2, replaces: substrate_cost_per_area,
+        why: 基板或中介層每 mm2 成本}
+      die_yield: {unit: percent, priority: P3, replaces: die_yield,
+        why: 特定製程與 die 面積下的良率，用來驗證良率模型}
+      package_cost_share: {unit: percent, priority: P3, replaces: package_cost_share,
+        why: 封裝成本佔總製造成本的比例}
+
+  system:
+    name: 產品整體（設計案例用）
+    params:
+      package_peak_compute: {unit: TOPS, priority: P1, replaces: package_peak_compute,
+        why: 整顆加速器峰值算力（condition 註明精度與是否含 sparsity）}
+      package_sram_bandwidth: {unit: GB/s, priority: P2, replaces: package_sram_bandwidth,
+        why: 片上 SRAM／快取總頻寬}
+      transistor_count: {unit: billion, priority: P3, replaces: transistor_count,
+        why: 規模參考}

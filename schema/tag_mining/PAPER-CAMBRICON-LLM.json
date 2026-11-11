@@ -1,0 +1,152 @@
+{
+ "doc_id": "PAPER-CAMBRICON-LLM",
+ "existing_tags": [
+  "edge_mobile",
+  "paper",
+  "compute_die",
+  "memory_die",
+  "lpddr",
+  "nand_flash",
+  "pim",
+  "bandwidth_capacity",
+  "energy",
+  "area",
+  "cost_yield",
+  "llm_inference",
+  "llm_on_device"
+ ],
+ "decisions": [
+  {
+   "decision": "權重存放的記憶體技術（模型大於 DRAM 容量時）",
+   "options": [
+    "內建運算的 NAND flash chiplet（Cambricon-LLM）",
+    "權重全部放 DRAM（MLC-LLM，Llama2-13B/70B 會 OOM；Flexgen-DRAM）",
+    "權重卸載到 NVMe SSD／UFS 4.0（Flexgen-SSD，UFS 理論上只有 0.06 token/s）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.2；PDF p.4（Table I 儲存密度）；PDF p.9（Table III）；PDF p.13（Table V 成本 $43.67 vs $194.68）"
+  },
+  {
+   "decision": "權重與 KV 分放不同記憶體層級，以及 DRAM 容量與頻寬要多少",
+   "options": [
+    "權重放 flash、KV 放 LPDDR5X（約 40 GB/s、約 700 MB 足夠 70B 在 batch=1、序列長度 1000 時使用）",
+    "權重和 KV 都放 DRAM（80 GB）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.2；PDF p.4；PDF p.9；PDF p.13（Table V）"
+  },
+  {
+   "decision": "NPU 與權重儲存之間的連接方式",
+   "options": [
+    "chiplet D2D 直連，NPU 內建 flash controller",
+    "經 UFS 4.0／PCIe 介面，而且要先搬進 DRAM（資料量多 3 倍以上）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.2；PDF p.5（Fig. 4）；PDF p.12（VIII-F，資料量少 9.7–11.6 倍、搬運能耗只有 67%）"
+  },
+  {
+   "decision": "GeMV 在 NPU 與 flash 端運算之間怎麼分配（比例與 tile 形狀）",
+   "options": [
+    "依硬體配置調整的 tiling：用 α 比例平衡 NPU 和 flash",
+    "全部在 flash 上算（沒有 tiling）",
+    "tile 形狀 256×2048、128×4096、4096×128"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.6；PDF p.7；PDF p.11（Fig. 13、Fig. 14）"
+  },
+  {
+   "decision": "flash die 上運算單元的放置粒度",
+   "options": [
+    "每個 die 共用一個 Compute Core",
+    "每個 plane 各有一個 Compute Core（作者以面積、發熱與錯誤率為由排除）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5；PDF p.9（Table IV，面積 overhead 1.2%、功耗 overhead 4.5%）"
+  },
+  {
+   "decision": "flash channel 數與每個 channel 掛的 chip 數",
+   "options": [
+    "S/M/L：8/16/32 channel、2/4/8 chip",
+    "掃描 1–64 channel",
+    "掃描每 channel 1–128 chip"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9（Table II）；PDF p.11；PDF p.12（Fig. 15）"
+  },
+  {
+   "decision": "權重量化精度",
+   "options": [
+    "W8A8",
+    "W4A16"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10（Fig. 11，S 版平均快 85.3%、L 版平均快 47.9%）"
+  },
+  {
+   "decision": "flash 錯誤的保護方式",
+   "options": [
+    "die 上以 outlier 為主的 ECC（保護前 1% 大值加多數決）",
+    "不做保護",
+    "controller 端的 LDPC（無法用在 die 上運算）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4（Fig. 3b）；PDF p.8；PDF p.10（Fig. 10）；PDF p.11"
+  },
+  {
+   "decision": "flash channel 上的請求排程",
+   "options": [
+    "只有 read-compute 請求",
+    "read-compute 加上不切片的 read 請求",
+    "read-compute 加上切片的 read 請求"
+   ],
+   "serves": "neither",
+   "evidence": "PDF p.6（Fig. 6）；PDF p.11（Fig. 12）"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "memory",
+   "id": "tiered_weight_kv",
+   "label": "權重／KV 分層存放",
+   "definition": "權重和 KV cache 刻意放在不同種類的記憶體（例如權重放 flash 或容量層、KV 放 DRAM 或頻寬層），並據此決定各層的容量與頻寬。",
+   "why": "現有標籤只能分別標 lpddr 與 nand_flash，看不出兩者是「權重放一層、KV 放另一層」的分工；agent 想找「KV 那一層需要多少 DRAM」或「權重層可以用便宜媒介」的設計時，會跟只有單一記憶體的文件混在一起。"
+  },
+  {
+   "group": "metric",
+   "id": "model_accuracy",
+   "label": "模型精度影響",
+   "definition": "文件有量化硬體或演算法選擇（量化位元數、記憶體錯誤率、壓縮、逐出）對模型精度的影響。",
+   "why": "metric 組只有頻寬、能耗、延遲、面積、成本、熱，沒有精度。agent 做 KV 量化、KV 逐出或權重精度的取捨時，查不到哪些文件有「精度代價」的數據（本文有 Fig. 3b、Fig. 10 的精度對錯誤率曲線）。"
+  },
+  {
+   "group": "precision",
+   "id": "weight_precision",
+   "label": "權重精度比較",
+   "definition": "文件比較了不同權重量化位元數（例如 W8A8 對 W4A16），並報告效能、頻寬或容量上的差異。",
+   "why": "現有標籤完全沒有精度維度。agent 要估「權重從 8 bit 降到 4 bit，decode 速度或容量需求變多少」時找不到這類文件；這一組之後也可以加 kv_precision，正好對應 Tack 的 KV 精度決策。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "pim",
+   "suggestion": "分成 dram_pim（在 DRAM／HBM bank 旁運算）和 in_storage_compute（在 flash 或儲存端運算）；後者可以再加條件區分 die 上運算還是 controller 端運算。兩者的頻寬來源、錯誤率和面積限制都不同，本文就特別說明自己是 die 上運算，跟 controller 端的 ISC 不一樣（p.3）。"
+  },
+  {
+   "tag": "kv_cache",
+   "suggestion": "分成 kv_placement_static（設計期決定 KV 放在哪一層、要多大，屬 hw_dse）和 kv_runtime_policy（執行期的保留、量化、逐出、重用、稀疏，屬 kv_runtime）。本文只把 KV 固定放在 DRAM，所以沒標 kv_cache；如果硬標，Tack 查執行期 KV 策略時會撈到這篇。"
+  },
+  {
+   "tag": "llm_on_device",
+   "suggestion": "把工作負載條件拆成可查的標籤：batch_1（單一 session、單一 batch 的 decode），對應 multi_session（多 session 同時跑）；另外加 context 長度區間（short_ctx，大約 ≤4K；long_ctx）。本文只測 batch=1、序列長度約 1000、模型 6.7B–70B。現在的定義只寫「batch 小」，無法區分 agent harness 常見的多 session 或長 context。"
+  },
+  {
+   "tag": "simulator",
+   "suggestion": "分成「文件本身提供模擬器」和「文件用哪種方法評估」：eval_cycle_sim（cycle-accurate 模擬）、eval_analytical（roofline 或解析模型）、eval_silicon（實機量測）、eval_rtl_synth（RTL 合成估面積與功耗）。本文用 SSDsim 加上自寫的 NPU cycle-accurate 模擬器、用 roofline 做動機分析、用 65 nm 合成估面積，但沒有提供可重用的模擬器，所以沒標 simulator。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.44018,
+  "turns": 5
+ }
+}

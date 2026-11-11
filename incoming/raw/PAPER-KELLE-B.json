@@ -1,0 +1,287 @@
+{
+ "doc_id": "PAPER-KELLE",
+ "rows": [
+  {
+   "parameter": "die_peak_compute",
+   "value": 4.13,
+   "unit": "TOPS",
+   "condition": "design=Kelle accelerator (Kelle+eDRAM); precision=INT8; sparsity=none; note=32x32 RSA @1GHz would give 2.048 TOPS at 1 MAC=2 OPs, the paper states 4.13; simulated (RTL synthesis + Destiny + Cacti), not taped out",
+   "location": "PDF p.10",
+   "quote": "Kelle accelerator achieves 4.13 INT8 TOPs",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_power",
+   "value": 6.52,
+   "unit": "W",
+   "condition": "design=Kelle accelerator; scope=on-chip (RSA 17%, eDRAM 29%, SRAM 41%, SFU 13%); excludes DRAM (11.74 W); logic=45nm synthesis; eDRAM/SRAM=65nm Destiny @105C; simulated",
+   "location": "PDF p.10",
+   "quote": "The on-chip power is 6.52W",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_energy_efficiency",
+   "value": 0.633,
+   "unit": "TOPS/W",
+   "condition": "design=Kelle accelerator; precision=INT8; derived=4.13 TOPS / 6.52 W on-chip power; peak; excludes DRAM power 11.74 W",
+   "location": "PDF p.10",
+   "quote": "Kelle accelerator achieves 4.13 INT8 TOPs",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 9.5,
+   "unit": "mm2",
+   "condition": "design=Kelle accelerator; scope=total on-chip area (RSA 23%, eDRAM 33%, SRAM 37%, SFU 7%); excludes DRAM area 16 mm2; logic=45nm; memory=65nm; simulated estimate",
+   "location": "PDF p.10",
+   "quote": "With these settings, the total on-chip area is",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 45,
+   "unit": "nm",
+   "condition": "design=Kelle accelerator; scope=logic (RSA, SFU, controller) synthesis; lib=NanGate 45nm Open Cell; tool=Synopsys Design Compiler",
+   "location": "PDF p.9",
+   "quote": "using 45nm NanGate Open Cell Library",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 65,
+   "unit": "nm",
+   "condition": "design=Kelle accelerator; scope=eDRAM and SRAM models; tool=Destiny; temp=105C",
+   "location": "PDF p.10",
+   "quote": "eDRAM and SRAM with 65nm tech node",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 1024,
+   "unit": "count",
+   "condition": "design=Kelle accelerator; RSA=32x32 systolic array; precision=INT8 MAC",
+   "location": "PDF p.9",
+   "quote": "consists of a 2D 32 × 32 RSA",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 576,
+   "unit": "count",
+   "condition": "design=Original+SRAM baseline; array=24x24 8-bit PEs; area-matched to Kelle+eDRAM",
+   "location": "PDF p.10",
+   "quote": "24×24 8-bit PEs, 4MB of on-chip SRAM",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_clock_freq",
+   "value": 1000,
+   "unit": "MHz",
+   "condition": "design=Kelle accelerator; 原文 1GHz",
+   "location": "PDF p.9",
+   "quote": "with frequency set to 1GHz",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 2,
+   "unit": "MB",
+   "condition": "design=Kelle accelerator; scope=weight SRAM; precision=INT8 weights",
+   "location": "PDF p.9",
+   "quote": "The size of SRAM for weight storage is set to 2MB.",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 4,
+   "unit": "MB",
+   "condition": "design=Kelle accelerator; scope=KV cache eDRAM (3T eDRAM, not SRAM); 65nm",
+   "location": "PDF p.10",
+   "quote": "cache and activation storage is set to 4MB and 256KB respectively",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 0.25,
+   "unit": "MB",
+   "condition": "design=Kelle accelerator; scope=activation eDRAM (not SRAM); 原文 256KB",
+   "location": "PDF p.10",
+   "quote": "cache and activation storage is set to 4MB and 256KB respectively",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_capacity",
+   "value": 4,
+   "unit": "MB",
+   "condition": "design=Original+SRAM baseline; scope=total on-chip SRAM; array=24x24 PEs",
+   "location": "PDF p.10",
+   "quote": "24×24 8-bit PEs, 4MB of on-chip SRAM",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_bandwidth",
+   "value": 128,
+   "unit": "GB/s",
+   "condition": "design=Kelle accelerator; scope=weight SRAM bandwidth",
+   "location": "PDF p.10",
+   "quote": "SRAM and eDRAM bandwidths are set to 128GB/s and 256 GB/s, respectively.",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_bandwidth",
+   "value": 256,
+   "unit": "GB/s",
+   "condition": "design=Kelle accelerator; scope=eDRAM bandwidth (KV cache eDRAM, 32 banks)",
+   "location": "PDF p.10",
+   "quote": "SRAM and eDRAM bandwidths are set to 128GB/s and 256 GB/s, respectively.",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_sram_bandwidth",
+   "value": 128,
+   "unit": "GB/s",
+   "condition": "design=Kelle accelerator, reduced-bandwidth ablation; scope=eDRAM; banks halved, capacity per bank doubled",
+   "location": "PDF p.12",
+   "quote": "under reduced eDRAM bandwidth (128GB/s)",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 16,
+   "unit": "GB",
+   "condition": "design=Kelle accelerator; mem_type=LPDDR4; tool=Cacti 7; similar to Google Coral edge device DRAM",
+   "location": "PDF p.10",
+   "quote": "a 16GB LPDDR4 DRAM, with 64GB/s bandwidth",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 64,
+   "unit": "GB/s",
+   "condition": "design=Kelle accelerator; mem_type=LPDDR4; capacity=16GB; tool=Cacti 7; peak (assumed)",
+   "location": "PDF p.10",
+   "quote": "a 16GB LPDDR4 DRAM, with 64GB/s bandwidth",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "model_weight_size",
+   "value": 6.5,
+   "unit": "GB",
+   "condition": "model=LLaMA2-7B; precision=INT8 weights; context=long-context analysis in 16GB DRAM",
+   "location": "PDF p.12",
+   "quote": "assuming 8-bit weights occupy 6.5 GB out of 16 GB DRAM",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "kv_cache_size",
+   "value": 4096,
+   "unit": "MB",
+   "condition": "model=LLaMA2-7B (32 layers, hidden 4096); seq=8192; precision=FP16; batch=1; 原文 4GB; derived=2*32*4096*2B*8192",
+   "location": "PDF p.1",
+   "quote": "the KV cache consumes 4GB of memory",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "kv_bytes_per_token",
+   "value": 0.5,
+   "unit": "MB/token",
+   "condition": "model=LLaMA2-7B (32 layers, hidden 4096, MHA); precision=FP16; derived=4GB / 8192 tokens",
+   "location": "PDF p.1",
+   "quote": "the KV cache consumes 4GB of memory",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 128,
+   "unit": "tokens",
+   "condition": "design=Kelle HW eval; bound=lower; scope=input context length; task=Lambada; context lengths 128/512/1024/512 for LA/TQ/QA/PG19",
+   "location": "PDF p.10",
+   "quote": "128, 512, 1024, and 512",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 1024,
+   "unit": "tokens",
+   "condition": "design=Kelle HW eval; bound=upper; scope=input context length; task=Qasper",
+   "location": "PDF p.10",
+   "quote": "128, 512, 1024, and 512",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 512,
+   "unit": "tokens",
+   "condition": "design=Kelle HW eval; bound=lower; scope=decoding length; task=Lambada; decoding lengths 512/2048/5120/8192 for LA/TQ/QA/PG19",
+   "location": "PDF p.10",
+   "quote": "512, 2048, 5120, and 8192",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 8192,
+   "unit": "tokens",
+   "condition": "design=Kelle HW eval; bound=upper; scope=decoding length; task=PG19",
+   "location": "PDF p.10",
+   "quote": "512, 2048, 5120, and 8192",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "context_length",
+   "value": 19000,
+   "unit": "tokens",
+   "condition": "design=Kelle; model=LLaMA2-7B; scope=max input tokens without AERP; DRAM=16GB; weights INT8 6.5GB; KV FP16; analytical estimate",
+   "location": "PDF p.12",
+   "quote": "can support up to 19,000 input tokens without AERP",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 60000,
+   "unit": "tokens",
+   "condition": "design=Kelle; model=LLaMA2-7B; scope=max input tokens with AERP; DRAM=16GB; 原文 around 60K; analytical estimate",
+   "location": "PDF p.12",
+   "quote": "support input sequences of up to around 60K tokens",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "context_length",
+   "value": 240000,
+   "unit": "tokens",
+   "condition": "design=Kelle; model=LLaMA2-7B; scope=max input tokens with AERP + 4-bit KV; DRAM=16GB; 原文 240K; analytical estimate",
+   "location": "PDF p.12",
+   "quote": "enables support for up to 240K tokens",
+   "value_kind": "derived"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "die_sram_capacity",
+   "value": 4,
+   "unit": "MB",
+   "cited_ref": "[2]",
+   "note": "NVIDIA Jetson Orin NX edge GPU has only 4MB L3 cache (PDF p.1)"
+  },
+  {
+   "parameter": "mem_total_bandwidth",
+   "value": 64,
+   "unit": "GB/s",
+   "cited_ref": "[72]",
+   "note": "Kelle's 16GB LPDDR4 at 64GB/s is described as similar to the DRAM in Google Coral edge device (PDF p.3, p.10)"
+  },
+  {
+   "parameter": "mem_total_capacity",
+   "value": 16,
+   "unit": "GB",
+   "cited_ref": "[72]",
+   "note": "Google Coral edge TPU dev board DRAM, which Kelle's 16GB DRAM is said to resemble (PDF p.3, p.10)"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 89,
+  "cost_usd": 0.504513,
+  "turns": 5
+ }
+}

@@ -1,0 +1,22 @@
+doc_id: PAPER-STREAMINGLLM
+leads:
+- parameter: context_length
+  value: 4096
+  unit: tokens
+  cited_ref: Touvron et al. (2023b)
+  note: Llama-2 預訓練 context 4K（p.1 'e.g., 4K for Llama-2'；p.17 'max context length 4k'）；p.6 說 cache 2048 是預訓練窗口的一半
+- parameter: context_length
+  value: 3500
+  unit: tokens
+  cited_ref: Bai et al. (2023)
+  note: LongBench 對 Llama-2-7B-chat 的預設最大序列長度 3,500 tokens，截斷基線為 1750+1750 (PDF p.17)
+- parameter: context_length
+  value: 2048
+  unit: tokens
+  cited_ref: Team (2023) / Biderman et al. (2023) / Almazrouei et al. (2023)
+  note: Falcon/Pythia/MPT 預訓練窗口，由 p.6 'cache 1024 為預訓練窗口一半' 推得，原文沒有直接寫
+- parameter: context_length
+  value: 32768
+  unit: tokens
+  cited_ref: Li et al. (2023); Together (2023)
+  note: LongChat-7b-v1.5-32k 與 Llama-2-7B-32K-Instruct 的 32K context（p.8），屬於模型本身的規格

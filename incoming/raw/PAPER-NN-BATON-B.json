@@ -1,0 +1,310 @@
+{
+ "doc_id": "PAPER-NN-BATON",
+ "rows": [
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 1.17,
+   "unit": "pJ/bit",
+   "condition": "design=NN-Baton 評估模型; D2D=GRS (ground-referenced signaling); process=16nm; 平均值; 數值取自 [66]",
+   "location": "PDF p.8",
+   "quote": "The average GRS energy in our evaluation is 1.17",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 3.34,
+   "unit": "pJ/bit",
+   "condition": "design=NN-Baton 背景說明; D2D 每 1-bit 傳輸經過一對 die-to-die PHY; 與 Table I 的 1.17 pJ/bit 不一致，原文沒有說明怎麼算出 3.34",
+   "location": "PDF p.3",
+   "quote": "each 1-bit transfer consumes 3.34 pJ energy",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "d2d_phy_area",
+   "value": 0.38,
+   "unit": "mm2",
+   "condition": "design=NN-Baton 評估模型; D2D=GRS macro; process=16nm; 數值取自 [66]",
+   "location": "PDF p.8",
+   "quote": "The average GRS energy in our evaluation is 1.17 ... with a 0.38",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 8.75,
+   "unit": "pJ/bit",
+   "condition": "design=NN-Baton 評估模型; mem_type=DRAM (經 DDR PHY); 只說是 DRAM power，沒有分 I/O 或 core; 數值取自 [22, 71]",
+   "location": "PDF p.8",
+   "quote": "The DRAM power is estimated to be 8.75",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 28,
+   "unit": "nm",
+   "condition": "design=NN-Baton 運算 core 合成; UMC 28nm; Synopsys DC; 之後再縮放到 16nm",
+   "location": "PDF p.8",
+   "quote": "UMC 28 nm process technology using Synopsys Design Compiler",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "process_node",
+   "value": 16,
+   "unit": "nm",
+   "condition": "design=NN-Baton 評估模型; 從 28nm 縮放到 16nm，為了對齊 GRS macro",
+   "location": "PDF p.8",
+   "quote": "Scaled to 16 nm technology to match the GRS",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_clock_freq",
+   "value": 500,
+   "unit": "MHz",
+   "condition": "design=NN-Baton 評估模型; 8-bit MAC 特性化時的頻率; process=16nm(縮放後)",
+   "location": "PDF p.8",
+   "quote": "running at 500MHz frequency",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_energy_efficiency",
+   "value": 83.3,
+   "unit": "TOPS/W",
+   "condition": "design=NN-Baton 評估模型; precision=INT8; 只算 MAC，不含 SRAM/DRAM/D2D; 算法：8-bit MAC 0.024 pJ/op，以 1 MAC=2 ops 換算 2/0.024=83.3 TOPS/W（如果 1 op=1 MAC 則是 41.7 TOPS/W）; 16nm@500MHz",
+   "location": "PDF p.8",
+   "quote": "the area and power of an 8-bit MAC are respectively 135.1",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 1,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE; 探索的 chiplet 數下限 (Table II: 1,2,4,8)",
+   "location": "PDF p.10",
+   "quote": "Figure 14 shows the optimal hardware implementation using 1-to-8 chiplets",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 8,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE; 探索的 chiplet 數上限 (Table II: 1,2,4,8)",
+   "location": "PDF p.10",
+   "quote": "Figure 14 shows the optimal hardware implementation using 1-to-8 chiplets",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=NN-Baton 案例研究 VI.A 的硬體設定; 每 chiplet 8 cores、8 lanes、8-size vector MAC; precision=INT8",
+   "location": "PDF p.8",
+   "quote": "the hardware model with 4 chiplets, 8 cores, 8 lanes of",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=與 Simba 比較時建的 4-chiplet Simba 原型模型; 記憶體與運算資源和 Simba 相同",
+   "location": "PDF p.9",
+   "quote": "We model a 4-chiplet Simba prototype with the configurations",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 512,
+   "unit": "count",
+   "condition": "design=NN-Baton 案例研究 VI.A; 算法：8 cores × 8 lanes × 8-size vector MAC = 512 MAC/chiplet; 共 4 chiplets",
+   "location": "PDF p.8",
+   "quote": "the hardware model with 4 chiplets, 8 cores, 8 lanes of",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 512,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE 最佳解; 總 MAC=2048; chiplet 面積上限 2 mm2; 算法：4-4-16-8 (chiplet-core-lane-vector) → 4 cores × 16 lanes × 8 = 512 MAC/chiplet",
+   "location": "PDF p.10",
+   "quote": "the 4-4-16-8 scheme is always the top-pick",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "die_mac_count",
+   "value": 2048,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE 最佳解; 總 MAC=4096; chiplet 面積上限 3 mm2; 算法：2-chiplet, 8 cores × 16 lanes × 16 vector-size = 2048 MAC/chiplet",
+   "location": "PDF p.11",
+   "quote": "for the multichip accelerators of 4096 MAC units ... 8-core, 16-lane, and 16-vector-size",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "partition_count_studied",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE; 總 MAC=2048; chiplet 面積上限 2 mm2; 最佳配置 4 chiplets × 4 cores × 16 lanes × 8-size vector-MAC; 以 EDP 評比; workloads=AlexNet/VGG-16/ResNet-50/DarkNet-19",
+   "location": "PDF p.1",
+   "quote": "the 4-chiplet implementation with 4 cores and 16 lanes of 8-size vector-MAC is always the",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "partition_count_studied",
+   "value": 2,
+   "unit": "count",
+   "condition": "design=NN-Baton DSE; 總 MAC=4096; chiplet 面積上限 3 mm2; 最佳配置 2 chiplets × 8 cores × 16 lanes × 16 vector-size; 以 EDP 評比; workloads=VGG-16/ResNet-50 (512x512)、DarkNet-19 (224x224)",
+   "location": "PDF p.11",
+   "quote": "under area constraint are all the configurations of ... 8-core, 16-lane, and 16-vector-size",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 2,
+   "unit": "mm2",
+   "condition": "design=NN-Baton DSE; chiplet 面積上限 (area constraint); 總 MAC=2048; 1-chiplet 設計達不到",
+   "location": "PDF p.10",
+   "quote": "with a chiplet area constraint of 2 ... no implementation meets the constraint using one chiplet",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 3,
+   "unit": "mm2",
+   "condition": "design=NN-Baton DSE; chiplet 面積上限 (area constraint); 總 MAC=4096; 沒有 RISC-V，interface macro 也比 Simba 少",
+   "location": "PDF p.11 Fig. 15",
+   "quote": "we apply a chiplet area constraint of 3",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "memory_die_count",
+   "value": 4,
+   "unit": "count",
+   "condition": "design=NN-Baton 4-chiplet 系統; mem_type=DRAM; 每個 chiplet 配 1 顆 DRAM，經 crossbar 存取 (Fig. 2 標示 memory bus on package)",
+   "location": "PDF p.7",
+   "quote": "four DRAMs are integrated into the system",
+   "value_kind": "assumed"
+  },
+  {
+   "parameter": "die_peak_compute",
+   "value": 0.512,
+   "unit": "TOPS",
+   "condition": "design=NN-Baton DSE 最佳解 4-4-16-8; precision=INT8; 算法：512 MAC × 2 ops × 500 MHz = 0.512 TOPS; 500 MHz 是 MAC 特性化頻率，論文沒有直接給 TOPS",
+   "location": "PDF p.10",
+   "quote": "the 4-4-16-8 scheme is always the top-pick",
+   "value_kind": "derived"
+  },
+  {
+   "parameter": "package_peak_compute",
+   "value": 2.048,
+   "unit": "TOPS",
+   "condition": "design=NN-Baton DSE 系統; 總 MAC=2048; precision=INT8; 算法：2048 MAC × 2 ops × 500 MHz = 2.048 TOPS; 論文沒有直接給 TOPS",
+   "location": "PDF p.10",
+   "quote": "units in total, there are up to 63 possibilities",
+   "value_kind": "derived"
+  }
+ ],
+ "leads": [
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 1.17,
+   "unit": "pJ/bit",
+   "cited_ref": "[66]",
+   "note": "Wilson et al. ISSCC 2018 GRS 單端 serial link，16nm，off/on-package；NN-Baton 的 D2D 能耗與 0.38 mm2 面積都取自這篇"
+  },
+  {
+   "parameter": "d2d_data_rate",
+   "value": 25,
+   "unit": "GT/s",
+   "cited_ref": "[66]",
+   "note": "參考文獻標題：1.17pJ/b 25Gb/s/pin ground-referenced single-ended serial link, 16nm"
+  },
+  {
+   "parameter": "mem_energy_per_bit",
+   "value": 8.75,
+   "unit": "pJ/bit",
+   "cited_ref": "[22, 71]",
+   "note": "DRAM 存取能耗，來自 Horowitz ISSCC 2014 與 Interstellar"
+  },
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 0.94,
+   "unit": "pJ/bit",
+   "cited_ref": "[56]",
+   "note": "只出現在參考文獻標題：20.83Gb/s/wire CNRZ-5 forwarded clock serdes，最長 12mm，28nm MCM"
+  },
+  {
+   "parameter": "d2d_data_rate",
+   "value": 20.83,
+   "unit": "GT/s",
+   "cited_ref": "[56]",
+   "note": "只出現在參考文獻標題：20.83Gb/s/wire CNRZ-5 MCM serdes"
+  },
+  {
+   "parameter": "d2d_energy_per_bit",
+   "value": 0.062,
+   "unit": "pJ/bit",
+   "cited_ref": "[40]",
+   "note": "只出現在參考文獻標題：16nm 256-bit wide 89.6GB/s in-package interconnect，0.3V swing"
+  },
+  {
+   "parameter": "d2d_aggregate_bw",
+   "value": 89.6,
+   "unit": "GB/s",
+   "cited_ref": "[40]",
+   "note": "只出現在參考文獻標題：16nm 256-bit wide in-package interconnect"
+  },
+  {
+   "parameter": "d2d_areal_bw_density",
+   "value": 375,
+   "unit": "GB/s/mm2",
+   "cited_ref": "[64]",
+   "note": "只出現在參考文獻標題：active interposer 3Tb/s/mm2 inter-chiplet interconnect，0.6ns/mm latency（3 Tb/s/mm2 換算成 375 GB/s/mm2）"
+  },
+  {
+   "parameter": "compute_die_count",
+   "value": 36,
+   "unit": "count",
+   "cited_ref": "[55]",
+   "note": "Simba 封裝內最多 36 個 chiplet (6x6)"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 6,
+   "unit": "mm2",
+   "cited_ref": "[55]",
+   "note": "Simba 每個 chiplet 約 6 mm2（p.2 文中舉例）"
+  },
+  {
+   "parameter": "die_peak_compute",
+   "value": 72,
+   "unit": "TOPS",
+   "cited_ref": "[3]",
+   "note": "Tesla FSD，自駕用，72 TOPS"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 260,
+   "unit": "mm2",
+   "cited_ref": "[3]",
+   "note": "Tesla FSD die 面積 260 mm2"
+  },
+  {
+   "parameter": "compute_die_area",
+   "value": 709,
+   "unit": "mm2",
+   "cited_ref": "[25]",
+   "note": "Hanguang 800，12nm，資料中心"
+  },
+  {
+   "parameter": "die_peak_compute",
+   "value": 825,
+   "unit": "TOPS",
+   "cited_ref": "[25]",
+   "note": "Hanguang 800，12nm，資料中心"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "run": "B",
+  "seconds": 96,
+  "cost_usd": 0.4947321,
+  "turns": 5
+ }
+}

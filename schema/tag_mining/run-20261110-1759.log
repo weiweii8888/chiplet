@@ -1,0 +1,16 @@
+== 2026-11-10 17:59:04 逐篇讀 PDF 提案標籤
+SPEC-BOW-2.0: 8 個決策、1 個新標籤提案、$0.56
+WP-AMD-CDNA3: 11 個決策、3 個新標籤提案、$0.64
+WP-INTEL-GAUDI3: 8 個決策、2 個新標籤提案、$0.50
+PAPER-SIMBA: 10 個決策、3 個新標籤提案、$0.47
+PAPER-CHIPLET-ACTUARY: 8 個決策、3 個新標籤提案、$0.30
+PAPER-GEMINI: 7 個決策、4 個新標籤提案、$0.44
+PAPER-HECATON: 7 個決策、3 個新標籤提案、$0.40
+PAPER-CAMBRICON-LLM: 9 個決策、3 個新標籤提案、$0.44
+CASE-GAUDI3: 8 個決策、3 個新標籤提案、$0.55
+PAPER-NN-BATON: 6 個決策、3 個新標籤提案、$0.40
+PAPER-MONAD: 7 個決策、3 個新標籤提案、$0.33
+PAPER-EXPERT-STREAMING: 9 個決策、4 個新標籤提案、$0.48
+== 18:03:59 彙整
+寫入 schema/TAG-REPORT.md；A 缺 11、B 讀 11 份、C 無 trace 統計
+== 2026-11-10 18:03:59 TAG PIPELINE DONE

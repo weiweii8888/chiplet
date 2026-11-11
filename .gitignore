@@ -1,0 +1,7 @@
+# 原始檔不進 git，只放目錄清單
+pdfs/
+*.pdf
+incoming/raw/*.cli.json
+eval/results/*.json
+traces/converted/
+__pycache__/

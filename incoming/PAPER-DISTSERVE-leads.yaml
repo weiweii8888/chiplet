@@ -1,0 +1,7 @@
+doc_id: PAPER-DISTSERVE
+leads:
+- parameter: context_length
+  value: 1000000
+  unit: tokens
+  cited_ref: '[11], [22], [34]'
+  note: Claude-3, Gemini-1.5, Large World Model (LWM) all have a 1M context window (PDF p.13, Long-context scenarios)

@@ -1,0 +1,139 @@
+defaults:
+  doc_id: PAPER-STREAMINGLLM
+  source_grade: paper
+  extracted_by: claude-opus-5-5（Claude Code，A/B 兩次獨立抽取）
+  extracted_date: '2026-11-10'
+rows:
+- parameter: decode_throughput
+  value: 32.26
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-7B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; batch=1(implied); cache_size=256; 換算=1000/31 ms per-token latency (Fig.
+    10 bar value 31 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 15.38
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-7B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; batch=1(implied); cache_size=4096; 換算=1000/65 ms per-token latency (Fig.
+    10 bar value 65 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 20.83
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-13B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; batch=1(implied); cache_size=256; 換算=1000/48 ms per-token latency (Fig.
+    10 bar value 48 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 9.43
+  unit: tokens/s
+  condition: design=StreamingLLM; model=Llama-2-13B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; batch=1(implied); cache_size=4096; 換算=1000/106 ms per-token latency (Fig.
+    10 bar value 106 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: decode_throughput
+  value: 0.709
+  unit: tokens/s
+  condition: design=sliding window with re-computation (baseline); model=Llama-2-7B; hw=1x NVIDIA A6000; framework=HuggingFace Transformers; precision=unspecified; cache_size=4096; 換算=1000/1411 ms per-token
+    latency (Fig. 10 bar value 1411 ms)
+  location: PDF p.9 Fig. 10
+  quote: Comparison of per-token decoding latency and memory usage
+  value_kind: derived
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 4000000
+  unit: tokens
+  condition: design=StreamingLLM; models=Llama-2-[7,13,70]B, MPT-[7,30]B, Falcon-[7,40]B, Pythia; 串流語言建模的總輸入長度(非 KV cache 大小); 原文 4 million tokens
+  location: PDF p.2
+  quote: can reliably model 4 million tokens
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 2048
+  unit: tokens
+  condition: design=StreamingLLM; model=Llama-2; dataset=PG19; KV cache 大小(實驗設定), 為預訓練視窗的一半
+  location: PDF p.6
+  quote: the cache size is set at 2048, while for Falcon, Pythia, and MPT models
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 1024
+  unit: tokens
+  condition: design=StreamingLLM; models=Falcon, Pythia, MPT; dataset=PG19; KV cache 大小(實驗設定)
+  location: PDF p.6
+  quote: the cache size is set at 2048, while for Falcon, Pythia, and MPT models
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 1024
+  unit: tokens
+  condition: design=StreamingLLM 與 window attention; models=Llama-2-[7,13,70]B-Chat; task=ARC streaming QA; KV cache 大小
+  location: PDF p.8 Table 5
+  quote: Window attention and StreamingLLM use cache sizes of 1024.
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 65000
+  unit: tokens
+  condition: model=Llama-2-13B; dataset=PG19 第一本書; 評估文本長度; 原文 65K tokens
+  location: PDF p.2 Fig. 1
+  quote: the first book (65K tokens) in the PG-19 test set
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 20000
+  unit: tokens
+  condition: models=Llama-2-7B, Pythia-12B, Falcon-7B, MPT-7B; 困惑度實驗的文本長度; 原文 20K
+  location: PDF p.4
+  quote: a 20K token text
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 120000
+  unit: tokens
+  condition: design=StreamingLLM; benchmark=StreamEval; models=Llama-2-7b/13b-Chat, LongChat-7b-v1.5-32k, Llama-2-7B-32K-Instruct; 輸入長度上限; 原文 120K tokens
+  location: PDF p.8
+  quote: reasonable accuracy even as input lengths approach 120K tokens
+  value_kind: measured
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 16384
+  unit: tokens
+  condition: design=StreamingLLM; model=Llama-2-7B-32K-Instruct; benchmark=StreamEval; 最大 cache config 4+16380 (4 sink + 16380 recent)
+  location: PDF p.16 Table 7
+  quote: 4+2044 4+4092 4+8188 4+16380
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 4096
+  unit: tokens
+  condition: model=Llama-2-7B-chat; 最大 context 長度; 原文 4k
+  location: PDF p.17
+  quote: Llama-2-7B-chat model (max context length 4k)
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 3500
+  unit: tokens
+  condition: design=StreamingLLM 4+3496; model=Llama-2-7B-chat; benchmark=LongBench; cache=4 sink + 3496 recent
+  location: PDF p.17 Table 8
+  quote: StreamingLLM 4+3496 uses 4 attention sink tokens and 3496 recent tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok
+- parameter: context_length
+  value: 4096
+  unit: tokens
+  condition: model=Llama-2-7B; attention sink 分析的序列長度; 256 sentences 平均
+  location: PDF p.18 Fig. 12
+  quote: each having a length of 4096 tokens
+  value_kind: assumed
+  ai_check: A/B 一致；出處 ok

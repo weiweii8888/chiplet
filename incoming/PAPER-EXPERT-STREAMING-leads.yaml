@@ -1,0 +1,92 @@
+doc_id: PAPER-EXPERT-STREAMING
+leads:
+- parameter: d2d_aggregate_bw
+  value: 100
+  unit: GB/s
+  cited_ref: '[52]'
+  note: Simba MCM, proprietary PHY, 100 GB/s/chiplet, 20 ns/hop (PDF p.4)
+- parameter: d2d_latency
+  value: 20
+  unit: ns
+  cited_ref: '[52]'
+  note: Simba, 20 ns/hop (PDF p.4)
+- parameter: d2d_energy_per_bit
+  value: 0.82
+  unit: pJ/bit
+  cited_ref: '[52]'
+  note: Simba, 0.82–1.75 pJ/bit 的下限 (PDF p.4)
+- parameter: d2d_energy_per_bit
+  value: 1.75
+  unit: pJ/bit
+  cited_ref: '[52]'
+  note: Simba, 0.82–1.75 pJ/bit 的上限 (PDF p.4)
+- parameter: d2d_aggregate_bw
+  value: 2500
+  unit: GB/s
+  cited_ref: '[59]'
+  note: 2.5D system, aggregate 20 Tb/s across 20 chiplets (300 Mb SRAM, ISSCC 2025) (PDF p.4)
+- parameter: d2d_shoreline_bw_density
+  value: 1312.5
+  unit: GB/s/mm
+  cited_ref: '[32]'
+  note: '3nm advanced package D2D, 10.5 Tb/s/mm; title: 32 Gb/s, 0.6 pJ/b UCIe-compliant (PDF p.4)'
+- parameter: d2d_energy_per_bit
+  value: 0.29
+  unit: pJ/bit
+  cited_ref: '[40]'
+  note: UCIe advanced package link, 3nm FinFET, 2.5D CoWoS, 0.29 pJ/b (PDF p.4)
+- parameter: d2d_shoreline_bw_density
+  value: 56
+  unit: GB/s/mm
+  cited_ref: '[67]'
+  note: 3nm UCIe-S (standard package) transceiver, 0.448 Tbps/mm (PDF p.4)
+- parameter: d2d_energy_per_bit
+  value: 0.52
+  unit: pJ/bit
+  cited_ref: '[67]'
+  note: 3nm UCIe-S standard package, 0.52 pJ/bit (PDF p.4)
+- parameter: mem_total_capacity
+  value: 6
+  unit: GB
+  cited_ref: ''
+  note: NVIDIA RTX 3060 laptop GPU has only 6GB memory; general example, no reference number (PDF p.3)
+- parameter: compute_die_count
+  value: 20
+  unit: count
+  cited_ref: '[59]'
+  note: 2.5D heterogeneous system with 20 chiplets (PDF p.4)
+- parameter: die_sram_capacity
+  value: 37.5
+  unit: MB
+  cited_ref: '[59]'
+  note: 'reference title: 300 Mb SRAM across the system (300 Mb = 37.5 MB), ISSCC 2025 (PDF p.15)'
+- parameter: d2d_data_rate
+  value: 32
+  unit: GT/s
+  cited_ref: '[32]'
+  note: 'reference title: 32 Gb/s/pin UCIe-compliant interface, 3nm (PDF p.14)'
+- parameter: d2d_energy_per_bit
+  value: 0.6
+  unit: pJ/bit
+  cited_ref: '[32]'
+  note: 'reference title: 0.6 pJ/b UCIe-compliant, 3nm (PDF p.14)'
+- parameter: d2d_shoreline_bw_density
+  value: 658.75
+  unit: GB/s/mm
+  cited_ref: '[40]'
+  note: 'reference title: 5.27 Tb/s/mm UCIe advanced package link, 3nm, CoWoS (PDF p.14)'
+- parameter: die_energy_efficiency
+  value: 8.3
+  unit: TOPS/W
+  cited_ref: '[66]'
+  note: 'reference title: 28nm MCM-CIM, 8.3 TFLOPS/W digital-CIM FP32 (TFLOPS/W, not TOPS) (PDF p.15)'
+- parameter: interposer_max_area
+  value: 586
+  unit: mm2
+  cited_ref: '[23]'
+  note: 'reference title: Shinsai 586 mm2 reusable active TSV interposer (PDF p.14)'
+- parameter: mem_total_capacity
+  value: 6
+  unit: GB
+  cited_ref: none
+  note: NVIDIA RTX 3060 laptop has only 6GB memory; mentioned as example without citation (PDF p.3)

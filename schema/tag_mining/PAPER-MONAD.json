@@ -1,0 +1,144 @@
+{
+ "doc_id": "PAPER-MONAD",
+ "existing_tags": [
+  "generic",
+  "paper",
+  "organic_substrate",
+  "interposer_2_5d",
+  "ucie",
+  "compute_die",
+  "dnn_inference",
+  "energy",
+  "latency",
+  "area",
+  "cost_yield",
+  "dse",
+  "cost_model",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "封裝技術",
+   "options": [
+    "有機基板",
+    "被動矽中介層",
+    "主動矽中介層（router 在中介層內）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.2, p.3, p.6, p.7"
+  },
+  {
+   "decision": "單晶片或切成多顆 chiplet（切分粒度）",
+   "options": [
+    "單晶片基準",
+    "3 顆 chiplet（大 die：TPU 331 mm²；小 die：Gemmini 1.1 mm²）",
+    "同一個 workload 用 1 顆或 2 顆 chiplet 執行（張量列車個案，成本降 28%）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3, p.8"
+  },
+  {
+   "decision": "異質特化 chiplet 的資源配置（每顆 chiplet 的 PE 數與 buffer 大小）",
+   "options": [
+    "同質、類 Simba 的平鋪架構",
+    "每個 workload 一顆特化 chiplet，PE 數依計算量配置，buffer 大小依 tiling 設定"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.1, p.5, p.6, p.7"
+  },
+  {
+   "decision": "Dataflow 與 mapping（spatial、order、tiling，以及單層在 chiplet 間怎麼切）",
+   "options": [
+    "Simba 式：切輸入與輸出 channel",
+    "NN-Baton 式：切輸出平面，ring 網路輪轉資料",
+    "Monad 依每個 workload 搜尋最佳 mapping"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5, p.7"
+  },
+  {
+   "decision": "多個 workload 在 chiplet 間的執行方式",
+   "options": [
+    "每顆 chiplet 跑一個 workload，用階層式 pipeline 重疊執行",
+    "相依的 workload 綁在同一顆 chiplet 上依序執行"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.3, p.4, p.5"
+  },
+  {
+   "decision": "封裝內網路拓撲、chiplet 擺放與鏈路頻寬配置",
+   "options": [
+    "mesh",
+    "ring",
+    "每條資料流各有專用通道",
+    "依熱點流量配置鏈路頻寬，並用 bw/D_bw × N_link 預留 I/O 面積"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.6, p.7, p.8"
+  },
+  {
+   "decision": "最佳化目標與搜尋範圍",
+   "options": [
+    "EDP",
+    "延遲",
+    "能耗",
+    "成本",
+    "只搜架構",
+    "只搜整合（網路與封裝）",
+    "架構與整合聯合最佳化（延遲降 8.1 倍、能耗降 3.9 倍）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7, p.8"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "partition",
+   "id": "heterogeneous_chiplets",
+   "label": "異質特化 chiplet",
+   "definition": "同一封裝內的運算 chiplet 依各自負責的 workload 設計不同的 PE 數、buffer 與 dataflow，而不是複製同一顆 die。",
+   "why": "現有的 compute_die 只表示「有運算 die」。agent 要比較「同質平鋪」和「異質特化」時，分不出 Simba／NN-Baton 和 Monad 是不同立場，也找不到 Monad 用來支持特化的成本與 EDP 數據。"
+  },
+  {
+   "group": "interconnect（新組）",
+   "id": "in_package_network",
+   "label": "封裝內網路拓撲",
+   "definition": "文件比較或設計了 chiplet 間的網路拓撲、路由、chiplet 擺放或鏈路頻寬配置（例如 mesh 和 ring）。",
+   "why": "d2d_interface 組只標記用哪種協定（UCIe、BoW）。agent 要決定 chiplet 怎麼連、跳數多少、熱點鏈路要配多少頻寬時，查不到 Monad 這類把拓撲當設計變數的文件（例如減少跳數可省 1.2 倍能耗）。"
+  },
+  {
+   "group": "mapping（新組）",
+   "id": "inter_chiplet_pipeline",
+   "label": "跨 chiplet 層間管線",
+   "definition": "把模型的不同層或不同 workload 分給不同 chiplet，以 pipeline 方式重疊執行，而不是把單一層切到所有 chiplet 上平行算。",
+   "why": "edge LLM 切到多顆 chiplet 時，要在「層間 pipeline」和「層內張量切分」之間選擇，這會直接影響 D2D 流量與每顆 die 的 SRAM 需求。沒有這個標籤，agent 用 multi_model 或 dse 都查不到 pipeline 類 mapping 的文件。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "interposer_2_5d",
+   "suggestion": "分成 passive_interposer 與 active_interposer。Monad 提到兩者的成本差很多：中介層成本在被動中介層佔總成本 15% 以上，在主動中介層佔 30% 以上（p.3）。主動中介層的 router 放在中介層內，能省下 bump 和 I/O 面積（p.2, p.6），兩者是不同的設計選項。"
+  },
+  {
+   "tag": "cost_yield",
+   "suggestion": "分成 fabrication_cost（die、bonding、基板／中介層的單顆製造成本）與 nre_cost（一次性設計成本與重用攤提）。Monad 只算製造成本（ICKnowledge 28nm），NRE 只說模型可以延伸（p.3）。edge 用 chiplet 的理由主要是 NRE 與重用，用同一個標籤會讓 agent 誤以為這份文件能回答 NRE 問題。"
+  },
+  {
+   "tag": "simulator",
+   "suggestion": "依評估精度分成 analytical_model（解析或 roofline 式，例如 Monad 用 TENET 加 Accelergy，與 ScaleSim 比對誤差在 9.8% 內）、cycle_sim（cycle 級模擬，例如 ScaleSim、LLMCompass、PLENA）、hw_measured（實機量測，例如 H100）。Tack 需要知道數字是從哪種精度的評估來的。"
+  },
+  {
+   "tag": "dnn_inference",
+   "suggestion": "分成 cnn_inference 與 transformer_nonautoregressive（BERT 類 encoder 或單一 Transformer block 的矩陣乘，沒有 decode 也沒有 KV cache）。Monad 的 Transformer 實驗只有 BERT-large 的矩陣乘形狀（p.7），不能標 llm_inference 或 kv_cache。細分後 agent 才知道這些結果最多只能參考 prefill 或矩陣乘階段，不能當成 decode 或 KV 的證據。"
+  },
+  {
+   "tag": "dse",
+   "suggestion": "依搜尋範圍分成 dse_architecture（PE、buffer、dataflow）、dse_integration（封裝、網路、擺放）與 dse_co_opt（兩者聯合）。Monad 的主要結論就是聯合最佳化比只搜其中一邊更好（p.7 圖 8），只用一個 dse 標籤表達不出這個差別。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.3341726,
+  "turns": 4
+ }
+}

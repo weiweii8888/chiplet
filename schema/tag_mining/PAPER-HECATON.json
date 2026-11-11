@@ -1,0 +1,139 @@
+{
+ "doc_id": "PAPER-HECATON",
+ "existing_tags": [
+  "datacenter",
+  "llm_training",
+  "compute_die",
+  "io_die",
+  "ucie",
+  "organic_substrate",
+  "bridge",
+  "hbm",
+  "latency",
+  "energy",
+  "bandwidth_capacity",
+  "simulator"
+ ],
+ "decisions": [
+  {
+   "decision": "模型在多顆 die 之間怎麼切（tensor parallel 的切法與 collective 演算法）",
+   "options": [
+    "Flat-ring：1D-TP 加 ring all-reduce（Megatron）",
+    "Torus-ring：1D-TP 加 2D-torus all-reduce",
+    "Optimus：2D-TP 加 broadcast/reduce",
+    "Hecaton：2D 矩陣切分，只在同列或同行內做 all-gather 與 reduce-scatter；attention 沿 head 切，讓同一個 head 留在同一顆 die"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.7"
+  },
+  {
+   "decision": "封裝等級（standard 對 advanced）與 D2D 頻寬",
+   "options": [
+    "Standard package（有機基板，UCIe 16GT/s）",
+    "Advanced package（嵌入式矽橋，UCIe 16GT/s，pitch 較細，同面積頻寬較高）",
+    "整片矽中介層（因為大面積成本高而不採用）"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.9"
+  },
+  {
+   "decision": "外部 DRAM 技術（同樣預算下要容量還是要頻寬）",
+   "options": [
+    "DDR4-3200",
+    "DDR5-6400（基準：51.2GB/s，19pJ/bit）",
+    "HBM2"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "NoP 拓樸",
+   "options": [
+    "用 bypass link 組成的 ring（只連相鄰 die，最長一段等於 2 倍相鄰鏈路）",
+    "傳統 2D-torus（兩端直接相連）",
+    "整片中介層的任意繞線"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.4"
+  },
+  {
+   "decision": "16 顆 die 的排列長寬比",
+   "options": [
+    "(1,16)",
+    "(2,8)",
+    "(4,4)",
+    "(8,2)",
+    "(16,1)"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.11"
+  },
+  {
+   "decision": "die 數隨模型規模放大（weak scaling）",
+   "options": [
+    "TinyLlama-1.1B 用 16 die",
+    "Llama2-7B 用 64 die",
+    "Llama2-70B 用 256 die",
+    "Llama3.1-405B 用 1024 die"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.10"
+  },
+  {
+   "decision": "排程上用片上 buffer 換 DRAM 存取：layer fusion 的深度、mini-batch 大小、封裝內運算與 DRAM 存取重疊",
+   "options": [
+    "weight buffer 不夠時：只把 attention block 內部融合，FFN 兩層依序執行",
+    "weight buffer 夠時：attention 與 FFN 一起融合",
+    "不融合"
+   ],
+   "serves": "hw_dse",
+   "evidence": "PDF p.5"
+  }
+ ],
+ "proposed_tags": [
+  {
+   "group": "memory",
+   "id": "ddr",
+   "label": "標準 DDR（DDR4/DDR5）",
+   "definition": "加速器的外部記憶體用標準 DDR（不是 LPDDR，也不是 HBM）。",
+   "why": "memory 組只有 hbm 和 lpddr。這份文件的主記憶體是 DDR5-6400（51.2GB/s、19pJ/bit），還跟 DDR4、HBM2 做了比較。沒有這個標籤，agent 查 DRAM 技術的替代方案時找不到這份，也就拿不到 DDR 的頻寬與能耗基準。"
+  },
+  {
+   "group": "mapping（新組）",
+   "id": "cross_die_parallelism",
+   "label": "跨 die 的模型切分方式",
+   "definition": "文件比較了把模型的權重、activation 或 attention head 分到多顆 die 的方法（例如 1D 或 2D tensor parallel、按 head 切、pipeline），以及這些方法造成的 D2D 流量和每顆 die 需要的 SRAM。",
+   "why": "partition 組只描述硬體上有哪幾種 die，表達不出「工作負載怎麼分到 die 上」。這個決定直接決定 D2D 頻寬需求和每顆 die 要多少 SRAM。沒有這個標籤，agent 做 chiplet 切分或 D2D 選型時，找不到量化過切法對流量和 SRAM 影響的文件（例如本文 Table III 的通訊複雜度、按 head 切讓 attention 不必跨 die）。"
+  },
+  {
+   "group": "interconnect（新組）",
+   "id": "nop_topology",
+   "label": "封裝內網路拓樸",
+   "definition": "文件比較或指定多顆 die 之間的 NoP 連接拓樸（例如 ring、bypass ring、mesh、2D-torus、全連接中介層），或比較 die 的排列方式。",
+   "why": "d2d_interface 組只列 PHY 或協定標準（UCIe、BoW…），package 組只列封裝製程，兩者都表達不了「die 之間怎麼連、怎麼排」。沒有這個標籤，agent 查多 chiplet 的拓樸或排列對延遲與能耗的影響時（本文 Fig.5、Fig.11），只能靠全文搜尋碰運氣。"
+  }
+ ],
+ "too_coarse": [
+  {
+   "tag": "simulator",
+   "suggestion": "按評估的可信度拆開，對應 Tack 的幾種評估方式：analytical_model（roofline 或解析公式）、perf_simulator（Timeloop、LLMCompass、PLENA 這類效能或週期模擬）、rtl_synthesis（RTL 合成加 PrimeTime 估功耗）、silicon_measured（實機或量產晶片實測）。本文同時用了解析推導、RTL 合成、Timeloop 驗證和 Ramulator，只標一個 simulator 會讓 agent 分不出這些數字可信到什麼程度。"
+  },
+  {
+   "tag": "latency",
+   "suggestion": "拆成 latency_link（ns 等級的 D2D 鏈路或記憶體存取延遲，例如本文 α=10ns、Table IV）和 latency_end_to_end（每次 iteration、每個 token、TTFT/TPOT 這類系統層級延遲）。本文的主要指標是一次訓練 iteration 的延遲，跟執行期 KV 決策要看的 token 延遲不同類，混在一起查會互相干擾。"
+  },
+  {
+   "tag": "bandwidth_capacity",
+   "suggestion": "至少拆成 bandwidth 和 capacity。本文兩者分開比較：一邊掃 DRAM 頻寬（Fig.10），另一邊討論每顆 die 的 SRAM 容量需求和 overflow（p.8 到 p.10）。合在一個標籤裡，agent 分不出這份是在講頻寬還是容量。"
+  },
+  {
+   "tag": "compute_die",
+   "suggestion": "分成 homogeneous_compute（多顆相同的運算 die 往外擴，本文最多 1024 顆）和 heterogeneous_compute（運算 die 搭配不同功能的 die，例如 host SoC 加 NPU chiplet），跟 dse_dimensions.yaml 裡 partition 的 example_values 對齊。edge 比較常見的是後者，混在一起查會被資料中心或 waferscale 的同質擴展淹沒。"
+  }
+ ],
+ "_meta": {
+  "model": "claude-opus-5-5",
+  "cost_usd": 0.4033498,
+  "turns": 5
+ }
+}
